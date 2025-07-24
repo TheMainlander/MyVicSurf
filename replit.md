@@ -4,16 +4,21 @@
 
 VicSurf is a mobile-first React application for tracking surf conditions across Victoria, Australia. The app provides real-time surf conditions, tide information, and forecasts for various surf spots. It features a clean, modern interface optimized for mobile devices with a bottom navigation layout.
 
-## Current Status - Phase 1 Complete
+## Current Status - Phase 2 Complete
 
 ✓ Core MVP functionality implemented
 ✓ Mobile-responsive design with ocean-themed styling
-✓ Four main pages: Home, Spots, Forecast, Profile
-✓ Real-time surf conditions display
+✓ Five main pages: Home, Spots, Forecast, Profile, Favorites
+✓ Real-time surf conditions display with API integration
 ✓ Tide information with visual charts
 ✓ 7-day forecast timeline
 ✓ Victoria surf spots database (Bells Beach, Torquay Point, Jan Juc, Winki Pop)
 ✓ Bottom navigation working properly
+✓ PostgreSQL database with user accounts and preferences
+✓ User favorites functionality with add/remove capabilities
+✓ Real-time API integration with Open-Meteo Marine API
+✓ Automatic fallback to stored data when API requests fail
+✓ User sessions tracking for personalized surf history
 
 ## User Preferences
 
@@ -63,6 +68,10 @@ Development approach: Build the app in phases, iterating one phase at a time.
 - **Surf Conditions**: Real-time wave, wind, and weather data
 - **Tide Times**: Daily tide schedules with heights and types
 - **Forecasts**: Multi-day surf predictions
+- **Users**: User account information
+- **User Favorites**: Saved surf spots for quick access
+- **User Sessions**: Surf session tracking and rating
+- **User Preferences**: Personalized settings and preferences
 
 ## Data Flow
 

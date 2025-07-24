@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import LoadingOverlay from "@/components/common/loading-overlay";
+import FavoriteButton from "@/components/favorites/favorite-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { SurfSpot, SurfCondition } from "@shared/schema";
@@ -11,6 +12,9 @@ interface SpotWithConditions extends SurfSpot {
 }
 
 export default function Spots() {
+  // Mock user ID for development - in production this would come from authentication
+  const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
+  
   const { data: spots, isLoading } = useQuery<SpotWithConditions[]>({
     queryKey: ["/api/surf-spots/1/nearby"],
   });
@@ -60,15 +64,22 @@ export default function Spots() {
                     />
                     <div className="flex-1 p-4">
                       <div className="flex justify-between items-start mb-2">
-                        <div>
+                        <div className="flex-1">
                           <h3 className="font-medium text-sm">{spot.name}</h3>
                           <p className="text-xs text-coastal-grey">{spot.region}</p>
                         </div>
-                        {spot.conditions && (
-                          <Badge className={`${getRatingColor(spot.conditions.rating)} text-white text-xs`}>
-                            {getRatingText(spot.conditions.rating)}
-                          </Badge>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          {spot.conditions && (
+                            <Badge className={`${getRatingColor(spot.conditions.rating)} text-white text-xs`}>
+                              {getRatingText(spot.conditions.rating)}
+                            </Badge>
+                          )}
+                          <FavoriteButton 
+                            spotId={spot.id} 
+                            userId={currentUserId}
+                            variant="icon"
+                          />
+                        </div>
                       </div>
                       
                       {spot.conditions && (

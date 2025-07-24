@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Spots from "@/pages/spots";
 import Forecast from "@/pages/forecast";
 import Profile from "@/pages/profile";
+import Favorites from "@/pages/favorites";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/spots" component={Spots} />
       <Route path="/forecast" component={Forecast} />
       <Route path="/profile" component={Profile} />
+      <Route path="/favorites" component={Favorites} />
       <Route component={NotFound} />
     </Switch>
   );

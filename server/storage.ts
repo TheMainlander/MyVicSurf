@@ -3,16 +3,30 @@ import {
   surfConditions, 
   tideTimes, 
   forecasts,
+  users,
+  userFavorites,
+  userSessions,
+  userPreferences,
   type SurfSpot, 
   type SurfCondition, 
   type TideTime, 
   type Forecast,
+  type User,
+  type UserFavorite,
+  type UserSession,
+  type UserPreferences,
   type InsertSurfSpot,
   type InsertSurfCondition,
   type InsertTideTime,
-  type InsertForecast
+  type InsertForecast,
+  type InsertUser,
+  type InsertUserFavorite,
+  type InsertUserSession,
+  type InsertUserPreferences
 } from "@shared/schema";
 import { getCurrentConditionsFromAPI, getForecastFromAPI } from "./api-integrations";
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   // Surf Spots
@@ -33,6 +47,25 @@ export interface IStorage {
   getForecast(spotId: number, days: number): Promise<Forecast[]>;
   getForecastFromAPI(spotId: number, days: number): Promise<Forecast[]>;
   createForecast(forecast: InsertForecast): Promise<Forecast>;
+
+  // Users
+  getUser(id: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+
+  // User Favorites
+  getUserFavorites(userId: string): Promise<(UserFavorite & { spot: SurfSpot })[]>;
+  addUserFavorite(userId: string, spotId: number): Promise<UserFavorite>;
+  removeUserFavorite(userId: string, spotId: number): Promise<boolean>;
+  isSpotFavorited(userId: string, spotId: number): Promise<boolean>;
+
+  // User Sessions
+  getUserSessions(userId: string, limit?: number): Promise<(UserSession & { spot: SurfSpot })[]>;
+  createUserSession(session: InsertUserSession): Promise<UserSession>;
+
+  // User Preferences
+  getUserPreferences(userId: string): Promise<UserPreferences | undefined>;
+  updateUserPreferences(userId: string, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences>;
 }
 
 export class MemStorage implements IStorage {
@@ -371,4 +404,254 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database-backed storage for production
+export class DatabaseStorage implements IStorage {
+  // Mock user for development - in production this would come from authentication
+  private currentUserId = "550e8400-e29b-41d4-a716-446655440000";
+
+  async getSurfSpots(): Promise<SurfSpot[]> {
+    return await db.select().from(surfSpots);
+  }
+
+  async getSurfSpot(id: number): Promise<SurfSpot | undefined> {
+    const [spot] = await db.select().from(surfSpots).where(eq(surfSpots.id, id));
+    return spot;
+  }
+
+  async createSurfSpot(spot: InsertSurfSpot): Promise<SurfSpot> {
+    const [newSpot] = await db.insert(surfSpots).values(spot).returning();
+    return newSpot;
+  }
+
+  async getCurrentConditions(spotId: number): Promise<SurfCondition | undefined> {
+    const [condition] = await db
+      .select()
+      .from(surfConditions)
+      .where(eq(surfConditions.spotId, spotId))
+      .orderBy(desc(surfConditions.timestamp))
+      .limit(1);
+    return condition;
+  }
+
+  async getCurrentConditionsFromAPI(spotId: number): Promise<SurfCondition | undefined> {
+    try {
+      const spot = await this.getSurfSpot(spotId);
+      if (!spot) return undefined;
+
+      const apiConditions = await getCurrentConditionsFromAPI(spotId, spot.latitude, spot.longitude);
+      
+      // Create new conditions from API data
+      const newCondition = {
+        spotId,
+        waveHeight: apiConditions.waveHeight || 0,
+        waveDirection: apiConditions.waveDirection || null,
+        wavePeriod: apiConditions.wavePeriod || null,
+        windSpeed: apiConditions.windSpeed || 0,
+        windDirection: apiConditions.windDirection || "N",
+        airTemperature: apiConditions.airTemperature || 20,
+        waterTemperature: apiConditions.waterTemperature || 18,
+        rating: apiConditions.rating || "fair",
+      };
+
+      const [inserted] = await db.insert(surfConditions).values(newCondition).returning();
+      return inserted;
+    } catch (error) {
+      console.error(`API fetch failed for spot ${spotId}, falling back to stored data:`, error);
+      return this.getCurrentConditions(spotId);
+    }
+  }
+
+  async createSurfCondition(condition: InsertSurfCondition): Promise<SurfCondition> {
+    const [newCondition] = await db.insert(surfConditions).values(condition).returning();
+    return newCondition;
+  }
+
+  async getTideTimesForDate(spotId: number, date: string): Promise<TideTime[]> {
+    return await db
+      .select()
+      .from(tideTimes)
+      .where(and(eq(tideTimes.spotId, spotId), eq(tideTimes.date, date)));
+  }
+
+  async createTideTime(tide: InsertTideTime): Promise<TideTime> {
+    const [newTide] = await db.insert(tideTimes).values(tide).returning();
+    return newTide;
+  }
+
+  async getForecast(spotId: number, days: number): Promise<Forecast[]> {
+    return await db
+      .select()
+      .from(forecasts)
+      .where(eq(forecasts.spotId, spotId))
+      .limit(days);
+  }
+
+  async getForecastFromAPI(spotId: number, days: number): Promise<Forecast[]> {
+    try {
+      const spot = await this.getSurfSpot(spotId);
+      if (!spot) return [];
+
+      const apiForecast = await getForecastFromAPI(spotId, spot.latitude, spot.longitude, days);
+      
+      // Clear existing forecasts for this spot to avoid duplicates
+      await db.delete(forecasts).where(eq(forecasts.spotId, spotId));
+
+      const forecastData = apiForecast.map(forecast => ({
+        spotId,
+        date: forecast.date || new Date().toISOString().split('T')[0],
+        waveHeight: forecast.waveHeight || 0,
+        waveDirection: forecast.waveDirection || null,
+        windSpeed: forecast.windSpeed || 0,
+        windDirection: forecast.windDirection || "N",
+        rating: forecast.rating || "fair",
+        airTemperature: forecast.airTemperature || 20,
+        waterTemperature: forecast.waterTemperature || 18
+      }));
+
+      const insertedForecasts = await db.insert(forecasts).values(forecastData).returning();
+      return insertedForecasts;
+    } catch (error) {
+      console.error(`API forecast fetch failed for spot ${spotId}, falling back to stored data:`, error);
+      return this.getForecast(spotId, days);
+    }
+  }
+
+  async createForecast(forecast: InsertForecast): Promise<Forecast> {
+    const [newForecast] = await db.insert(forecasts).values(forecast).returning();
+    return newForecast;
+  }
+
+  // User management
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(users).values(user).returning();
+    return newUser;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  // User Favorites
+  async getUserFavorites(userId: string): Promise<(UserFavorite & { spot: SurfSpot })[]> {
+    const favorites = await db
+      .select({
+        id: userFavorites.id,
+        userId: userFavorites.userId,
+        spotId: userFavorites.spotId,
+        addedAt: userFavorites.addedAt,
+        spot: surfSpots
+      })
+      .from(userFavorites)
+      .innerJoin(surfSpots, eq(userFavorites.spotId, surfSpots.id))
+      .where(eq(userFavorites.userId, userId))
+      .orderBy(desc(userFavorites.addedAt));
+
+    return favorites.map(f => ({
+      id: f.id,
+      userId: f.userId,
+      spotId: f.spotId,
+      addedAt: f.addedAt,
+      spot: f.spot
+    }));
+  }
+
+  async addUserFavorite(userId: string, spotId: number): Promise<UserFavorite> {
+    const [favorite] = await db
+      .insert(userFavorites)
+      .values({ userId, spotId })
+      .returning();
+    return favorite;
+  }
+
+  async removeUserFavorite(userId: string, spotId: number): Promise<boolean> {
+    const result = await db
+      .delete(userFavorites)
+      .where(and(eq(userFavorites.userId, userId), eq(userFavorites.spotId, spotId)));
+    return result.rowCount > 0;
+  }
+
+  async isSpotFavorited(userId: string, spotId: number): Promise<boolean> {
+    const [favorite] = await db
+      .select({ id: userFavorites.id })
+      .from(userFavorites)
+      .where(and(eq(userFavorites.userId, userId), eq(userFavorites.spotId, spotId)));
+    return !!favorite;
+  }
+
+  // User Sessions
+  async getUserSessions(userId: string, limit: number = 10): Promise<(UserSession & { spot: SurfSpot })[]> {
+    const sessions = await db
+      .select({
+        id: userSessions.id,
+        userId: userSessions.userId,
+        spotId: userSessions.spotId,
+        sessionDate: userSessions.sessionDate,
+        waveHeight: userSessions.waveHeight,
+        rating: userSessions.rating,
+        notes: userSessions.notes,
+        duration: userSessions.duration,
+        createdAt: userSessions.createdAt,
+        spot: surfSpots
+      })
+      .from(userSessions)
+      .innerJoin(surfSpots, eq(userSessions.spotId, surfSpots.id))
+      .where(eq(userSessions.userId, userId))
+      .orderBy(desc(userSessions.sessionDate))
+      .limit(limit);
+
+    return sessions.map(s => ({
+      id: s.id,
+      userId: s.userId,
+      spotId: s.spotId,
+      sessionDate: s.sessionDate,
+      waveHeight: s.waveHeight,
+      rating: s.rating,
+      notes: s.notes,
+      duration: s.duration,
+      createdAt: s.createdAt,
+      spot: s.spot
+    }));
+  }
+
+  async createUserSession(session: InsertUserSession): Promise<UserSession> {
+    const [newSession] = await db.insert(userSessions).values(session).returning();
+    return newSession;
+  }
+
+  // User Preferences
+  async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
+    const [prefs] = await db
+      .select()
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userId));
+    return prefs;
+  }
+
+  async updateUserPreferences(userId: string, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences> {
+    const existing = await this.getUserPreferences(userId);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(userPreferences)
+        .set({ ...preferences, updatedAt: new Date() })
+        .where(eq(userPreferences.userId, userId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(userPreferences)
+        .values({ userId, ...preferences })
+        .returning();
+      return created;
+    }
+  }
+}
+
+// Use database storage for production, memory storage for fallback
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();

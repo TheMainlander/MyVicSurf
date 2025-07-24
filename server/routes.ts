@@ -114,6 +114,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User favorites routes
+  app.get("/api/users/:userId/favorites", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const favorites = await storage.getUserFavorites(userId);
+      res.json(favorites);
+    } catch (error) {
+      console.error("Error fetching user favorites:", error);
+      res.status(500).json({ message: "Failed to fetch favorites" });
+    }
+  });
+
+  app.post("/api/users/:userId/favorites", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const { spotId } = req.body;
+      
+      // Check if already favorited
+      const isAlreadyFavorited = await storage.isSpotFavorited(userId, spotId);
+      if (isAlreadyFavorited) {
+        return res.status(409).json({ message: "Spot already favorited" });
+      }
+      
+      const favorite = await storage.addUserFavorite(userId, spotId);
+      res.status(201).json(favorite);
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+      res.status(500).json({ message: "Failed to add favorite" });
+    }
+  });
+
+  app.delete("/api/users/:userId/favorites/:spotId", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const spotId = parseInt(req.params.spotId);
+      
+      const removed = await storage.removeUserFavorite(userId, spotId);
+      if (!removed) {
+        return res.status(404).json({ message: "Favorite not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+      res.status(500).json({ message: "Failed to remove favorite" });
+    }
+  });
+
+  // Check if spot is favorited
+  app.get("/api/users/:userId/favorites/:spotId/check", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const spotId = parseInt(req.params.spotId);
+      
+      const isFavorited = await storage.isSpotFavorited(userId, spotId);
+      res.json({ isFavorited });
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+      res.status(500).json({ message: "Failed to check favorite status" });
+    }
+  });
+
+  // User sessions routes
+  app.get("/api/users/:userId/sessions", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const sessions = await storage.getUserSessions(userId, limit);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching user sessions:", error);
+      res.status(500).json({ message: "Failed to fetch sessions" });
+    }
+  });
+
+  app.post("/api/users/:userId/sessions", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const sessionData = { ...req.body, userId };
+      
+      const session = await storage.createUserSession(sessionData);
+      res.status(201).json(session);
+    } catch (error) {
+      console.error("Error creating session:", error);
+      res.status(500).json({ message: "Failed to create session" });
+    }
+  });
+
+  // User preferences routes
+  app.get("/api/users/:userId/preferences", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const preferences = await storage.getUserPreferences(userId);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error fetching user preferences:", error);
+      res.status(500).json({ message: "Failed to fetch preferences" });
+    }
+  });
+
+  app.put("/api/users/:userId/preferences", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const preferences = await storage.updateUserPreferences(userId, req.body);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error updating preferences:", error);
+      res.status(500).json({ message: "Failed to update preferences" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

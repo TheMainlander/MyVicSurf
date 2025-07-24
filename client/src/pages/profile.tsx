@@ -1,11 +1,15 @@
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
+import FavoritesList from "@/components/favorites/favorites-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import APISettings from "@/components/settings/api-settings";
 
 export default function Profile() {
+  // Mock user ID for development - in production this would come from authentication
+  const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
+  
   return (
     <div className="min-h-screen bg-slate-50">
       <Header />
@@ -21,6 +25,9 @@ export default function Profile() {
           </div>
 
           <div className="space-y-4">
+            {/* Favorites List */}
+            <FavoritesList userId={currentUserId} maxItems={3} />
+            
             {/* API Settings */}
             <APISettings />
 
