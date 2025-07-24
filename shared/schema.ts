@@ -104,14 +104,14 @@ export const users = pgTable("users", {
 
 export const userFavorites = pgTable("user_favorites", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   spotId: integer("spot_id").references(() => surfSpots.id, { onDelete: "cascade" }),
   addedAt: timestamp("added_at").defaultNow(),
 });
 
 export const userSessions = pgTable("user_sessions", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   spotId: integer("spot_id").references(() => surfSpots.id),
   sessionDate: timestamp("session_date").notNull(),
   waveHeight: real("wave_height"),
@@ -123,7 +123,7 @@ export const userSessions = pgTable("user_sessions", {
 
 export const userPreferences = pgTable("user_preferences", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).unique(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).unique(),
   preferredUnits: text("preferred_units").default("metric"), // metric, imperial
   emailNotifications: boolean("email_notifications").default(true),
   pushNotifications: boolean("push_notifications").default(true),
@@ -139,7 +139,7 @@ export const userPreferences = pgTable("user_preferences", {
 
 export const pushSubscriptions = pgTable("push_subscriptions", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   endpoint: text("endpoint").notNull(),
   p256dhKey: text("p256dh_key").notNull(),
   authKey: text("auth_key").notNull(),
@@ -150,7 +150,7 @@ export const pushSubscriptions = pgTable("push_subscriptions", {
 
 export const notificationLog = pgTable("notification_log", {
   id: serial("id").primaryKey(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   spotId: integer("spot_id").references(() => surfSpots.id),
   notificationType: text("notification_type").notNull(), // optimal_conditions, daily_forecast
   title: text("title").notNull(),
