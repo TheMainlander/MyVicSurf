@@ -250,26 +250,26 @@ export default function Landing() {
               </div>
             </div>
             {/* Features Grid - Below Surf Spots */}
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="glass rounded-2xl p-8 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '1.8s' }}>
-                <div className="text-4xl mb-4">🌊</div>
-                <h3 className="text-2xl font-bold text-white mb-4">Real-Time Conditions</h3>
+            <div className="grid md:grid-cols-3 gap-8 mb-16">
+              <div className="glass rounded-2xl p-10 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '1.8s' }}>
+                <div className="text-4xl mb-6">🌊</div>
+                <h3 className="text-2xl font-bold text-white mb-6">Real-Time Conditions</h3>
                 <p className="text-white/80 leading-relaxed">
                   Live wave heights, wind conditions, and water temperature from trusted sources
                 </p>
               </div>
 
-              <div className="glass rounded-2xl p-8 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.0s' }}>
-                <div className="text-4xl mb-4">📈</div>
-                <h3 className="text-2xl font-bold text-white mb-4">7-Day Forecasts</h3>
+              <div className="glass rounded-2xl p-10 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.0s' }}>
+                <div className="text-4xl mb-6">📈</div>
+                <h3 className="text-2xl font-bold text-white mb-6">7-Day Forecasts</h3>
                 <p className="text-white/80 leading-relaxed">
                   Plan your surf sessions with detailed forecasts and optimal condition alerts
                 </p>
               </div>
 
-              <div className="glass rounded-2xl p-8 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.2s' }}>
-                <div className="text-4xl mb-4">❤️</div>
-                <h3 className="text-2xl font-bold text-white mb-4">Personal Favorites</h3>
+              <div className="glass rounded-2xl p-10 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.2s' }}>
+                <div className="text-4xl mb-6">❤️</div>
+                <h3 className="text-2xl font-bold text-white mb-6">Personal Favorites</h3>
                 <p className="text-white/80 leading-relaxed">
                   Save your favorite spots and get push notifications for optimal conditions
                 </p>
@@ -277,20 +277,22 @@ export default function Landing() {
             </div>
 
           {/* Call to Action */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20">
-            <h3 className="text-2xl font-bold text-white mb-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-12 border border-white/20 mt-8">
+            <h3 className="text-3xl font-bold text-white mb-6 text-center">
               Ready to Catch the Perfect Wave?
             </h3>
-            <p className="text-white/80 mb-6">
+            <p className="text-white/80 mb-8 text-center text-lg max-w-2xl mx-auto">
               Join VicSurf today and never miss optimal surf conditions again
             </p>
-            <Button
-              onClick={handleLogin}
-              size="lg"
-              className="bg-sunset-orange text-white hover:bg-sunset-orange/90 font-semibold px-8 py-3"
-            >
-              Sign In to Continue
-            </Button>
+            <div className="text-center">
+              <Button
+                onClick={handleLogin}
+                size="lg"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 hover:scale-105 transition-all duration-200 font-bold px-12 py-4 text-lg rounded-xl shadow-xl"
+              >
+                Sign In to Continue
+              </Button>
+            </div>
           </div>
           </div>
         </main>
