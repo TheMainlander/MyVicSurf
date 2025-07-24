@@ -73,35 +73,52 @@ export default function Landing() {
               Track conditions at Bells Beach, Torquay Point, Jan Juc, and Winki Pop.
             </p>
             
-            {/* Enhanced Authentication Section */}
-            <div className="slide-up space-y-6 max-w-sm mx-auto" style={{ animationDelay: '0.6s' }}>
+            {/* Enhanced Registration Section */}
+            <div className="slide-up space-y-6 max-w-md mx-auto" style={{ animationDelay: '0.6s' }}>
               <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
-                <h3 className="text-xl font-semibold text-white mb-4 text-center">Sign In to Continue</h3>
+                <h3 className="text-2xl font-bold text-white mb-2 text-center">Start Your Surf Journey</h3>
+                <p className="text-cyan-300 text-sm font-medium mb-4 text-center">
+                  Join 1,000+ surfers tracking perfect waves
+                </p>
                 <p className="text-white/80 text-sm mb-6 text-center">
-                  Access personalized surf forecasts and save your favorite spots
+                  Get instant alerts when your favorite spots hit optimal conditions, track forecasts 7 days ahead, and never miss epic surf again
                 </p>
                 
                 <Button
                   onClick={handleLogin}
                   size="lg"
-                  className="w-full bg-white text-gray-800 hover:bg-gray-50 hover:scale-[1.02] transition-all duration-200 font-semibold py-4 text-base shadow-xl rounded-xl flex items-center justify-center gap-3 border-2 border-transparent hover:border-white/20"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 hover:scale-[1.02] transition-all duration-200 font-bold py-4 text-base shadow-xl rounded-xl flex items-center justify-center gap-3 border-2 border-transparent hover:border-white/20"
                 >
-                  <div className="w-7 h-7 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+                  <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center shadow-md backdrop-blur-sm">
                     <div className="text-white text-sm font-bold">R</div>
                   </div>
-                  Continue with Replit
+                  Register Free with Replit
                 </Button>
                 
                 <div className="mt-4 text-center">
                   <p className="text-white/60 text-xs">
-                    Secure authentication powered by Replit
+                    Free forever • No credit card required • 30-second setup
                   </p>
                 </div>
               </div>
               
-              <div className="text-center">
-                <p className="text-white/70 text-sm">
-                  New to VicSurf? Create your account automatically when you sign in
+              <div className="text-center space-y-2">
+                <div className="flex items-center justify-center space-x-6 text-white/80 text-sm">
+                  <div className="flex items-center space-x-1">
+                    <span className="text-cyan-400">✓</span>
+                    <span>Real-time alerts</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-cyan-400">✓</span>
+                    <span>7-day forecasts</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-cyan-400">✓</span>
+                    <span>Favorite spots</span>
+                  </div>
+                </div>
+                <p className="text-white/60 text-xs">
+                  Already have an account? You'll be signed in automatically
                 </p>
               </div>
             </div>
