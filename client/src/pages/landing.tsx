@@ -8,30 +8,41 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+        }}
+      ></div>
+      
+      {/* Gradient Overlay - 10% opacity */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 via-blue-800/85 to-blue-700/90"></div>
+      
       {/* Animated background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-300/10 rounded-full blur-2xl animate-pulse delay-500"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-300/5 rounded-full blur-2xl animate-pulse delay-500"></div>
         
         {/* Ocean wave pattern */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-blue-800/50 to-transparent">
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-blue-800/30 to-transparent">
           <svg className="absolute bottom-0 w-full h-16" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path d="M0,60 C300,120 600,0 900,60 C1050,90 1150,30 1200,60 L1200,120 L0,120 Z" 
-                  fill="rgba(255,255,255,0.1)" className="animate-pulse">
+                  fill="rgba(255,255,255,0.05)" className="animate-pulse">
             </path>
           </svg>
         </div>
       </div>
       
       <div className="relative z-10">
-        <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+        <header className="bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
           <div className="max-w-4xl mx-auto px-4 py-4">
             <div className="flex items-center justify-center">
               <div className="flex items-center space-x-3">
-                <div className="text-3xl wave-animation">🏄‍♂️</div>
-                <h1 className="text-2xl font-bold text-white">VicSurf</h1>
+                <div className="text-3xl wave-animation">🏄‍♀️</div>
+                <h1 className="text-2xl font-bold text-white drop-shadow-lg">VicSurf</h1>
               </div>
             </div>
           </div>
@@ -42,21 +53,21 @@ export default function Landing() {
           {/* Hero Section */}
           <div className="mb-12 fade-in">
             <div className="wave-animation">
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                🏄‍♂️ VicSurf
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-2xl">
+                🏄‍♀️ VicSurf
               </h1>
             </div>
-            <p className="text-xl md:text-2xl text-white/90 mb-8 slide-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-xl md:text-2xl text-white mb-8 slide-up drop-shadow-lg" style={{ animationDelay: '0.2s' }}>
               Your Ultimate Guide to Victoria's Surf Conditions
             </p>
-            <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto slide-up" style={{ animationDelay: '0.4s' }}>
+            <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto slide-up drop-shadow-md" style={{ animationDelay: '0.4s' }}>
               Get real-time surf reports, forecasts, and tide information for Victoria's premier surf spots. 
               Track conditions at Bells Beach, Torquay Point, Jan Juc, and Winki Pop.
             </p>
             
             {/* Enhanced Authentication Section */}
             <div className="slide-up space-y-6 max-w-sm mx-auto" style={{ animationDelay: '0.6s' }}>
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
+              <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
                 <h3 className="text-xl font-semibold text-white mb-4 text-center">Sign In to Continue</h3>
                 <p className="text-white/80 text-sm mb-6 text-center">
                   Access personalized surf forecasts and save your favorite spots
