@@ -62,7 +62,8 @@ function calculateSurfRating(waveHeight: number, windSpeed: number, waveDirectio
 }
 
 export async function fetchOpenMeteoForecast(latitude: number, longitude: number): Promise<OpenMeteoResponse> {
-  const params = new URLSearchParams({
+  // Get marine data (waves)
+  const marineParams = new URLSearchParams({
     latitude: latitude.toString(),
     longitude: longitude.toString(),
     hourly: [
@@ -70,7 +71,17 @@ export async function fetchOpenMeteoForecast(latitude: number, longitude: number
       "wave_direction", 
       "wave_period",
       "wind_wave_height",
-      "swell_wave_height",
+      "swell_wave_height"
+    ].join(','),
+    timezone: "Australia/Melbourne",
+    forecast_days: "7"
+  });
+
+  // Get weather data (wind)
+  const weatherParams = new URLSearchParams({
+    latitude: latitude.toString(),
+    longitude: longitude.toString(),
+    hourly: [
       "wind_speed_10m",
       "wind_direction_10m"
     ].join(','),
@@ -78,13 +89,31 @@ export async function fetchOpenMeteoForecast(latitude: number, longitude: number
     forecast_days: "7"
   });
 
-  const response = await fetch(`${OPEN_METEO_BASE}?${params}`);
+  const [marineResponse, weatherResponse] = await Promise.all([
+    fetch(`${OPEN_METEO_BASE}?${marineParams}`),
+    fetch(`https://api.open-meteo.com/v1/forecast?${weatherParams}`)
+  ]);
   
-  if (!response.ok) {
-    throw new Error(`Open-Meteo API error: ${response.status} ${response.statusText}`);
+  if (!marineResponse.ok) {
+    throw new Error(`Open-Meteo Marine API error: ${marineResponse.status} ${marineResponse.statusText}`);
   }
   
-  return response.json();
+  if (!weatherResponse.ok) {
+    throw new Error(`Open-Meteo Weather API error: ${weatherResponse.status} ${weatherResponse.statusText}`);
+  }
+  
+  const marineData = await marineResponse.json();
+  const weatherData = await weatherResponse.json();
+  
+  // Combine the data
+  return {
+    ...marineData,
+    hourly: {
+      ...marineData.hourly,
+      wind_speed_10m: weatherData.hourly.wind_speed_10m,
+      wind_direction_10m: weatherData.hourly.wind_direction_10m
+    }
+  };
 }
 
 export async function getCurrentConditionsFromAPI(spotId: number, latitude: number, longitude: number): Promise<Partial<SurfCondition>> {
@@ -99,8 +128,8 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
     const windSpeed = data.hourly.wind_speed_10m[currentIndex];
     const windDirection = data.hourly.wind_direction_10m[currentIndex];
     
-    // Convert wind speed from m/s to km/h
-    const windSpeedKmh = windSpeed * 3.6;
+    // Wind speed is already in km/h from the weather API
+    const windSpeedKmh = windSpeed;
     
     const rating = calculateSurfRating(waveHeight, windSpeedKmh, waveDirection, windDirection);
     
@@ -145,8 +174,8 @@ export async function getForecastFromAPI(spotId: number, latitude: number, longi
         const windSpeed = data.hourly.wind_speed_10m[middayIndex];
         const windDirection = data.hourly.wind_direction_10m[middayIndex];
         
-        // Convert wind speed from m/s to km/h
-        const windSpeedKmh = windSpeed * 3.6;
+        // Wind speed is already in km/h from the weather API
+        const windSpeedKmh = windSpeed;
         
         const rating = calculateSurfRating(waveHeight, windSpeedKmh, waveDirection, windDirection);
         
