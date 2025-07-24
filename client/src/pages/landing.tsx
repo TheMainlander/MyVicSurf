@@ -65,7 +65,7 @@ export default function Landing() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+          backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Female_surfer%2C_Yamba%2C_NSW_2014-12-18_%2821548724031%29.jpg/1280px-Female_surfer%2C_Yamba%2C_NSW_2014-12-18_%2821548724031%29.jpg')`
         }}
       ></div>
       
