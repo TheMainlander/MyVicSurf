@@ -10,9 +10,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await setupAuth(app);
       console.log("Replit Auth configured successfully");
     } catch (error) {
-      console.log("Replit Auth not configured:", (error as Error).message);
+      console.error("Replit Auth configuration failed:", (error as Error).message);
+      // Continue without auth in case of error - better than crashing
     }
+  } else {
+    console.warn("Replit Auth not configured - missing DATABASE_URL or REPLIT_DOMAINS");
   }
+
+  // Health check endpoint for production monitoring
+  app.get('/api/health', async (req, res) => {
+    try {
+      // Check database connection
+      const spots = await storage.getSurfSpots();
+      res.json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        database: 'connected',
+        spotsCount: spots.length,
+        environment: process.env.NODE_ENV || 'development'
+      });
+    } catch (error) {
+      res.status(503).json({ 
+        status: 'unhealthy', 
+        timestamp: new Date().toISOString(),
+        error: (error as Error).message 
+      });
+    }
+  });
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
