@@ -11,6 +11,8 @@ export const surfSpots = pgTable("surf_spots", {
   imageUrl: text("image_url"),
   region: text("region").notNull(),
   difficulty: text("difficulty").notNull(), // beginner, intermediate, advanced, expert
+  externalId: text("external_id"), // For external API integration
+  apiSource: text("api_source").default("open-meteo"), // Track data source
 });
 
 export const surfConditions = pgTable("surf_conditions", {

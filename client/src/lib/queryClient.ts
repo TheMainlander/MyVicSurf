@@ -29,7 +29,26 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
+    let url = queryKey.join("/") as string;
+    
+    // Check if we should use real API data
+    const useRealAPI = (() => {
+      try {
+        const saved = localStorage.getItem('vicsurf-use-real-api');
+        return saved ? JSON.parse(saved) : true;
+      } catch {
+        return true; // Default to real API
+      }
+    })();
+
+    // Add API parameter to requests that support it
+    if (useRealAPI && (url.includes('/conditions') || url.includes('/forecast') || url.includes('/nearby'))) {
+      const urlObj = new URL(url, window.location.origin);
+      urlObj.searchParams.set('api', 'true');
+      url = urlObj.toString();
+    }
+
+    const res = await fetch(url, {
       credentials: "include",
     });
 

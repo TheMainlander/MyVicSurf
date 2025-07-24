@@ -3,6 +3,7 @@ import BottomNavigation from "@/components/layout/bottom-navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import APISettings from "@/components/settings/api-settings";
 
 export default function Profile() {
   return (
@@ -20,6 +21,9 @@ export default function Profile() {
           </div>
 
           <div className="space-y-4">
+            {/* API Settings */}
+            <APISettings />
+
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center">

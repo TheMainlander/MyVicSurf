@@ -27,16 +27,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get current conditions for a spot
+  // Get current conditions for a spot (using real API)
   app.get("/api/surf-spots/:id/conditions", async (req, res) => {
     try {
       const spotId = parseInt(req.params.id);
-      const conditions = await storage.getCurrentConditions(spotId);
+      const useRealData = req.query.api === 'true';
+      
+      let conditions;
+      if (useRealData) {
+        conditions = await storage.getCurrentConditionsFromAPI(spotId);
+      } else {
+        conditions = await storage.getCurrentConditions(spotId);
+      }
+      
       if (!conditions) {
         return res.status(404).json({ message: "No conditions found for this spot" });
       }
       res.json(conditions);
     } catch (error) {
+      console.error("Error fetching conditions:", error);
       res.status(500).json({ message: "Failed to fetch surf conditions" });
     }
   });
@@ -53,29 +62,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get forecast for a spot
+  // Get forecast for a spot (using real API)
   app.get("/api/surf-spots/:id/forecast", async (req, res) => {
     try {
       const spotId = parseInt(req.params.id);
       const days = parseInt(req.query.days as string) || 7;
-      const forecast = await storage.getForecast(spotId, days);
+      const useRealData = req.query.api === 'true';
+      
+      let forecast;
+      if (useRealData) {
+        forecast = await storage.getForecastFromAPI(spotId, days);
+      } else {
+        forecast = await storage.getForecast(spotId, days);
+      }
+      
       res.json(forecast);
     } catch (error) {
+      console.error("Error fetching forecast:", error);
       res.status(500).json({ message: "Failed to fetch forecast" });
     }
   });
 
-  // Get nearby spots (simplified - returns all spots for now)
+  // Get nearby spots with real-time conditions
   app.get("/api/surf-spots/:id/nearby", async (req, res) => {
     try {
       const currentSpotId = parseInt(req.params.id);
+      const useRealData = req.query.api === 'true';
       const allSpots = await storage.getSurfSpots();
       const nearbySpots = allSpots.filter(spot => spot.id !== currentSpotId);
       
       // Add current conditions to each spot
       const spotsWithConditions = await Promise.all(
         nearbySpots.map(async (spot) => {
-          const conditions = await storage.getCurrentConditions(spot.id);
+          let conditions;
+          if (useRealData) {
+            conditions = await storage.getCurrentConditionsFromAPI(spot.id);
+          } else {
+            conditions = await storage.getCurrentConditions(spot.id);
+          }
           return {
             ...spot,
             conditions
@@ -85,6 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(spotsWithConditions);
     } catch (error) {
+      console.error("Error fetching nearby spots:", error);
       res.status(500).json({ message: "Failed to fetch nearby spots" });
     }
   });

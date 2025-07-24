@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import APIStatus from "@/components/ui/api-status";
 
 export default function Header() {
   const [showSettings, setShowSettings] = useState(false);
@@ -17,6 +18,7 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             <i className="fas fa-water text-2xl"></i>
             <h1 className="text-xl font-semibold">VicSurf</h1>
+            <APIStatus className="bg-white/20 border-white/30 text-white" />
           </div>
           <Button 
             variant="ghost" 

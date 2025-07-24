@@ -12,6 +12,7 @@ import {
   type InsertTideTime,
   type InsertForecast
 } from "@shared/schema";
+import { getCurrentConditionsFromAPI, getForecastFromAPI } from "./api-integrations";
 
 export interface IStorage {
   // Surf Spots
@@ -21,6 +22,7 @@ export interface IStorage {
 
   // Surf Conditions
   getCurrentConditions(spotId: number): Promise<SurfCondition | undefined>;
+  getCurrentConditionsFromAPI(spotId: number): Promise<SurfCondition | undefined>;
   createSurfCondition(condition: InsertSurfCondition): Promise<SurfCondition>;
 
   // Tide Times
@@ -29,6 +31,7 @@ export interface IStorage {
 
   // Forecasts
   getForecast(spotId: number, days: number): Promise<Forecast[]>;
+  getForecastFromAPI(spotId: number, days: number): Promise<Forecast[]>;
   createForecast(forecast: InsertForecast): Promise<Forecast>;
 }
 
@@ -49,7 +52,7 @@ export class MemStorage implements IStorage {
   }
 
   private initializeData() {
-    // Initialize Victoria surf spots
+    // Initialize Victoria surf spots with accurate coordinates for API integration
     const spots: SurfSpot[] = [
       {
         id: 1,
@@ -59,7 +62,9 @@ export class MemStorage implements IStorage {
         description: "World-famous surf break, home of the Rip Curl Pro",
         imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400",
         region: "Surf Coast",
-        difficulty: "intermediate"
+        difficulty: "intermediate",
+        externalId: null,
+        apiSource: "open-meteo"
       },
       {
         id: 2,
@@ -69,7 +74,9 @@ export class MemStorage implements IStorage {
         description: "Consistent waves in the heart of surf city",
         imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=120",
         region: "Surf Coast",
-        difficulty: "beginner"
+        difficulty: "beginner",
+        externalId: null,
+        apiSource: "open-meteo"
       },
       {
         id: 3,
@@ -79,7 +86,9 @@ export class MemStorage implements IStorage {
         description: "Popular beach break with good learning waves",
         imageUrl: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=120",
         region: "Surf Coast",
-        difficulty: "beginner"
+        difficulty: "beginner",
+        externalId: null,
+        apiSource: "open-meteo"
       },
       {
         id: 4,
@@ -89,7 +98,9 @@ export class MemStorage implements IStorage {
         description: "World-class right-hand point break",
         imageUrl: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=120",
         region: "Surf Coast",
-        difficulty: "expert"
+        difficulty: "expert",
+        externalId: null,
+        apiSource: "open-meteo"
       }
     ];
 
@@ -236,6 +247,42 @@ export class MemStorage implements IStorage {
     return conditions?.[conditions.length - 1];
   }
 
+  async getCurrentConditionsFromAPI(spotId: number): Promise<SurfCondition | undefined> {
+    try {
+      const spot = this.surfSpots.get(spotId);
+      if (!spot) return undefined;
+
+      const apiConditions = await getCurrentConditionsFromAPI(spotId, spot.latitude, spot.longitude);
+      
+      // Create and store the new conditions
+      const id = this.currentId++;
+      const newCondition: SurfCondition = {
+        ...apiConditions,
+        id,
+        spotId,
+        waveHeight: apiConditions.waveHeight || 0,
+        windSpeed: apiConditions.windSpeed || 0,
+        windDirection: apiConditions.windDirection || "N",
+        airTemperature: apiConditions.airTemperature || 20,
+        waterTemperature: apiConditions.waterTemperature || 18,
+        rating: apiConditions.rating || "fair",
+        timestamp: new Date(),
+        waveDirection: apiConditions.waveDirection || null,
+        wavePeriod: apiConditions.wavePeriod || null
+      };
+
+      if (!this.surfConditions.has(spotId)) {
+        this.surfConditions.set(spotId, []);
+      }
+      this.surfConditions.get(spotId)!.push(newCondition);
+      
+      return newCondition;
+    } catch (error) {
+      console.error(`API fetch failed for spot ${spotId}, falling back to stored data:`, error);
+      return this.getCurrentConditions(spotId);
+    }
+  }
+
   async createSurfCondition(condition: InsertSurfCondition): Promise<SurfCondition> {
     const id = this.currentId++;
     const newCondition: SurfCondition = { 
@@ -273,6 +320,39 @@ export class MemStorage implements IStorage {
   async getForecast(spotId: number, days: number): Promise<Forecast[]> {
     const allForecasts = this.forecasts.get(spotId) || [];
     return allForecasts.slice(0, days);
+  }
+
+  async getForecastFromAPI(spotId: number, days: number): Promise<Forecast[]> {
+    try {
+      const spot = this.surfSpots.get(spotId);
+      if (!spot) return [];
+
+      const apiForecast = await getForecastFromAPI(spotId, spot.latitude, spot.longitude, days);
+      
+      const forecasts: Forecast[] = apiForecast.map((forecast, index) => ({
+        id: this.currentId + index,
+        spotId,
+        date: forecast.date || new Date().toISOString().split('T')[0],
+        waveHeight: forecast.waveHeight || 0,
+        waveDirection: forecast.waveDirection || null,
+        windSpeed: forecast.windSpeed || 0,
+        windDirection: forecast.windDirection || "N",
+        rating: forecast.rating || "fair",
+        airTemperature: forecast.airTemperature || 20,
+        waterTemperature: forecast.waterTemperature || 18
+      }));
+
+      // Update the currentId to account for new forecast entries
+      this.currentId += forecasts.length;
+
+      // Store the forecasts
+      this.forecasts.set(spotId, forecasts);
+      
+      return forecasts;
+    } catch (error) {
+      console.error(`API forecast fetch failed for spot ${spotId}, falling back to stored data:`, error);
+      return this.getForecast(spotId, days);
+    }
   }
 
   async createForecast(forecast: InsertForecast): Promise<Forecast> {
