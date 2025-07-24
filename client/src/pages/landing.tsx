@@ -14,33 +14,37 @@ export default function Landing() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto text-center">
           {/* Hero Section */}
-          <div className="mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              🏄‍♂️ VicSurf
-            </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-8">
+          <div className="mb-12 fade-in">
+            <div className="wave-animation">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                🏄‍♂️ VicSurf
+              </h1>
+            </div>
+            <p className="text-xl md:text-2xl text-white/90 mb-8 slide-up" style={{ animationDelay: '0.2s' }}>
               Your Ultimate Guide to Victoria's Surf Conditions
             </p>
-            <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto slide-up" style={{ animationDelay: '0.4s' }}>
               Get real-time surf reports, forecasts, and tide information for Victoria's premier surf spots. 
               Track conditions at Bells Beach, Torquay Point, Jan Juc, and Winki Pop.
             </p>
             
-            <Button
-              onClick={handleLogin}
-              size="lg"
-              className="bg-white text-ocean-blue hover:bg-gray-100 font-semibold px-8 py-3 text-lg"
-            >
-              Get Started
-            </Button>
+            <div className="slide-up" style={{ animationDelay: '0.6s' }}>
+              <Button
+                onClick={handleLogin}
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-gray-100 hover:scale-105 transition-all duration-200 font-semibold px-8 py-3 text-lg shadow-lg"
+              >
+                Get Started
+              </Button>
+            </div>
           </div>
 
           {/* Features */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: '0.8s' }}>
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-center">
-                  <i className="fas fa-water text-2xl mr-3"></i>
+                  <div className="text-2xl mr-3">🌊</div>
                   Real-Time Conditions
                 </CardTitle>
               </CardHeader>
@@ -51,10 +55,10 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: '1.0s' }}>
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-center">
-                  <i className="fas fa-chart-line text-2xl mr-3"></i>
+                  <div className="text-2xl mr-3">📈</div>
                   7-Day Forecasts
                 </CardTitle>
               </CardHeader>
@@ -65,10 +69,10 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: '1.2s' }}>
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-center">
-                  <i className="fas fa-heart text-2xl mr-3"></i>
+                  <div className="text-2xl mr-3">❤️</div>
                   Personal Favorites
                 </CardTitle>
               </CardHeader>

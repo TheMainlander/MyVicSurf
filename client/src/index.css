@@ -67,6 +67,7 @@
 
   body {
     @apply font-sans antialiased bg-slate-50 text-slate-800;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
@@ -100,5 +101,103 @@
   }
   .text-coral {
     color: var(--coral);
+  }
+  
+  /* Enhanced animations */
+  .wave-animation {
+    animation: wave 2s ease-in-out infinite;
+  }
+  
+  @keyframes wave {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .scale-hover {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .scale-hover:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Enhanced card styles */
+  .surf-card {
+    @apply bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-blue-300;
+  }
+  
+  /* Gradient backgrounds */
+  .ocean-gradient {
+    background: linear-gradient(135deg, 
+      var(--ocean-blue) 0%, 
+      var(--ocean-light) 50%, 
+      var(--wave-green) 100%);
+  }
+  
+  .sunset-gradient {
+    background: linear-gradient(135deg, 
+      var(--coral) 0%, 
+      var(--coral-light) 50%, 
+      var(--sand-beige) 100%);
+  }
+  
+  /* Status indicators */
+  .status-excellent {
+    @apply bg-green-100 text-green-800 border-green-200;
+  }
+  
+  .status-good {
+    @apply bg-blue-100 text-blue-800 border-blue-200;
+  }
+  
+  .status-fair {
+    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+  }
+  
+  .status-poor {
+    @apply bg-red-100 text-red-800 border-red-200;
+  }
+  
+  /* Loading shimmer effect */
+  .shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 }

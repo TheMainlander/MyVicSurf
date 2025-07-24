@@ -27,27 +27,43 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100">
       <Header />
       
-      <LocationSelector 
-        selectedSpot={selectedSpot}
-        spots={spots || []}
-        onSpotChange={setSelectedSpotId}
-      />
+      <div className="fade-in">
+        <LocationSelector 
+          selectedSpot={selectedSpot}
+          spots={spots || []}
+          onSpotChange={setSelectedSpotId}
+        />
+      </div>
       
-      <main className="max-w-md mx-auto px-4 pb-20">
-        <div className="flex justify-end mb-4">
+      <main className="max-w-md mx-auto px-4 pb-20 space-y-6">
+        <div className="flex justify-end slide-up">
           <FavoriteButton 
             spotId={selectedSpotId} 
             userId={currentUserId}
             variant="default"
           />
         </div>
-        <CurrentConditions spotId={selectedSpotId} />
-        <TideInformation spotId={selectedSpotId} />
-        <ForecastTimeline spotId={selectedSpotId} />
-        <SurfSpotsList spotId={selectedSpotId} />
+        
+        <div className="space-y-6">
+          <div className="fade-in" style={{ animationDelay: '0.1s' }}>
+            <CurrentConditions spotId={selectedSpotId} />
+          </div>
+          
+          <div className="fade-in" style={{ animationDelay: '0.2s' }}>
+            <TideInformation spotId={selectedSpotId} />
+          </div>
+          
+          <div className="fade-in" style={{ animationDelay: '0.3s' }}>
+            <ForecastTimeline spotId={selectedSpotId} />
+          </div>
+          
+          <div className="fade-in" style={{ animationDelay: '0.4s' }}>
+            <SurfSpotsList spotId={selectedSpotId} />
+          </div>
+        </div>
       </main>
 
       <BottomNavigation activeTab="home" />

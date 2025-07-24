@@ -16,23 +16,17 @@ export default function TideInformation({ spotId }: TideInformationProps) {
 
   if (isLoading) {
     return (
-      <section className="py-4">
-        <h3 className="text-lg font-semibold mb-4 flex items-center">
-          <i className="fas fa-chart-line text-ocean-blue mr-2"></i>
-          Today's Tides
-        </h3>
-        <Card className="rounded-xl shadow-md">
-          <CardContent className="p-5">
-            <div className="animate-pulse space-y-4">
-              <div className="flex justify-between">
-                <div className="h-12 bg-gray-200 rounded w-16"></div>
-                <div className="h-12 bg-gray-200 rounded w-16"></div>
-                <div className="h-12 bg-gray-200 rounded w-16"></div>
-              </div>
-              <div className="h-20 bg-gray-200 rounded"></div>
+      <section>
+        <div className="surf-card p-5">
+          <div className="shimmer space-y-4">
+            <div className="flex justify-between">
+              <div className="h-12 bg-gray-200 rounded w-16 shimmer"></div>
+              <div className="h-12 bg-gray-200 rounded w-16 shimmer"></div>
+              <div className="h-12 bg-gray-200 rounded w-16 shimmer"></div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-20 bg-gray-200 rounded shimmer"></div>
+          </div>
+        </div>
       </section>
     );
   }
@@ -46,25 +40,42 @@ export default function TideInformation({ spotId }: TideInformationProps) {
   };
 
   return (
-    <section className="py-4">
-      <h3 className="text-lg font-semibold mb-4 flex items-center">
-        <i className="fas fa-chart-line text-ocean-blue mr-2"></i>
-        Today's Tides
-      </h3>
-      <Card className="rounded-xl shadow-md">
-        <CardContent className="p-5">
+    <section>
+      <div className="surf-card p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+              <span className="text-2xl">🌊</span>
+              Tide Information
+            </h2>
+            <p className="text-sm text-gray-600">Today's tide schedule</p>
+          </div>
+          <div className="glass-card p-2 rounded-lg">
+            <div className="text-blue-600 text-sm font-medium">Live Data</div>
+          </div>
+        </div>
+        
+        <div>
           {tides && tides.length > 0 ? (
             <>
-              <div className="flex justify-between items-center mb-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 {tides.map((tide, index) => (
-                  <div key={tide.id} className="text-center">
-                    <div className="text-xs text-coastal-grey mb-1 capitalize">
-                      {tide.type}
+                  <div key={tide.id} className={`text-center p-4 rounded-lg transition-all duration-200 hover:scale-105 ${
+                    tide.type === 'high' 
+                      ? 'bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200' 
+                      : 'bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200'
+                  }`}>
+                    <div className={`text-xs font-medium mb-1 capitalize ${
+                      tide.type === 'high' ? 'text-blue-700' : 'text-gray-700'
+                    }`}>
+                      {tide.type === 'high' ? '⬆️ High' : '⬇️ Low'} Tide
                     </div>
-                    <div className="text-sm font-semibold">
+                    <div className="text-lg font-bold text-gray-800">
                       {formatTime(tide.time)}
                     </div>
-                    <div className="text-xs text-coastal-grey">
+                    <div className={`text-sm ${
+                      tide.type === 'high' ? 'text-blue-600' : 'text-gray-600'
+                    }`}>
                       {tide.height.toFixed(1)}m
                     </div>
                   </div>
@@ -72,7 +83,8 @@ export default function TideInformation({ spotId }: TideInformationProps) {
               </div>
               
               {/* Tide chart visualization */}
-              <div className="h-20 bg-gradient-to-r from-ocean-light/20 via-ocean-blue/30 to-ocean-light/20 rounded-lg flex items-end justify-between px-2 pb-2">
+              <div className="h-20 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100 rounded-lg flex items-end justify-between px-2 pb-2 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-500/20 to-blue-400/10 rounded-lg"></div>
                 {Array.from({ length: 7 }, (_, i) => (
                   <div 
                     key={i}
@@ -89,8 +101,8 @@ export default function TideInformation({ spotId }: TideInformationProps) {
               <p className="text-coastal-grey">No tide data available for today</p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </section>
   );
 }
