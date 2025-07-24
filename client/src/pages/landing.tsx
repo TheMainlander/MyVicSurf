@@ -124,70 +124,52 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Features */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: '0.8s' }}>
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-center">
-                  <div className="text-2xl mr-3">🌊</div>
-                  Real-Time Conditions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-white/80">
-                  Live wave heights, wind conditions, and water temperature from trusted sources
-                </p>
-              </CardContent>
-            </Card>
 
-            <Card className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: '1.0s' }}>
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-center">
-                  <div className="text-2xl mr-3">📈</div>
-                  7-Day Forecasts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-white/80">
-                  Plan your surf sessions with detailed forecasts and optimal condition alerts
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: '1.2s' }}>
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-center">
-                  <div className="text-2xl mr-3">❤️</div>
-                  Personal Favorites
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-white/80">
-                  Save your favorite spots and get push notifications for optimal conditions
-                </p>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Surf Spots Preview */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-white mb-6">Featured Surf Spots</h2>
-            <div className="grid md:grid-cols-4 gap-4">
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-white mb-8 drop-shadow-lg">Featured Surf Spots</h2>
+            <div className="grid md:grid-cols-4 gap-4 mb-16">
               {[
                 { name: "Bells Beach", description: "World-famous surf break" },
                 { name: "Torquay Point", description: "Perfect for beginners" },
-                { name: "Jan Juc", description: "Consistent waves" },
-                { name: "Winki Pop", description: "Advanced surfers" },
-              ].map((spot) => (
-                <Card key={spot.name} className="bg-white/10 backdrop-blur-sm border-white/20">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-white text-lg">{spot.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-white/80 text-sm">{spot.description}</p>
+                { name: "Jan Juc", description: "Consistent waves year-round" },
+                { name: "Winki Pop", description: "Advanced surfers paradise" },
+              ].map((spot, index) => (
+                <Card key={spot.name} className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: `${1.4 + index * 0.1}s` }}>
+                  <CardContent className="p-4 text-center">
+                    <h4 className="font-semibold text-white mb-2">{spot.name}</h4>
+                    <p className="text-white/70 text-sm">{spot.description}</p>
                   </CardContent>
                 </Card>
               ))}
+            </div>
+
+            {/* Features Grid - Below Surf Spots */}
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="glass rounded-2xl p-8 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '1.8s' }}>
+                <div className="text-4xl mb-4">🌊</div>
+                <h3 className="text-2xl font-bold text-white mb-4">Real-Time Conditions</h3>
+                <p className="text-white/80 leading-relaxed">
+                  Live wave heights, wind conditions, and water temperature from trusted sources
+                </p>
+              </div>
+
+              <div className="glass rounded-2xl p-8 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.0s' }}>
+                <div className="text-4xl mb-4">📈</div>
+                <h3 className="text-2xl font-bold text-white mb-4">7-Day Forecasts</h3>
+                <p className="text-white/80 leading-relaxed">
+                  Plan your surf sessions with detailed forecasts and optimal condition alerts
+                </p>
+              </div>
+
+              <div className="glass rounded-2xl p-8 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.2s' }}>
+                <div className="text-4xl mb-4">❤️</div>
+                <h3 className="text-2xl font-bold text-white mb-4">Personal Favorites</h3>
+                <p className="text-white/80 leading-relaxed">
+                  Save your favorite spots and get push notifications for optimal conditions
+                </p>
+              </div>
             </div>
           </div>
 
