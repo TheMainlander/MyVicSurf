@@ -1,0 +1,95 @@
+# VicSurf - Surf Condition Tracking App
+
+## Overview
+
+VicSurf is a mobile-first React application for tracking surf conditions across Victoria, Australia. The app provides real-time surf conditions, tide information, and forecasts for various surf spots. It features a clean, modern interface optimized for mobile devices with a bottom navigation layout.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and optimized production builds
+- **UI Library**: Radix UI primitives with shadcn/ui components
+- **Styling**: Tailwind CSS with custom color variables for ocean-themed design
+- **Routing**: Wouter for lightweight client-side routing
+- **State Management**: TanStack Query (React Query) for server state management
+- **Mobile-First Design**: Responsive layout optimized for mobile devices
+
+### Backend Architecture
+- **Runtime**: Node.js with Express.js
+- **Language**: TypeScript with ES modules
+- **API Design**: RESTful API with structured endpoints
+- **Development Server**: Custom Vite integration for hot module replacement
+- **Error Handling**: Centralized error middleware with structured responses
+
+### Data Storage
+- **Database**: PostgreSQL (configured for production)
+- **ORM**: Drizzle ORM with type-safe schema definitions
+- **Development Storage**: In-memory storage implementation for development
+- **Database Provider**: Neon Database (@neondatabase/serverless)
+- **Migrations**: Drizzle-kit for schema management
+
+## Key Components
+
+### Frontend Components
+- **Layout Components**: Header, bottom navigation, and mobile-optimized layout
+- **Surf Components**: Current conditions, tide information, forecast timeline, and spot listings
+- **Common Components**: Location selector, loading overlays, and reusable UI elements
+- **shadcn/ui Components**: Comprehensive UI component library including cards, buttons, badges, and form elements
+
+### Backend Services
+- **Storage Interface**: Abstract storage layer with in-memory implementation
+- **Route Handlers**: RESTful endpoints for surf spots, conditions, tides, and forecasts
+- **Development Tools**: Request logging and Vite integration
+
+### Database Schema
+- **Surf Spots**: Location and metadata information
+- **Surf Conditions**: Real-time wave, wind, and weather data
+- **Tide Times**: Daily tide schedules with heights and types
+- **Forecasts**: Multi-day surf predictions
+
+## Data Flow
+
+1. **Client Requests**: React components use TanStack Query to fetch data
+2. **API Layer**: Express routes handle HTTP requests and validation
+3. **Storage Layer**: Abstract storage interface provides data access
+4. **Database**: Drizzle ORM manages PostgreSQL interactions
+5. **Response**: Structured JSON responses with error handling
+
+## External Dependencies
+
+### Frontend Dependencies
+- **UI Framework**: React ecosystem with Radix UI primitives
+- **Styling**: Tailwind CSS with PostCSS processing
+- **Data Fetching**: TanStack Query for caching and synchronization
+- **Icons**: Font Awesome for consistent iconography
+- **Date Handling**: date-fns for date manipulation
+
+### Backend Dependencies
+- **Web Framework**: Express.js with middleware support
+- **Database**: Drizzle ORM with Neon Database integration
+- **Development**: tsx for TypeScript execution and Vite for frontend tooling
+- **Validation**: Zod for schema validation and type safety
+
+## Deployment Strategy
+
+### Development Environment
+- **Hot Reloading**: Vite integration with Express for seamless development
+- **TypeScript**: Full type safety across frontend and backend
+- **Environment Variables**: DATABASE_URL for database connection
+
+### Production Build
+- **Frontend**: Vite builds optimized static assets
+- **Backend**: esbuild bundles Node.js application
+- **Deployment**: Single-server deployment with static file serving
+
+### Database Management
+- **Schema**: Drizzle-kit manages PostgreSQL schema
+- **Connection**: Environment-based configuration
+- **Development**: In-memory storage for rapid prototyping
+
+The architecture prioritizes developer experience with hot reloading, type safety, and modern tooling while maintaining a clean separation between frontend and backend concerns. The mobile-first design ensures optimal user experience across devices, particularly for surfers checking conditions on mobile devices.
