@@ -36,25 +36,25 @@ export default function Landing() {
     { 
       name: "Bells Beach", 
       description: "World-famous surf break home to the Rip Curl Pro",
-      videoUrl: "https://player.vimeo.com/video/76979871?autoplay=1&loop=1&muted=1&background=1",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Bells_Beach_2009.jpg/1280px-Bells_Beach_2009.jpg",
       location: "Torquay, Victoria"
     },
     { 
       name: "Torquay Point", 
       description: "Perfect for beginners with gentle, consistent waves",
-      videoUrl: "https://player.vimeo.com/video/158284739?autoplay=1&loop=1&muted=1&background=1",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Torquay_Front_Beach.jpg/1280px-Torquay_Front_Beach.jpg",
       location: "Torquay, Victoria"
     },
     { 
       name: "Jan Juc", 
       description: "Consistent waves year-round with beautiful beach setting",
-      videoUrl: "https://player.vimeo.com/video/202299713?autoplay=1&loop=1&muted=1&background=1",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Jan_Juc_surf_beach.JPG/1280px-Jan_Juc_surf_beach.JPG",
       location: "Surf Coast, Victoria"
     },
     { 
       name: "Winki Pop", 
       description: "Advanced surfers paradise with powerful reef break",
-      videoUrl: "https://player.vimeo.com/video/145937503?autoplay=1&loop=1&muted=1&background=1",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Winki_Pop%2C_Victoria%2C_Australia_%2835728698534%29.jpg/1280px-Winki_Pop%2C_Victoria%2C_Australia_%2835728698534%29.jpg",
       location: "Torquay, Victoria"
     }
   ];
@@ -190,15 +190,12 @@ export default function Landing() {
                   {surfSpots.map((spot, index) => (
                     <div key={spot.name} className="flex-[0_0_100%] min-w-0 relative">
                       <div className="relative h-[500px] mx-4">
-                        {/* Video Background */}
+                        {/* Background Image */}
                         <div className="absolute inset-0 rounded-2xl overflow-hidden">
-                          <iframe
-                            src={spot.videoUrl}
+                          <img
+                            src={spot.imageUrl}
+                            alt={`${spot.name} surf beach`}
                             className="w-full h-full object-cover"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowFullScreen
-                            style={{ border: 'none' }}
-                            title={`${spot.name} surf video`}
                           />
                         </div>
                         
@@ -209,7 +206,7 @@ export default function Landing() {
                         <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
                           <div className="mb-4">
                             <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-                              <Play className="w-6 h-6 text-white" />
+                              <div className="text-2xl">🏄‍♀️</div>
                             </div>
                           </div>
                           <h3 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{spot.name}</h3>
