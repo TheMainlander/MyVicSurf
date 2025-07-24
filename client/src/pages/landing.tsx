@@ -8,11 +8,37 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ocean-blue via-wave-foam to-sandy-beige">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-300/10 rounded-full blur-2xl animate-pulse delay-500"></div>
+        
+        {/* Ocean wave pattern */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-blue-800/50 to-transparent">
+          <svg className="absolute bottom-0 w-full h-16" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,60 C300,120 600,0 900,60 C1050,90 1150,30 1200,60 L1200,120 L0,120 Z" 
+                  fill="rgba(255,255,255,0.1)" className="animate-pulse">
+            </path>
+          </svg>
+        </div>
+      </div>
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto text-center">
+      <div className="relative z-10">
+        <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center space-x-3">
+                <div className="text-3xl wave-animation">🏄‍♂️</div>
+                <h1 className="text-2xl font-bold text-white">VicSurf</h1>
+              </div>
+            </div>
+          </div>
+        </header>
+      
+        <main className="container mx-auto px-4 py-16">
+          <div className="max-w-4xl mx-auto text-center">
           {/* Hero Section */}
           <div className="mb-12 fade-in">
             <div className="wave-animation">
@@ -28,14 +54,37 @@ export default function Landing() {
               Track conditions at Bells Beach, Torquay Point, Jan Juc, and Winki Pop.
             </p>
             
-            <div className="slide-up" style={{ animationDelay: '0.6s' }}>
-              <Button
-                onClick={handleLogin}
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 hover:scale-105 transition-all duration-200 font-semibold px-8 py-3 text-lg shadow-lg"
-              >
-                Get Started
-              </Button>
+            {/* Enhanced Authentication Section */}
+            <div className="slide-up space-y-6 max-w-sm mx-auto" style={{ animationDelay: '0.6s' }}>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
+                <h3 className="text-xl font-semibold text-white mb-4 text-center">Sign In to Continue</h3>
+                <p className="text-white/80 text-sm mb-6 text-center">
+                  Access personalized surf forecasts and save your favorite spots
+                </p>
+                
+                <Button
+                  onClick={handleLogin}
+                  size="lg"
+                  className="w-full bg-white text-gray-800 hover:bg-gray-50 hover:scale-[1.02] transition-all duration-200 font-semibold py-4 text-base shadow-xl rounded-xl flex items-center justify-center gap-3 border-2 border-transparent hover:border-white/20"
+                >
+                  <div className="w-7 h-7 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+                    <div className="text-white text-sm font-bold">R</div>
+                  </div>
+                  Continue with Replit
+                </Button>
+                
+                <div className="mt-4 text-center">
+                  <p className="text-white/60 text-xs">
+                    Secure authentication powered by Replit
+                  </p>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-white/70 text-sm">
+                  New to VicSurf? Create your account automatically when you sign in
+                </p>
+              </div>
             </div>
           </div>
 
@@ -122,8 +171,9 @@ export default function Landing() {
               Sign In to Continue
             </Button>
           </div>
-        </div>
-      </main>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
