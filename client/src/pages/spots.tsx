@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import FavoriteButton from "@/components/favorites/favorite-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { SurfSpot, SurfCondition } from "@shared/schema";
 
 interface SpotWithConditions extends SurfSpot {
@@ -15,8 +17,14 @@ export default function Spots() {
   // Mock user ID for development - in production this would come from authentication
   const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
   
+  const [selectedBeachType, setSelectedBeachType] = useState<string>("all");
+  
   const { data: spots, isLoading } = useQuery<SpotWithConditions[]>({
     queryKey: ["/api/surf-spots/1/nearby"],
+  });
+
+  const { data: beachTypes } = useQuery({
+    queryKey: ["/api/beach-types"],
   });
 
   if (isLoading) {
@@ -41,6 +49,30 @@ export default function Spots() {
     }
   };
 
+  const filteredSpots = spots?.filter(spot => {
+    if (selectedBeachType === "all") return true;
+    return spot.beachType === selectedBeachType || spot.beachType === "both";
+  });
+
+  const getBeachTypeColor = (beachType: string) => {
+    switch (beachType) {
+      case "surf": return "bg-ocean-blue text-white";
+      case "swimming": return "bg-wave-green text-white";
+      case "both": return "bg-coastal-grey text-white";
+      default: return "bg-gray-500 text-white";
+    }
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "beginner": return "bg-green-500";
+      case "intermediate": return "bg-yellow-500";
+      case "advanced": return "bg-orange-500";
+      case "expert": return "bg-red-500";
+      default: return "bg-gray-500";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Header />
@@ -49,11 +81,49 @@ export default function Spots() {
         <section className="py-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <i className="fas fa-map-marked-alt text-ocean-blue mr-2"></i>
-            Victoria Surf Spots
+            Victoria Beaches & Surf Spots
           </h2>
           
+          {/* Beach Type Filter */}
+          <div className="mb-6">
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant={selectedBeachType === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedBeachType("all")}
+                className="text-xs"
+              >
+                All Beaches
+              </Button>
+              <Button
+                variant={selectedBeachType === "surf" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedBeachType("surf")}
+                className="text-xs"
+              >
+                🏄 Surf Only
+              </Button>
+              <Button
+                variant={selectedBeachType === "swimming" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedBeachType("swimming")}
+                className="text-xs"
+              >
+                🏊 Swimming Only
+              </Button>
+              <Button
+                variant={selectedBeachType === "both" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedBeachType("both")}
+                className="text-xs"
+              >
+                🏄🏊 Both
+              </Button>
+            </div>
+          </div>
+          
           <div className="space-y-4">
-            {spots?.map((spot) => (
+            {filteredSpots?.map((spot) => (
               <Card key={spot.id} className="overflow-hidden">
                 <CardContent className="p-0">
                   <div className="flex">

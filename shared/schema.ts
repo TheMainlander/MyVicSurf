@@ -12,6 +12,12 @@ export const surfSpots = pgTable("surf_spots", {
   imageUrl: text("image_url"),
   region: text("region").notNull(),
   difficulty: text("difficulty").notNull(), // beginner, intermediate, advanced, expert
+  beachType: text("beach_type").notNull().default("both"), // surf, swimming, both
+  beachCategory: text("beach_category").default("surf_beach"), // surf_beach, family_beach, protected_bay, ocean_beach
+  facilities: text("facilities").array().default([]), // parking, toilets, cafe, lifeguards, etc
+  accessInfo: text("access_info"), // How to access the beach
+  bestConditions: text("best_conditions"), // Optimal wind/swell conditions
+  hazards: text("hazards").array().default([]), // rips, rocks, sharks, etc
   externalId: text("external_id"), // For external API integration
   apiSource: text("api_source").default("open-meteo"), // Track data source
 });
