@@ -31,6 +31,9 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ API fallback system with authentic stored data when external APIs fail
 ✓ Production-ready deployment configuration with error handling and health checks
 ✓ Optimized build process with static asset generation for production
+✓ Robust authentication configuration with environment variable validation
+✓ Graceful fallback handling when REPLIT_DOMAINS or other auth variables are missing
+✓ Optional authentication setup prevents deployment crashes
 
 ## User Preferences
 
@@ -119,6 +122,12 @@ Development approach: Build the app in phases, iterating one phase at a time.
 - **Frontend**: Vite builds optimized static assets
 - **Backend**: esbuild bundles Node.js application
 - **Deployment**: Single-server deployment with static file serving
+
+### Authentication Configuration
+- **Required Environment Variables**: REPLIT_DOMAINS, REPL_ID, SESSION_SECRET, DATABASE_URL
+- **Graceful Degradation**: Application continues to run without authentication if variables are missing
+- **Error Handling**: Comprehensive validation and fallback mechanisms prevent deployment crashes
+- **Health Monitoring**: /api/health endpoint reports authentication status and missing variables
 
 ### Database Management
 - **Schema**: Drizzle-kit manages PostgreSQL schema

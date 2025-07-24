@@ -3,18 +3,63 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 
+// Global flag to track auth status
+let authConfigured = false;
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication for production with Replit Auth
-  if (process.env.DATABASE_URL && process.env.REPLIT_DOMAINS) {
+  const hasRequiredEnvVars = process.env.DATABASE_URL && 
+                            process.env.REPLIT_DOMAINS && 
+                            process.env.REPL_ID && 
+                            process.env.SESSION_SECRET;
+
+  if (hasRequiredEnvVars) {
     try {
       await setupAuth(app);
+      authConfigured = true;
       console.log("Replit Auth configured successfully");
     } catch (error) {
       console.error("Replit Auth configuration failed:", (error as Error).message);
-      // Continue without auth in case of error - better than crashing
+      console.warn("Continuing without authentication - some features may be limited");
+      authConfigured = false;
     }
   } else {
-    console.warn("Replit Auth not configured - missing DATABASE_URL or REPLIT_DOMAINS");
+    const missingVars = [
+      !process.env.DATABASE_URL && 'DATABASE_URL',
+      !process.env.REPLIT_DOMAINS && 'REPLIT_DOMAINS', 
+      !process.env.REPL_ID && 'REPL_ID',
+      !process.env.SESSION_SECRET && 'SESSION_SECRET'
+    ].filter(Boolean);
+    
+    console.warn(`Replit Auth not configured - missing environment variables: ${missingVars.join(', ')}`);
+    console.warn("Application will run without authentication");
+    authConfigured = false;
+  }
+
+  // Add fallback authentication endpoints when auth is not configured
+  if (!authConfigured) {
+    app.get('/api/login', (req, res) => {
+      res.status(503).json({ 
+        error: 'Authentication not configured', 
+        message: 'Missing required environment variables for authentication'
+      });
+    });
+
+    app.get('/api/callback', (req, res) => {
+      res.status(503).json({ 
+        error: 'Authentication not configured'
+      });
+    });
+
+    app.get('/api/logout', (req, res) => {
+      res.redirect('/');
+    });
+
+    app.get('/api/auth/user', (req, res) => {
+      res.status(401).json({ 
+        error: 'Authentication not configured'
+      });
+    });
   }
 
   // Health check endpoint for production monitoring
@@ -27,13 +72,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp: new Date().toISOString(),
         database: 'connected',
         spotsCount: spots.length,
-        environment: process.env.NODE_ENV || 'development'
+        environment: process.env.NODE_ENV || 'development',
+        authentication: authConfigured ? 'enabled' : 'disabled',
+        missingEnvVars: authConfigured ? [] : [
+          !process.env.DATABASE_URL && 'DATABASE_URL',
+          !process.env.REPLIT_DOMAINS && 'REPLIT_DOMAINS',
+          !process.env.REPL_ID && 'REPL_ID', 
+          !process.env.SESSION_SECRET && 'SESSION_SECRET'
+        ].filter(Boolean)
       });
     } catch (error) {
       res.status(503).json({ 
         status: 'unhealthy', 
         timestamp: new Date().toISOString(),
-        error: (error as Error).message 
+        error: (error as Error).message,
+        authentication: authConfigured ? 'enabled' : 'disabled'
       });
     }
   });
