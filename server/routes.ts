@@ -1,8 +1,31 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication for production with Replit Auth
+  if (process.env.DATABASE_URL && process.env.REPLIT_DOMAINS) {
+    try {
+      await setupAuth(app);
+      console.log("Replit Auth configured successfully");
+    } catch (error) {
+      console.log("Replit Auth not configured:", error.message);
+    }
+  }
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Get all surf spots
   app.get("/api/surf-spots", async (req, res) => {
     try {
@@ -224,6 +247,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error updating preferences:", error);
       res.status(500).json({ message: "Failed to update preferences" });
     }
+  });
+
+  // Push notification routes
+  app.post("/api/users/:userId/push-subscribe", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const { endpoint, keys, userAgent } = req.body;
+
+      const subscription = await storage.subscribeToPush(userId, {
+        userId,
+        endpoint,
+        p256dhKey: keys.p256dh,
+        authKey: keys.auth,
+        userAgent: userAgent || null,
+        isActive: true
+      });
+
+      res.status(201).json(subscription);
+    } catch (error) {
+      console.error("Error subscribing to push notifications:", error);
+      res.status(500).json({ message: "Failed to subscribe to push notifications" });
+    }
+  });
+
+  app.delete("/api/users/:userId/push-unsubscribe", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const { endpoint } = req.body;
+
+      const unsubscribed = await storage.unsubscribeFromPush(userId, endpoint);
+      if (!unsubscribed) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error unsubscribing from push notifications:", error);
+      res.status(500).json({ message: "Failed to unsubscribe from push notifications" });
+    }
+  });
+
+  app.get("/api/users/:userId/notifications", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const limit = parseInt(req.query.limit as string) || 20;
+
+      const notifications = await storage.getUserNotifications(userId, limit);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching user notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  // VAPID public key endpoint
+  app.get("/api/vapid-public-key", (req, res) => {
+    const publicKey = process.env.VAPID_PUBLIC_KEY || "BNJzp5DbZefY5Zu9KoLVJFJQdqhqLnz3FOq2z_BwHjEeojJ1KJRUhEJdnqKW_YQJpEjW2x7aSWgKXDq6qsKsZBE";
+    res.json({ publicKey });
   });
 
   const httpServer = createServer(app);

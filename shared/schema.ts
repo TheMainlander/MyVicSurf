@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, real, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, real, timestamp, uuid, varchar, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -74,12 +74,24 @@ export type InsertSurfCondition = z.infer<typeof insertSurfConditionSchema>;
 export type InsertTideTime = z.infer<typeof insertTideTimeSchema>;
 export type InsertForecast = z.infer<typeof insertForecastSchema>;
 
+// Session storage table for SSO
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
 // User management tables
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  email: varchar("email", { length: 255 }).unique(),
-  name: varchar("name", { length: 255 }),
-  profileImage: text("profile_image"),
+  id: varchar("id").primaryKey().notNull(),
+  email: varchar("email"),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -109,10 +121,37 @@ export const userPreferences = pgTable("user_preferences", {
   preferredUnits: text("preferred_units").default("metric"), // metric, imperial
   emailNotifications: boolean("email_notifications").default(true),
   pushNotifications: boolean("push_notifications").default(true),
+  optimalConditionAlerts: boolean("optimal_condition_alerts").default(true),
+  waveHeightMin: real("wave_height_min").default(1.0), // minimum wave height for alerts
+  waveHeightMax: real("wave_height_max").default(4.0), // maximum wave height for alerts
+  windSpeedMax: real("wind_speed_max").default(20), // max wind speed for optimal conditions
   favoriteRegions: text("favorite_regions").array().default(["Surf Coast"]),
   skillLevel: text("skill_level").default("intermediate"), // beginner, intermediate, advanced, expert
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  endpoint: text("endpoint").notNull(),
+  p256dhKey: text("p256dh_key").notNull(),
+  authKey: text("auth_key").notNull(),
+  userAgent: text("user_agent"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const notificationLog = pgTable("notification_log", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  spotId: integer("spot_id").references(() => surfSpots.id),
+  notificationType: text("notification_type").notNull(), // optimal_conditions, daily_forecast
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  sent: boolean("sent").default(false),
+  sentAt: timestamp("sent_at"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Relations
@@ -120,6 +159,8 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   favorites: many(userFavorites),
   sessions: many(userSessions),
   preferences: one(userPreferences),
+  pushSubscriptions: many(pushSubscriptions),
+  notifications: many(notificationLog),
 }));
 
 export const userFavoritesRelations = relations(userFavorites, ({ one }) => ({
@@ -148,6 +189,24 @@ export const userPreferencesRelations = relations(userPreferences, ({ one }) => 
   user: one(users, {
     fields: [userPreferences.userId],
     references: [users.id],
+  }),
+}));
+
+export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one }) => ({
+  user: one(users, {
+    fields: [pushSubscriptions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationLogRelations = relations(notificationLog, ({ one }) => ({
+  user: one(users, {
+    fields: [notificationLog.userId],
+    references: [users.id],
+  }),
+  spot: one(surfSpots, {
+    fields: [notificationLog.spotId],
+    references: [surfSpots.id],
   }),
 }));
 
@@ -182,15 +241,32 @@ export const insertUserPreferencesSchema = createInsertSchema(userPreferences).o
   updatedAt: true,
 });
 
+export const insertPushSubscriptionSchema = createInsertSchema(pushSubscriptions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertNotificationLogSchema = createInsertSchema(notificationLog).omit({
+  id: true,
+  createdAt: true,
+  sentAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertUserFavorite = z.infer<typeof insertUserFavoriteSchema>;
 export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
 export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
+export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
+export type InsertNotificationLog = z.infer<typeof insertNotificationLogSchema>;
+
+export type UpsertUser = typeof users.$inferInsert;
 
 export type User = typeof users.$inferSelect;
 export type UserFavorite = typeof userFavorites.$inferSelect;
 export type UserSession = typeof userSessions.$inferSelect;
 export type UserPreferences = typeof userPreferences.$inferSelect;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type NotificationLog = typeof notificationLog.$inferSelect;
 
 export type SurfSpot = typeof surfSpots.$inferSelect;
 export type SurfCondition = typeof surfConditions.$inferSelect;

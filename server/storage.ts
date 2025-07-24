@@ -7,6 +7,8 @@ import {
   userFavorites,
   userSessions,
   userPreferences,
+  pushSubscriptions,
+  notificationLog,
   type SurfSpot, 
   type SurfCondition, 
   type TideTime, 
@@ -15,6 +17,8 @@ import {
   type UserFavorite,
   type UserSession,
   type UserPreferences,
+  type PushSubscription,
+  type NotificationLog,
   type InsertSurfSpot,
   type InsertSurfCondition,
   type InsertTideTime,
@@ -22,7 +26,10 @@ import {
   type InsertUser,
   type InsertUserFavorite,
   type InsertUserSession,
-  type InsertUserPreferences
+  type InsertUserPreferences,
+  type InsertPushSubscription,
+  type InsertNotificationLog,
+  type UpsertUser
 } from "@shared/schema";
 import { getCurrentConditionsFromAPI, getForecastFromAPI } from "./api-integrations";
 import { db } from "./db";
@@ -51,6 +58,7 @@ export interface IStorage {
   // Users
   getUser(id: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
 
   // User Favorites
@@ -66,6 +74,15 @@ export interface IStorage {
   // User Preferences
   getUserPreferences(userId: string): Promise<UserPreferences | undefined>;
   updateUserPreferences(userId: string, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences>;
+
+  // Push Notifications
+  subscribeToPush(userId: string, subscription: InsertPushSubscription): Promise<PushSubscription>;
+  unsubscribeFromPush(userId: string, endpoint: string): Promise<boolean>;
+  getUserPushSubscriptions(userId: string): Promise<PushSubscription[]>;
+  
+  // Notification Log
+  createNotificationLog(notification: InsertNotificationLog): Promise<NotificationLog>;
+  getUserNotifications(userId: string, limit?: number): Promise<NotificationLog[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -650,6 +667,78 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return created;
     }
+  }
+
+  // Push Notifications
+  async subscribeToPush(userId: string, subscription: InsertPushSubscription): Promise<PushSubscription> {
+    // Deactivate existing subscriptions for this user
+    await db
+      .update(pushSubscriptions)
+      .set({ isActive: false })
+      .where(eq(pushSubscriptions.userId, userId));
+
+    // Create new subscription
+    const [newSubscription] = await db
+      .insert(pushSubscriptions)
+      .values(subscription)
+      .returning();
+    return newSubscription;
+  }
+
+  async unsubscribeFromPush(userId: string, endpoint: string): Promise<boolean> {
+    const result = await db
+      .update(pushSubscriptions)
+      .set({ isActive: false })
+      .where(and(
+        eq(pushSubscriptions.userId, userId),
+        eq(pushSubscriptions.endpoint, endpoint)
+      ));
+
+    return (result.rowCount || 0) > 0;
+  }
+
+  async getUserPushSubscriptions(userId: string): Promise<PushSubscription[]> {
+    return await db
+      .select()
+      .from(pushSubscriptions)
+      .where(and(
+        eq(pushSubscriptions.userId, userId),
+        eq(pushSubscriptions.isActive, true)
+      ));
+  }
+
+  // Notification Log
+  async createNotificationLog(notification: InsertNotificationLog): Promise<NotificationLog> {
+    const [newNotification] = await db
+      .insert(notificationLog)
+      .values(notification)
+      .returning();
+    return newNotification;
+  }
+
+  async getUserNotifications(userId: string, limit: number = 20): Promise<NotificationLog[]> {
+    return await db
+      .select()
+      .from(notificationLog)
+      .where(eq(notificationLog.userId, userId))
+      .orderBy(desc(notificationLog.createdAt))
+      .limit(limit);
+  }
+
+  // User upsert for SSO
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
   }
 }
 

@@ -1,6 +1,7 @@
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import FavoritesList from "@/components/favorites/favorites-list";
+import NotificationSettings from "@/components/notifications/notification-settings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,9 @@ export default function Profile() {
           <div className="space-y-4">
             {/* Favorites List */}
             <FavoritesList userId={currentUserId} maxItems={3} />
+            
+            {/* Notification Settings */}
+            <NotificationSettings userId={currentUserId} />
             
             {/* API Settings */}
             <APISettings />
