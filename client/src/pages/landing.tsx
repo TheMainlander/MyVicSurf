@@ -1,11 +1,63 @@
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useEmblaCarousel from 'embla-carousel-react';
+import { useCallback, useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 
 export default function Landing() {
   const handleLogin = () => {
     window.location.href = "/api/login";
   };
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+  }, [emblaApi, onSelect]);
+
+  const surfSpots = [
+    { 
+      name: "Bells Beach", 
+      description: "World-famous surf break home to the Rip Curl Pro",
+      videoUrl: "https://player.vimeo.com/video/76979871?autoplay=1&loop=1&muted=1&background=1",
+      location: "Torquay, Victoria"
+    },
+    { 
+      name: "Torquay Point", 
+      description: "Perfect for beginners with gentle, consistent waves",
+      videoUrl: "https://player.vimeo.com/video/158284739?autoplay=1&loop=1&muted=1&background=1",
+      location: "Torquay, Victoria"
+    },
+    { 
+      name: "Jan Juc", 
+      description: "Consistent waves year-round with beautiful beach setting",
+      videoUrl: "https://player.vimeo.com/video/202299713?autoplay=1&loop=1&muted=1&background=1",
+      location: "Surf Coast, Victoria"
+    },
+    { 
+      name: "Winki Pop", 
+      description: "Advanced surfers paradise with powerful reef break",
+      videoUrl: "https://player.vimeo.com/video/145937503?autoplay=1&loop=1&muted=1&background=1",
+      location: "Torquay, Victoria"
+    }
+  ];
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -58,7 +110,7 @@ export default function Landing() {
       
         <main className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
-          {/* Hero Section */}
+            {/* Hero Section */}
           <div className="mb-12 fade-in">
             <div className="wave-animation">
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-2xl">
@@ -123,28 +175,83 @@ export default function Landing() {
               </div>
             </div>
           </div>
+          </div>
 
 
 
-          {/* Surf Spots Preview */}
+          {/* Surf Spots Carousel */}
           <div className="mb-16">
-            <h2 className="text-3xl font-bold text-white mb-8 drop-shadow-lg">Featured Surf Spots</h2>
-            <div className="grid md:grid-cols-4 gap-4 mb-16">
-              {[
-                { name: "Bells Beach", description: "World-famous surf break" },
-                { name: "Torquay Point", description: "Perfect for beginners" },
-                { name: "Jan Juc", description: "Consistent waves year-round" },
-                { name: "Winki Pop", description: "Advanced surfers paradise" },
-              ].map((spot, index) => (
-                <Card key={spot.name} className="glass hover:scale-105 transition-all duration-300 slide-up" style={{ animationDelay: `${1.4 + index * 0.1}s` }}>
-                  <CardContent className="p-4 text-center">
-                    <h4 className="font-semibold text-white mb-2">{spot.name}</h4>
-                    <p className="text-white/70 text-sm">{spot.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <h2 className="text-3xl font-bold text-white mb-8 drop-shadow-lg text-center">Featured Surf Spots</h2>
+            
+            <div className="relative max-w-6xl mx-auto">
+              {/* Carousel Container */}
+              <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
+                <div className="flex">
+                  {surfSpots.map((spot, index) => (
+                    <div key={spot.name} className="flex-[0_0_100%] min-w-0 relative">
+                      <div className="relative h-[500px] mx-4">
+                        {/* Video Background */}
+                        <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                          <iframe
+                            src={spot.videoUrl}
+                            className="w-full h-full object-cover"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            style={{ border: 'none' }}
+                            title={`${spot.name} surf video`}
+                          />
+                        </div>
+                        
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl"></div>
+                        
+                        {/* Content */}
+                        <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
+                          <div className="mb-4">
+                            <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full mb-4">
+                              <Play className="w-6 h-6 text-white" />
+                            </div>
+                          </div>
+                          <h3 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{spot.name}</h3>
+                          <p className="text-white/90 text-lg mb-2 drop-shadow-md">{spot.description}</p>
+                          <p className="text-cyan-300 text-sm font-medium drop-shadow-sm">{spot.location}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
+              {/* Navigation Buttons */}
+              <button
+                onClick={scrollPrev}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/30 transition-all duration-200 hover:scale-110 shadow-lg"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              
+              <button
+                onClick={scrollNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/30 transition-all duration-200 hover:scale-110 shadow-lg"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+
+              {/* Dots Indicator */}
+              <div className="flex justify-center space-x-2 mt-6">
+                {surfSpots.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => emblaApi?.scrollTo(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                      index === selectedIndex 
+                        ? 'bg-cyan-400 shadow-lg shadow-cyan-400/50' 
+                        : 'bg-white/30 hover:bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
             {/* Features Grid - Below Surf Spots */}
             <div className="grid md:grid-cols-3 gap-8">
               <div className="glass rounded-2xl p-8 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '1.8s' }}>
@@ -171,7 +278,6 @@ export default function Landing() {
                 </p>
               </div>
             </div>
-          </div>
 
           {/* Call to Action */}
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20">
