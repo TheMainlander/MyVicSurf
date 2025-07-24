@@ -187,7 +187,7 @@ export class MemStorage implements IStorage {
           spotId: spot.id,
           date: dateStr,
           waveHeight: 0.8 + Math.random() * 1.5,
-          waveDirection: ["S", "SW", "W", "NW"][Math.floor(Math.random() * 4)],
+          waveDirection: ["S", "SW", "W", "NW"][Math.floor(Math.random() * 4)] as string,
           windSpeed: 8 + Math.random() * 15,
           windDirection: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"][Math.floor(Math.random() * 8)],
           rating: ["fair", "good", "very-good", "excellent"][Math.floor(Math.random() * 4)],
@@ -221,7 +221,12 @@ export class MemStorage implements IStorage {
 
   async createSurfSpot(spot: InsertSurfSpot): Promise<SurfSpot> {
     const id = this.currentId++;
-    const newSpot: SurfSpot = { ...spot, id };
+    const newSpot: SurfSpot = { 
+      ...spot, 
+      id,
+      description: spot.description || null,
+      imageUrl: spot.imageUrl || null 
+    };
     this.surfSpots.set(id, newSpot);
     return newSpot;
   }
@@ -236,7 +241,9 @@ export class MemStorage implements IStorage {
     const newCondition: SurfCondition = { 
       ...condition, 
       id, 
-      timestamp: new Date() 
+      timestamp: new Date(),
+      waveDirection: condition.waveDirection || null,
+      wavePeriod: condition.wavePeriod || null
     };
     
     if (!this.surfConditions.has(condition.spotId)) {
@@ -270,7 +277,11 @@ export class MemStorage implements IStorage {
 
   async createForecast(forecast: InsertForecast): Promise<Forecast> {
     const id = this.currentId++;
-    const newForecast: Forecast = { ...forecast, id };
+    const newForecast: Forecast = { 
+      ...forecast, 
+      id,
+      waveDirection: forecast.waveDirection || null
+    };
     
     if (!this.forecasts.has(forecast.spotId)) {
       this.forecasts.set(forecast.spotId, []);
