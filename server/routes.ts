@@ -10,7 +10,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await setupAuth(app);
       console.log("Replit Auth configured successfully");
     } catch (error) {
-      console.log("Replit Auth not configured:", error.message);
+      console.log("Replit Auth not configured:", (error as Error).message);
     }
   }
 

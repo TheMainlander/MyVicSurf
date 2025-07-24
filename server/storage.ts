@@ -90,6 +90,12 @@ export class MemStorage implements IStorage {
   private surfConditions: Map<number, SurfCondition[]>;
   private tideTimes: Map<string, TideTime[]>; // key: spotId-date
   private forecasts: Map<number, Forecast[]>;
+  private users: Map<string, User>;
+  private userFavorites: Map<string, UserFavorite[]>;
+  private userSessions: Map<string, UserSession[]>;
+  private userPreferences: Map<string, UserPreferences>;
+  private pushSubscriptions: Map<string, PushSubscription[]>;
+  private notificationLog: Map<string, NotificationLog[]>;
   private currentId: number;
 
   constructor() {
@@ -97,6 +103,12 @@ export class MemStorage implements IStorage {
     this.surfConditions = new Map();
     this.tideTimes = new Map();
     this.forecasts = new Map();
+    this.users = new Map();
+    this.userFavorites = new Map();
+    this.userSessions = new Map();
+    this.userPreferences = new Map();
+    this.pushSubscriptions = new Map();
+    this.notificationLog = new Map();
     this.currentId = 1;
     this.initializeData();
   }
@@ -310,7 +322,15 @@ export class MemStorage implements IStorage {
       ...spot, 
       id,
       description: spot.description || null,
-      imageUrl: spot.imageUrl || null 
+      imageUrl: spot.imageUrl || null,
+      beachType: spot.beachType || "surf",
+      beachCategory: spot.beachCategory || null,
+      facilities: spot.facilities || [],
+      accessInfo: spot.accessInfo || null,
+      bestConditions: spot.bestConditions || null,
+      hazards: spot.hazards || [],
+      externalId: spot.externalId || null,
+      apiSource: spot.apiSource || null
     };
     this.surfSpots.set(id, newSpot);
     return newSpot;
@@ -443,6 +463,208 @@ export class MemStorage implements IStorage {
     this.forecasts.get(forecast.spotId)!.push(newForecast);
     return newForecast;
   }
+
+  // User methods
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const userId = `user-${this.currentId++}`;
+    const newUser: User = {
+      id: userId,
+      email: user.email || null,
+      firstName: user.firstName || null,
+      lastName: user.lastName || null,
+      profileImageUrl: user.profileImageUrl || null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(newUser.id, newUser);
+    return newUser;
+  }
+
+  async upsertUser(user: UpsertUser): Promise<User> {
+    const existing = this.users.get(user.id);
+    if (existing) {
+      const updated: User = {
+        ...existing,
+        ...user,
+        updatedAt: new Date()
+      };
+      this.users.set(user.id, updated);
+      return updated;
+    } else {
+      return this.createUser(user);
+    }
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  // User Favorites
+  async getUserFavorites(userId: string): Promise<(UserFavorite & { spot: SurfSpot })[]> {
+    const favorites = this.userFavorites.get(userId) || [];
+    return favorites.map(fav => ({
+      ...fav,
+      spot: this.surfSpots.get(fav.spotId!)!
+    }));
+  }
+
+  async addUserFavorite(userId: string, spotId: number): Promise<UserFavorite> {
+    const favorite: UserFavorite = {
+      id: this.currentId++,
+      userId,
+      spotId,
+      addedAt: new Date()
+    };
+    
+    if (!this.userFavorites.has(userId)) {
+      this.userFavorites.set(userId, []);
+    }
+    this.userFavorites.get(userId)!.push(favorite);
+    return favorite;
+  }
+
+  async removeUserFavorite(userId: string, spotId: number): Promise<boolean> {
+    const favorites = this.userFavorites.get(userId) || [];
+    const index = favorites.findIndex(fav => fav.spotId === spotId);
+    if (index > -1) {
+      favorites.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
+  async isSpotFavorited(userId: string, spotId: number): Promise<boolean> {
+    const favorites = this.userFavorites.get(userId) || [];
+    return favorites.some(fav => fav.spotId === spotId);
+  }
+
+  // User Sessions
+  async getUserSessions(userId: string, limit: number = 20): Promise<(UserSession & { spot: SurfSpot })[]> {
+    const sessions = this.userSessions.get(userId) || [];
+    return sessions.slice(0, limit).map(session => ({
+      ...session,
+      spot: this.surfSpots.get(session.spotId!)!
+    }));
+  }
+
+  async createUserSession(session: InsertUserSession): Promise<UserSession> {
+    const newSession: UserSession = {
+      ...session,
+      id: this.currentId++,
+      createdAt: new Date(),
+      userId: session.userId || null,
+      spotId: session.spotId || null,
+      rating: session.rating || null,
+      notes: session.notes || null,
+      duration: session.duration || null,
+      waveHeight: session.waveHeight || null
+    };
+    
+    if (!this.userSessions.has(session.userId!)) {
+      this.userSessions.set(session.userId!, []);
+    }
+    this.userSessions.get(session.userId!)!.push(newSession);
+    return newSession;
+  }
+
+  // User Preferences
+  async getUserPreferences(userId: string): Promise<UserPreferences | undefined> {
+    return this.userPreferences.get(userId);
+  }
+
+  async updateUserPreferences(userId: string, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences> {
+    const existing = this.userPreferences.get(userId);
+    
+    if (existing) {
+      const updated: UserPreferences = {
+        ...existing,
+        ...preferences,
+        updatedAt: new Date()
+      };
+      this.userPreferences.set(userId, updated);
+      return updated;
+    } else {
+      const newPrefs: UserPreferences = {
+        id: this.currentId++,
+        userId,
+        preferredUnits: "metric",
+        emailNotifications: true,
+        pushNotifications: true,
+        optimalConditionAlerts: true,
+        waveHeightMin: 1.0,
+        waveHeightMax: 4.0,
+        windSpeedMax: 20,
+        favoriteRegions: ["Surf Coast"],
+        skillLevel: "intermediate",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ...preferences
+      };
+      this.userPreferences.set(userId, newPrefs);
+      return newPrefs;
+    }
+  }
+
+  // Push Notifications
+  async subscribeToPush(userId: string, subscription: InsertPushSubscription): Promise<PushSubscription> {
+    const newSubscription: PushSubscription = {
+      ...subscription,
+      id: this.currentId++,
+      userId: subscription.userId || null,
+      isActive: true,
+      createdAt: new Date(),
+      userAgent: subscription.userAgent || null
+    };
+    
+    if (!this.pushSubscriptions.has(userId)) {
+      this.pushSubscriptions.set(userId, []);
+    }
+    this.pushSubscriptions.get(userId)!.push(newSubscription);
+    return newSubscription;
+  }
+
+  async unsubscribeFromPush(userId: string, endpoint: string): Promise<boolean> {
+    const subscriptions = this.pushSubscriptions.get(userId) || [];
+    const subscription = subscriptions.find(sub => sub.endpoint === endpoint);
+    if (subscription) {
+      subscription.isActive = false;
+      return true;
+    }
+    return false;
+  }
+
+  async getUserPushSubscriptions(userId: string): Promise<PushSubscription[]> {
+    const subscriptions = this.pushSubscriptions.get(userId) || [];
+    return subscriptions.filter(sub => sub.isActive);
+  }
+
+  // Notification Log
+  async createNotificationLog(notification: InsertNotificationLog): Promise<NotificationLog> {
+    const newNotification: NotificationLog = {
+      ...notification,
+      id: this.currentId++,
+      sent: false,
+      sentAt: null,
+      createdAt: new Date(),
+      userId: notification.userId || null,
+      spotId: notification.spotId || null
+    };
+    
+    if (!this.notificationLog.has(notification.userId!)) {
+      this.notificationLog.set(notification.userId!, []);
+    }
+    this.notificationLog.get(notification.userId!)!.push(newNotification);
+    return newNotification;
+  }
+
+  async getUserNotifications(userId: string, limit: number = 20): Promise<NotificationLog[]> {
+    const notifications = this.notificationLog.get(userId) || [];
+    return notifications.slice(0, limit);
+  }
 }
 
 // Database-backed storage for production
@@ -569,7 +791,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const [newUser] = await db.insert(users).values(user).returning();
+    const [newUser] = await db.insert(users).values({
+      id: `user-${Date.now()}`,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      profileImageUrl: user.profileImageUrl,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }).returning();
     return newUser;
   }
 
@@ -614,7 +844,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .delete(userFavorites)
       .where(and(eq(userFavorites.userId, userId), eq(userFavorites.spotId, spotId)));
-    return result.rowCount > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async isSpotFavorited(userId: string, spotId: number): Promise<boolean> {
@@ -718,7 +948,7 @@ export class DatabaseStorage implements IStorage {
         eq(pushSubscriptions.endpoint, endpoint)
       ));
 
-    return (result.rowCount || 0) > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async getUserPushSubscriptions(userId: string): Promise<PushSubscription[]> {
@@ -753,11 +983,22 @@ export class DatabaseStorage implements IStorage {
   async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(userData)
+      .values({
+        id: userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profileImageUrl: userData.profileImageUrl,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
       .onConflictDoUpdate({
         target: users.id,
         set: {
-          ...userData,
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          profileImageUrl: userData.profileImageUrl,
           updatedAt: new Date(),
         },
       })
