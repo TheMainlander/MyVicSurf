@@ -3,20 +3,16 @@ import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
 import FavoritesSidebar from "@/components/favorites/favorites-sidebar";
-import { Star, User, LogIn, Settings } from "lucide-react";
+import { Heart, User, LogIn } from "lucide-react";
 
 export default function Header() {
-  const [showSettings, setShowSettings] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   
   // Mock user ID for development - in production this would come from authentication
   const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
 
-  const handleSettingsClick = () => {
-    setShowSettings(!showSettings);
-    console.log('Open settings');
-  };
+
 
   const handleSignIn = () => {
     window.location.href = "/api/login";
@@ -52,20 +48,11 @@ export default function Header() {
             <Button 
               variant="ghost" 
               size="sm"
-              className="p-2 rounded-lg hover:bg-coral-50 transition-all duration-200 hover:scale-110 text-gray-500 hover:text-coral relative"
-              onClick={() => setShowFavorites(true)}
+              className="p-2 rounded-lg hover:bg-red-50 transition-all duration-200 hover:scale-110 text-gray-500 hover:text-red-500"
+              onClick={() => setShowFavorites(!showFavorites)}
               title="Quick access to favorite beaches"
             >
-              <Star className="h-5 w-5" />
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 hover:scale-110 text-gray-500 hover:text-blue-600"
-              onClick={handleSettingsClick}
-            >
-              <Settings className="h-5 w-5" />
+              <Heart className="h-5 w-5 fill-current" />
             </Button>
           </div>
         </div>
