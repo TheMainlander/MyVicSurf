@@ -87,26 +87,26 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
             </div>
           </div>
           <div className="absolute bottom-4 left-4 text-white">
-            <div className={`text-3xl font-bold ${getRatingColor(conditions.rating)} wave-animation`}>
+            <div className={`text-3xl font-bold text-white wave-animation`} style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8), 0px 0px 8px rgba(0,0,0,0.6)' }}>
               {getRatingText(conditions.rating)}
             </div>
-            <p className="text-sm opacity-90">{getLastUpdated()}</p>
+            <p className="text-sm text-white font-medium" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.8)' }}>{getLastUpdated()}</p>
           </div>
         </div>
         
         <div className="p-6">
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-ocean-blue">
+              <div className="text-3xl font-bold text-gray-900">
                 {conditions.waveHeight.toFixed(1)}m
               </div>
-              <div className="text-sm text-secondary font-medium">Wave Height</div>
+              <div className="text-sm text-gray-600 font-medium">Wave Height</div>
             </div>
             <div className="text-center">
               <div className={`text-3xl font-bold ${getRatingColor(conditions.rating)}`}>
                 {getRatingText(conditions.rating)}
               </div>
-              <div className="text-sm text-secondary font-medium">Surf Rating</div>
+              <div className="text-sm text-gray-600 font-medium">Surf Rating</div>
             </div>
           </div>
           
