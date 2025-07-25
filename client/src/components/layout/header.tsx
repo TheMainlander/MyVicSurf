@@ -51,15 +51,24 @@ export default function Header() {
             )}
 
             {isAuthenticated && (
-              <Button
-                onClick={handleSignOut}
-                size="sm"
-                variant="outline"
-                className="border-gray-200 text-coastal-grey hover:bg-gray-50 hover:border-gray-300 hover:text-ocean-blue transition-all duration-300 px-3 py-1.5 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md h-8 flex items-center"
-              >
-                <LogOut className="h-4 w-4 stroke-2" />
-                Sign Out
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  onClick={() => window.location.href = '/pricing'}
+                  size="sm"
+                  className="bg-yellow-500 text-white hover:bg-yellow-600 px-3 py-1.5 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md h-8 flex items-center"
+                >
+                  ⚡ Upgrade
+                </Button>
+                <Button
+                  onClick={handleSignOut}
+                  size="sm"
+                  variant="outline"
+                  className="border-gray-200 text-coastal-grey hover:bg-gray-50 hover:border-gray-300 hover:text-ocean-blue transition-all duration-300 px-3 py-1.5 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md h-8 flex items-center"
+                >
+                  <LogOut className="h-4 w-4 stroke-2" />
+                  Sign Out
+                </Button>
+              </div>
             )}
 
             <Button 

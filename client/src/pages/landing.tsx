@@ -4,14 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useEmblaCarousel from 'embla-carousel-react';
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import RegistrationFlow from "@/components/registration/registration-flow";
 
 export default function Landing() {
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const handleLogin = () => {
     window.location.href = "/api/login";
   };
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' });
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const handleRegister = () => {
+    setShowRegistration(true);
+  };
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -138,11 +144,11 @@ export default function Landing() {
                 </p>
                 
                 <Button
-                  onClick={handleLogin}
+                  onClick={handleRegister}
                   size="lg"
                   className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 hover:scale-[1.02] transition-all duration-200 font-bold py-4 text-base shadow-xl rounded-xl flex items-center justify-center border-2 border-transparent hover:border-white/20"
                 >
-                  Register
+                  Get Started
                 </Button>
                 
                 <div className="mt-4 text-center">
@@ -295,6 +301,11 @@ export default function Landing() {
           </div>
         </main>
       </div>
+
+      {/* Registration Flow Modal */}
+      {showRegistration && (
+        <RegistrationFlow onClose={() => setShowRegistration(false)} />
+      )}
     </div>
   );
 }

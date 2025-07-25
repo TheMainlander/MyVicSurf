@@ -94,6 +94,11 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Database schema for payments, subscription plans, and user subscriptions
 ✓ Payment API endpoints for subscription management and Stripe integration
 ✓ Premium feature differentiation ready for user tier-based access control
+✓ Integrated subscription selection into registration flow with modal interface
+✓ Post-registration handler for seamless subscription completion after authentication
+✓ Enhanced "Get Started" button opens subscription selection before auth redirect
+✓ Subscription plan selection persisted through localStorage during registration
+✓ Upgrade button added to header for authenticated users to access pricing
 
 ## User Preferences
 

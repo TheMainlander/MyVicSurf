@@ -14,6 +14,7 @@ import Landing from "@/pages/landing";
 import Pricing from "@/pages/pricing";
 import Checkout from "@/pages/checkout";
 import PaymentSuccess from "@/pages/payment-success";
+import PostRegistrationHandler from "@/components/registration/post-registration-handler";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -45,6 +46,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <PostRegistrationHandler />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>
