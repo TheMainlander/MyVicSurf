@@ -65,6 +65,7 @@ export default function SettingsList({ userId }: SettingsListProps) {
 
   const getDefaultLocationDisplay = () => {
     if (!preferences?.defaultLocation) return "Not set";
+    if (!surfSpots || surfSpots.length === 0) return "Loading...";
     const spot = surfSpots?.find(s => s.id.toString() === preferences.defaultLocation);
     return spot?.name || "Unknown location";
   };
@@ -174,6 +175,17 @@ export default function SettingsList({ userId }: SettingsListProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">No default location</SelectItem>
+                    {surfSpots && surfSpots.length > 0 ? (
+                      surfSpots.map((spot) => (
+                        <SelectItem key={spot.id} value={spot.id.toString()}>
+                          {spot.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="" disabled>
+                        Loading locations...
+                      </SelectItem>
+                    )}
                     {surfSpots?.map((spot) => (
                       <SelectItem key={spot.id} value={spot.id.toString()}>
                         {spot.name}

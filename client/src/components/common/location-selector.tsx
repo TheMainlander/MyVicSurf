@@ -19,9 +19,30 @@ export default function LocationSelector({ selectedSpot, spots, onSpotChange }: 
   const [showPicker, setShowPicker] = useState(false);
 
   const handleSpotChange = (value: string) => {
-    onSpotChange(parseInt(value));
+    try {
+      const spotId = parseInt(value);
+      if (!isNaN(spotId)) {
+        onSpotChange(spotId);
+      }
+    } catch (error) {
+      console.error("Error changing spot:", error);
+    }
     setShowPicker(false);
   };
+
+  // Don't render if spots are not loaded
+  if (!spots || spots.length === 0) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-3 bg-white shadow-sm">
+        <div className="flex items-center justify-center">
+          <div className="flex items-center space-x-2">
+            <i className="fas fa-map-marker-alt text-ocean-blue"></i>
+            <span className="text-lg font-medium text-gray-500">Loading locations...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto px-4 py-3 bg-white shadow-sm">
@@ -44,11 +65,17 @@ export default function LocationSelector({ selectedSpot, spots, onSpotChange }: 
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {spots.map((spot) => (
-                <SelectItem key={spot.id} value={spot.id.toString()}>
-                  {spot.name}
+              {spots && spots.length > 0 ? (
+                spots.map((spot) => (
+                  <SelectItem key={spot.id} value={spot.id.toString()}>
+                    {spot.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="" disabled>
+                  No locations available
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
         ) : (
