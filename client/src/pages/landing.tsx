@@ -61,11 +61,11 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image - Bells Beach, Victoria */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Female_surfer%2C_Yamba%2C_NSW_2014-12-18_%2821548724031%29.jpg/1280px-Female_surfer%2C_Yamba%2C_NSW_2014-12-18_%2821548724031%29.jpg')`
+          backgroundImage: `url('https://cdn.pixabay.com/photo/2014/11/05/06/49/beach-517410_1280.jpg')`
         }}
       ></div>
       
