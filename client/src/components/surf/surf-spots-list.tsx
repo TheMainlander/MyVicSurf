@@ -81,31 +81,40 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
       </h3>
       <div className="space-y-3">
         {nearbySpots?.slice(0, 3).map((spot) => (
-          <Card key={spot.id} className="shadow-md overflow-hidden">
+          <Card key={spot.id} className="shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 bg-white">
             <CardContent className="p-0">
               <div className="flex">
                 <img 
                   src={spot.imageUrl || "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=120"} 
                   alt={spot.name}
-                  className="w-20 h-20 object-cover"
+                  className="w-24 h-24 object-cover"
                 />
-                <div className="flex-1 p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-medium text-sm">{spot.name}</h4>
+                <div className="flex-1 p-4 bg-white">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-base leading-tight">{spot.name}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{spot.beachType || "Surf Coast"} • {spot.description || "World-class surf break"}</p>
+                    </div>
                     {spot.conditions && (
-                      <Badge className={`${getRatingColor(spot.conditions.rating)} text-white text-xs`}>
+                      <Badge className={`${getRatingColor(spot.conditions.rating)} text-white text-xs font-semibold px-2 py-1 rounded-full`}>
                         {getRatingText(spot.conditions.rating)}
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center justify-between text-xs text-coastal-grey mb-2">
-                    <span>{getMockDistance(spot.name).toFixed(1)} km away</span>
+                  <div className="flex items-center justify-between text-sm text-gray-700 mb-3">
+                    <span className="font-medium">{getMockDistance(spot.name).toFixed(1)} km away</span>
                     {spot.conditions && (
-                      <span>{spot.conditions.waveHeight.toFixed(1)}m waves</span>
+                      <span className="font-medium text-ocean-blue">{spot.conditions.waveHeight.toFixed(1)}m waves</span>
                     )}
                   </div>
-                  <div className="flex justify-end pt-1 border-t border-gray-100">
+                  <div className="text-xs text-gray-500 mb-2">
+                    Added {new Date().toLocaleDateString()}
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-gray-100">
                     <QuickShare spot={spot} conditions={spot.conditions} compact={true} />
+                    <span className="text-xs text-gray-500">
+                      Share this surf report
+                    </span>
                   </div>
                 </div>
               </div>
