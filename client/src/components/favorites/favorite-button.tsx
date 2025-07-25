@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Heart, Star } from "lucide-react";
+import { Heart } from "lucide-react";
 
 interface FavoriteButtonProps {
   spotId: number;
@@ -96,11 +96,15 @@ export default function FavoriteButton({
       size="sm"
       onClick={handleFavoriteClick}
       disabled={favoriteMutation.isPending}
-      className={`gap-2 hover:shadow-sm transition-all ${className}`}
+      className={`gap-2 hover:shadow-sm transition-all ${
+        isFavorited 
+          ? "bg-red-500 text-white hover:bg-red-600 border-red-500" 
+          : "border-gray-200 text-gray-700 hover:bg-gray-50"
+      } ${className}`}
     >
       <Heart 
         className={`h-4 w-4 ${
-          isFavorited ? "fill-current" : ""
+          isFavorited ? "fill-current text-white" : "text-gray-600"
         } ${favoriteMutation.isPending ? "animate-pulse" : ""}`}
       />
       {isFavorited ? "Favorited" : "Add to Favorites"}
