@@ -4,8 +4,8 @@ import { setupVite, serveStatic, log } from "./vite";
 import { pushNotificationService } from "./push-notifications";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -55,10 +55,8 @@ app.use((req, res, next) => {
 
     res.status(status).json({ message });
     
-    // Only throw in development, log in production
-    if (process.env.NODE_ENV === "development") {
-      throw err;
-    }
+    // Log in all environments, don't throw to prevent crashes
+    console.error("Request failed with status:", status);
   });
 
   // importantly only setup vite in development and after
