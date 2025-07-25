@@ -72,7 +72,7 @@ export default function LocationSelector({ selectedSpot, spots, onSpotChange }: 
                   </SelectItem>
                 ))
               ) : (
-                <SelectItem value="" disabled>
+                <SelectItem value="no-locations" disabled>
                   No locations available
                 </SelectItem>
               )}

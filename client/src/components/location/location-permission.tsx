@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -33,9 +33,11 @@ export default function LocationPermission({
   };
 
   // Call onLocationShared when we get coordinates
-  if (latitude && longitude && onLocationShared) {
-    onLocationShared(latitude, longitude);
-  }
+  React.useEffect(() => {
+    if (latitude && longitude && onLocationShared) {
+      onLocationShared(latitude, longitude);
+    }
+  }, [latitude, longitude, onLocationShared]);
 
   if (showCompact) {
     return (

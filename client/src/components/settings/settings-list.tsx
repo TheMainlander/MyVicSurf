@@ -174,7 +174,7 @@ export default function SettingsList({ userId }: SettingsListProps) {
                     <SelectValue placeholder="Select a surf spot" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No default location</SelectItem>
+                    <SelectItem value="none">No default location</SelectItem>
                     {surfSpots && surfSpots.length > 0 ? (
                       surfSpots.map((spot) => (
                         <SelectItem key={spot.id} value={spot.id.toString()}>
@@ -182,15 +182,10 @@ export default function SettingsList({ userId }: SettingsListProps) {
                         </SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="loading" disabled>
                         Loading locations...
                       </SelectItem>
                     )}
-                    {surfSpots?.map((spot) => (
-                      <SelectItem key={spot.id} value={spot.id.toString()}>
-                        {spot.name}
-                      </SelectItem>
-                    ))}
                   </SelectContent>
                 </Select>
               </div>
