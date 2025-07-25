@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
 import FavoritesSidebar from "@/components/favorites/favorites-sidebar";
+import { Star, User, LogIn, Settings } from "lucide-react";
 
 export default function Header() {
   const [showSettings, setShowSettings] = useState(false);
@@ -41,8 +42,9 @@ export default function Header() {
               <Button
                 onClick={handleSignIn}
                 size="sm"
-                className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-all duration-200 px-4 py-2 rounded-lg shadow-md"
+                className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-all duration-200 px-4 py-2 rounded-lg shadow-md gap-2"
               >
+                <LogIn className="h-4 w-4" />
                 Sign In
               </Button>
             )}
@@ -54,7 +56,7 @@ export default function Header() {
               onClick={() => setShowFavorites(true)}
               title="Quick access to favorite beaches"
             >
-              <i className="fas fa-heart text-lg"></i>
+              <Star className="h-5 w-5" />
             </Button>
             
             <Button 
@@ -63,7 +65,7 @@ export default function Header() {
               className="p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 hover:scale-110 text-gray-500 hover:text-blue-600"
               onClick={handleSettingsClick}
             >
-              <div className="text-lg">⚙️</div>
+              <Settings className="h-5 w-5" />
             </Button>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Star, X, MapPin, Waves, Wind, Thermometer } from "lucide-react";
 import type { UserFavorite, SurfSpot, SurfCondition } from "@shared/schema";
 
 interface FavoritesSidebarProps {
@@ -80,7 +81,7 @@ export default function FavoritesSidebar({ userId, isOpen, onClose }: FavoritesS
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-ocean-blue to-blue-600">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <i className="fas fa-heart text-coral"></i>
+              <Star className="h-5 w-5 text-coral" />
               Favorite Beaches
             </h2>
             <Button 
@@ -89,7 +90,7 @@ export default function FavoritesSidebar({ userId, isOpen, onClose }: FavoritesS
               onClick={onClose}
               className="text-white hover:bg-white/20 p-2"
             >
-              <i className="fas fa-times"></i>
+              <X className="h-4 w-4" />
             </Button>
           </div>
           <p className="text-sm text-blue-100 mt-1">
@@ -140,11 +141,11 @@ export default function FavoritesSidebar({ userId, isOpen, onClose }: FavoritesS
                           {favorite.spot.conditions && (
                             <div className="flex items-center gap-3 text-xs text-gray-600">
                               <span className="flex items-center">
-                                <i className="fas fa-water text-ocean-blue mr-1"></i>
+                                <Waves className="h-3 w-3 text-ocean-blue mr-1" />
                                 {favorite.spot.conditions.waveHeight}m
                               </span>
                               <span className="flex items-center">
-                                <i className="fas fa-wind mr-1"></i>
+                                <Wind className="h-3 w-3 mr-1" />
                                 {favorite.spot.conditions.windSpeed}km/h
                               </span>
                             </div>
@@ -167,8 +168,8 @@ export default function FavoritesSidebar({ userId, isOpen, onClose }: FavoritesS
               
               <div className="mt-4 pt-3 border-t border-gray-200">
                 <Link href="/favorites" onClick={onClose}>
-                  <Button variant="outline" className="w-full text-sm">
-                    <i className="fas fa-list mr-2"></i>
+                  <Button variant="outline" className="w-full text-sm gap-2">
+                    <Star className="h-4 w-4" />
                     Manage All Favorites
                   </Button>
                 </Link>
@@ -177,15 +178,15 @@ export default function FavoritesSidebar({ userId, isOpen, onClose }: FavoritesS
           ) : (
             <div className="text-center py-8">
               <div className="mb-4">
-                <i className="far fa-heart text-4xl text-gray-300"></i>
+                <Star className="h-16 w-16 text-gray-300 mx-auto" />
               </div>
               <h3 className="font-medium text-gray-600 mb-2">No favorites yet</h3>
               <p className="text-sm text-gray-500 mb-4">
                 Add beaches to your favorites for quick access
               </p>
               <Link href="/spots" onClick={onClose}>
-                <Button size="sm">
-                  <i className="fas fa-plus mr-2"></i>
+                <Button size="sm" className="gap-2">
+                  <MapPin className="h-4 w-4" />
                   Browse Beaches
                 </Button>
               </Link>

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Camera, RefreshCw, ExternalLink, CirclePlay, Signal } from "lucide-react";
 import type { SurfSpot } from "@shared/schema";
 
 interface BeachCamerasProps {
@@ -121,7 +122,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            <i className="fas fa-video text-ocean-blue"></i>
+            <Camera className="h-5 w-5 text-ocean-blue" />
             Beach Cameras
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -129,13 +130,14 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
               variant="outline"
               size="sm"
               onClick={handleRefresh}
-              className="text-xs"
+              className="text-xs gap-1.5 hover:bg-blue-50 transition-colors"
             >
-              <i className="fas fa-refresh mr-1"></i>
+              <RefreshCw className="h-3.5 w-3.5" />
               Refresh
             </Button>
             {selectedCamera && (
-              <Badge className={`${getCameraStatusColor(selectedCamera.status)} text-white text-xs`}>
+              <Badge className={`${getCameraStatusColor(selectedCamera.status)} text-white text-xs flex items-center gap-1`}>
+                <Signal className="h-3 w-3" />
                 {getCameraStatusText(selectedCamera.status)}
               </Badge>
             )}
@@ -165,8 +167,8 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                         allowFullScreen
                         title={`${selectedCamera.name} Live Camera`}
                       />
-                      <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                      <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
+                        <CirclePlay className="h-3 w-3 animate-pulse" />
                         LIVE
                       </div>
                     </div>
@@ -196,7 +198,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                   ) : (
                     <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-500" style={{ aspectRatio: '16/9' }}>
                       <div className="text-center">
-                        <i className="fas fa-video-slash text-4xl mb-2"></i>
+                        <Camera className="h-12 w-12 mb-2 text-gray-400" />
                         <p className="text-sm">Camera temporarily unavailable</p>
                       </div>
                     </div>
@@ -215,14 +217,22 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                     )}
                     {selectedCamera.embedUrl && (
                       <div className="mt-2">
-                        <a
-                          href={selectedCamera.embedUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:text-blue-800 underline"
+                        <Button
+                          variant="link"
+                          size="sm"
+                          asChild
+                          className="text-xs p-0 h-auto text-blue-600 hover:text-blue-800"
                         >
-                          View full camera feed on {selectedCamera.provider}
-                        </a>
+                          <a
+                            href={selectedCamera.embedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            View full camera feed on {selectedCamera.provider}
+                          </a>
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -230,7 +240,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
               ) : (
                 <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-500" style={{ aspectRatio: '16/9' }}>
                   <div className="text-center">
-                    <i className="fas fa-video text-4xl mb-2"></i>
+                    <Camera className="h-12 w-12 mb-2 text-gray-400" />
                     <p className="text-sm">No camera selected</p>
                   </div>
                 </div>
@@ -248,12 +258,13 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                       variant={selectedCamera?.id === camera.id ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSelectedCamera(camera)}
-                      className="text-xs flex items-center gap-1"
+                      className="text-xs flex items-center gap-1.5 hover:shadow-sm transition-all"
                     >
-                      <div className={`w-2 h-2 rounded-full ${
-                        camera.status === "live" ? "bg-green-400" : 
-                        camera.status === "offline" ? "bg-red-400" : "bg-gray-400"
-                      }`}></div>
+                      <Signal className={`h-3 w-3 ${
+                        camera.status === "live" ? "text-green-500" : 
+                        camera.status === "available" ? "text-blue-500" :
+                        camera.status === "offline" ? "text-red-500" : "text-gray-500"
+                      }`} />
                       {camera.name}
                     </Button>
                   ))}
@@ -272,7 +283,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
         ) : (
           <div className="text-center py-8">
             <div className="mb-4">
-              <i className="fas fa-video-slash text-4xl text-gray-300"></i>
+              <Camera className="h-16 w-16 text-gray-300 mx-auto" />
             </div>
             <h3 className="font-medium text-gray-600 mb-2">No cameras available</h3>
             <p className="text-sm text-gray-500 mb-4">
