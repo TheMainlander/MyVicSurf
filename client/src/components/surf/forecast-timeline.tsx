@@ -88,26 +88,36 @@ export default function ForecastTimeline({ spotId }: ForecastTimelineProps) {
             <Card key={`${day.spotId}-${day.date}`} className="shadow-md">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
+                  {/* Left section: Date and Wave info */}
                   <div className="flex items-center space-x-4">
-                    <div className="text-center min-w-[60px]">
-                      <div className="text-sm font-medium">{dateInfo.name}</div>
+                    <div className="text-left min-w-[80px]">
+                      <div className="text-sm font-medium text-gray-900">{dateInfo.name}</div>
                       <div className="text-xs text-coastal-grey">{dateInfo.date}</div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <i className="fas fa-water text-ocean-blue"></i>
-                      <span className="text-sm font-medium">
+                      <i className="fas fa-water text-ocean-blue w-4 text-center"></i>
+                      <span className="text-sm font-semibold text-gray-900 min-w-[40px]">
                         {day.waveHeight.toFixed(1)}m
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-center">
-                      <i className="fas fa-wind text-coastal-grey text-sm"></i>
-                      <div className="text-xs text-coastal-grey">
-                        {Math.round(day.windSpeed)} km/h {day.windDirection}
+                  
+                  {/* Right section: Wind and Rating aligned properly */}
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-1.5 min-w-[70px]">
+                      <i className="fas fa-wind text-coastal-grey text-sm w-3 text-center"></i>
+                      <div className="text-xs text-coastal-grey leading-tight">
+                        <div>{Math.round(day.windSpeed)} km/h</div>
+                        <div className="text-[10px] opacity-75">{day.windDirection}</div>
                       </div>
                     </div>
-                    <Badge className={`${getRatingColor(day.rating)} text-white text-xs`}>
+                    <div className="flex items-center space-x-1.5 min-w-[50px]">
+                      <i className="fas fa-thermometer-half text-orange-400 text-sm w-3 text-center"></i>
+                      <span className="text-xs text-coastal-grey">
+                        {Math.round(day.airTemperature)}°C
+                      </span>
+                    </div>
+                    <Badge className={`${getRatingColor(day.rating)} text-white text-xs px-2.5 py-1 font-medium`}>
                       {getRatingText(day.rating)}
                     </Badge>
                   </div>
