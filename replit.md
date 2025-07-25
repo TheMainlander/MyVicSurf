@@ -60,6 +60,11 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Updated Sign Out button to use grey colors matching bottom navigation consistency
 ✓ Simplified register button text from "Register Free with Replit" to just "Register"
 ✓ Added authentic Bells Beach background image to logged-out home screen using free Pixabay photo
+✓ Implemented one-click beach camera screenshot save feature with download functionality
+✓ Added "Save" button to camera interface with green styling and loading states
+✓ Created backend API endpoint for camera screenshot capture and streaming
+✓ Enhanced user feedback with toast notifications for successful saves and error handling
+✓ Automatic filename generation with beach name, camera name, and date timestamp
 
 ## User Preferences
 

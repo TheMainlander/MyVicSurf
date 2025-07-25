@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Camera, RefreshCw, ExternalLink, CirclePlay, Signal } from "lucide-react";
+import { Camera, RefreshCw, ExternalLink, CirclePlay, Signal, Download } from "lucide-react";
 import type { SurfSpot } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 
 interface BeachCamerasProps {
   spotId: number;
@@ -26,6 +27,8 @@ interface CameraSource {
 export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
   const [selectedCamera, setSelectedCamera] = useState<CameraSource | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
 
   // Fetch available cameras for the spot
   const { data: cameras, isLoading } = useQuery<CameraSource[]>({
@@ -73,6 +76,75 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
         })
         .catch(error => console.error('Error refreshing cameras:', error));
     }
+  };
+
+  const handleScreenshotSave = async () => {
+    if (!selectedCamera || isSaving) return;
+
+    setIsSaving(true);
+    try {
+      let imageUrl = '';
+      let filename = '';
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      filename = `${spotName || 'Beach'}-${selectedCamera.name}-${timestamp}.jpg`;
+      
+      // For live cameras with embed URLs, we'll use the fallback image or imageUrl
+      if (selectedCamera.imageUrl) {
+        imageUrl = selectedCamera.imageUrl;
+      } else if (selectedCamera.embedUrl) {
+        // For embedded cameras, we'll try to capture via the API
+        const response = await fetch(`/api/surf-spots/${spotId}/cameras/${selectedCamera.id}/screenshot`);
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          downloadImage(url, filename);
+          URL.revokeObjectURL(url);
+          
+          toast({
+            title: "Screenshot saved!",
+            description: `${selectedCamera.name} camera image saved as ${filename}`,
+          });
+          return;
+        }
+        // Fallback to imageUrl if screenshot API fails
+        imageUrl = selectedCamera.imageUrl || '';
+      }
+
+      if (imageUrl) {
+        // Fetch the image and convert to blob for download
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        
+        downloadImage(url, filename);
+        URL.revokeObjectURL(url);
+        
+        toast({
+          title: "Screenshot saved!",
+          description: `${selectedCamera.name} camera image saved as ${filename}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error saving screenshot:', error);
+      toast({
+        title: "Save failed",
+        description: "Failed to save screenshot. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const downloadImage = (url: string, filename: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const getCameraStatusColor = (status: string) => {
@@ -126,6 +198,18 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
             Beach Cameras
           </CardTitle>
           <div className="flex items-center gap-2">
+            {selectedCamera && (selectedCamera.imageUrl || selectedCamera.embedUrl) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleScreenshotSave}
+                disabled={isSaving}
+                className="text-xs gap-1.5 hover:bg-green-50 transition-colors border-green-200 text-green-700 hover:text-green-800 disabled:opacity-50"
+              >
+                <Download className={`h-3.5 w-3.5 ${isSaving ? 'animate-spin' : ''}`} />
+                {isSaving ? 'Saving...' : 'Save'}
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"

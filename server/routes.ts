@@ -462,6 +462,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Beach camera screenshot endpoint
+  app.get("/api/surf-spots/:spotId/cameras/:cameraId/screenshot", async (req, res) => {
+    try {
+      const spotId = parseInt(req.params.spotId);
+      const cameraId = req.params.cameraId;
+      
+      // Get camera information
+      const cameras = await storage.getBeachCameras(spotId);
+      const camera = cameras.find(cam => cam.id === cameraId);
+      
+      if (!camera || !camera.imageUrl) {
+        return res.status(404).json({ message: "Camera or image not found" });
+      }
+
+      // Fetch the image from the camera URL
+      const imageResponse = await fetch(camera.imageUrl);
+      if (!imageResponse.ok) {
+        return res.status(502).json({ message: "Failed to fetch camera image" });
+      }
+
+      // Stream the image back to the client
+      const imageBuffer = await imageResponse.arrayBuffer();
+      const buffer = Buffer.from(imageBuffer);
+      
+      // Set appropriate headers
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Content-Disposition', `attachment; filename="${camera.name}-screenshot.jpg"`);
+      res.setHeader('Content-Length', buffer.length);
+      
+      res.send(buffer);
+    } catch (error) {
+      console.error("Error capturing camera screenshot:", error);
+      res.status(500).json({ message: "Failed to capture screenshot" });
+    }
+  });
+
   // VAPID public key endpoint
   app.get("/api/vapid-public-key", (req, res) => {
     const publicKey = process.env.VAPID_PUBLIC_KEY || "BNJzp5DbZefY5Zu9KoLVJFJQdqhqLnz3FOq2z_BwHjEeojJ1KJRUhEJdnqKW_YQJpEjW2x7aSWgKXDq6qsKsZBE";
