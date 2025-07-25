@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import ShareButton from "@/components/social/share-button";
+import { Wind, Thermometer, Droplets } from "lucide-react";
 import type { SurfCondition, SurfSpot } from "@shared/schema";
 
 interface CurrentConditionsProps {
@@ -112,37 +113,43 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
           
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 text-center hover:scale-105 transition-all duration-200">
-              <div className="text-2xl mb-1">💨</div>
+              <div className="flex justify-center mb-2">
+                <Wind className="h-5 w-5 text-blue-600" />
+              </div>
               <div className="text-sm font-medium text-blue-700">
                 {Math.round(conditions.windSpeed)} km/h
               </div>
-              <div className="text-xs text-blue-700 font-medium">
+              <div className="text-xs text-blue-600 font-medium">
                 {conditions.windDirection} Wind
               </div>
             </div>
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 text-center hover:scale-105 transition-all duration-200">
-              <div className="text-2xl mb-1">🌡️</div>
+              <div className="flex justify-center mb-2">
+                <Thermometer className="h-5 w-5 text-orange-600" />
+              </div>
               <div className="text-sm font-bold text-orange-800">
                 {Math.round(conditions.airTemperature)}°C
               </div>
-              <div className="text-xs text-orange-700 font-medium">Air Temp</div>
+              <div className="text-xs text-orange-600 font-medium">Air Temp</div>
             </div>
             <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-lg p-3 text-center hover:scale-105 transition-all duration-200">
-              <div className="text-2xl mb-1">🌊</div>
+              <div className="flex justify-center mb-2">
+                <Droplets className="h-5 w-5 text-cyan-600" />
+              </div>
               <div className="text-sm font-bold text-cyan-800">
                 {Math.round(conditions.waterTemperature)}°C
               </div>
-              <div className="text-xs text-cyan-700 font-medium">Water Temp</div>
+              <div className="text-xs text-cyan-600 font-medium">Water Temp</div>
             </div>
           </div>
           
           {/* Social Sharing */}
           {spot && (
-            <div className="flex justify-center pt-2 border-t border-gray-100">
+            <div className="flex justify-center pt-3 border-t border-gray-100">
               <ShareButton 
                 spot={spot}
                 conditions={conditions}
-                className="text-ocean-blue"
+                className="text-ocean-blue border-ocean-blue/30 hover:bg-ocean-blue/10 hover:border-ocean-blue/50"
               />
             </div>
           )}

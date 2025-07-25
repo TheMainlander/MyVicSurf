@@ -85,14 +85,16 @@ export default function Home() {
         )}
         
         <div className="flex justify-between items-center slide-up">
-          <h2 className="text-lg font-semibold text-gray-800">
-            {selectedSpot?.name || "Surf Conditions"}
-          </h2>
-          <FavoriteButton 
-            spotId={selectedSpotId} 
-            userId={currentUserId}
-            variant="icon"
-          />
+          <div className="flex items-center space-x-2">
+            <h2 className="text-lg font-semibold text-gray-800">
+              {selectedSpot?.name || "Surf Conditions"}
+            </h2>
+            <FavoriteButton 
+              spotId={selectedSpotId} 
+              userId={currentUserId}
+              variant="icon"
+            />
+          </div>
         </div>
         
         <div className="space-y-6">
