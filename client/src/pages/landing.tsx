@@ -144,7 +144,7 @@ export default function Landing() {
                   <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center shadow-md backdrop-blur-sm">
                     <div className="text-white text-sm font-bold">R</div>
                   </div>
-                  Register Free with Replit
+                  Register
                 </Button>
                 
                 <div className="mt-4 text-center">
