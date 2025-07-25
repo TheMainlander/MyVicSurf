@@ -82,11 +82,11 @@ export interface IStorage {
   subscribeToPush(userId: string, subscription: InsertPushSubscription): Promise<PushSubscription>;
   unsubscribeFromPush(userId: string, endpoint: string): Promise<boolean>;
   getUserPushSubscriptions(userId: string): Promise<PushSubscription[]>;
-  
+
   // Notification Log
   createNotificationLog(notification: InsertNotificationLog): Promise<NotificationLog>;
   getUserNotifications(userId: string, limit?: number): Promise<NotificationLog[]>;
-  
+
   // Beach Cameras
   getBeachCameras(spotId: number): Promise<any[]>;
 }
@@ -283,7 +283,7 @@ export class MemStorage implements IStorage {
       const date = new Date();
       date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
-      
+
       spots.forEach(spot => {
         const forecast: Forecast = {
           id: forecasts.length + 1,
@@ -371,7 +371,7 @@ export class MemStorage implements IStorage {
       if (!spot) return undefined;
 
       const apiConditions = await getCurrentConditionsFromAPI(spotId, spot.latitude, spot.longitude);
-      
+
       // Create and store the new conditions
       const id = this.currentId++;
       const newCondition: SurfCondition = {
@@ -393,7 +393,7 @@ export class MemStorage implements IStorage {
         this.surfConditions.set(spotId, []);
       }
       this.surfConditions.get(spotId)!.push(newCondition);
-      
+
       return newCondition;
     } catch (error) {
       console.error(`API fetch failed for spot ${spotId}, falling back to stored data:`, error);
@@ -410,7 +410,7 @@ export class MemStorage implements IStorage {
       waveDirection: condition.waveDirection || null,
       wavePeriod: condition.wavePeriod || null
     };
-    
+
     if (!this.surfConditions.has(condition.spotId)) {
       this.surfConditions.set(condition.spotId, []);
     }
@@ -426,7 +426,7 @@ export class MemStorage implements IStorage {
   async getTideTimesFromBOM(spotId: number, date: string): Promise<TideTime[]> {
     try {
       const bomTideData = await getTideDataFromBOM(spotId, date);
-      
+
       // Convert BOM data to our TideTime format
       const tideData: TideTime[] = bomTideData.map((bomTide, index) => {
         const datetime = new Date(bomTide.datetime);
@@ -443,7 +443,7 @@ export class MemStorage implements IStorage {
       // Store in memory cache
       const key = `${spotId}-${date}`;
       this.tideTimes.set(key, tideData);
-      
+
       return tideData;
     } catch (error) {
       console.error('Error fetching BOM tide data:', error);
@@ -464,7 +464,7 @@ export class MemStorage implements IStorage {
   async createTideTime(tide: InsertTideTime): Promise<TideTime> {
     const id = this.currentId++;
     const newTide: TideTime = { ...tide, id };
-    
+
     const key = `${tide.spotId}-${tide.date}`;
     if (!this.tideTimes.has(key)) {
       this.tideTimes.set(key, []);
@@ -484,7 +484,7 @@ export class MemStorage implements IStorage {
       if (!spot) return [];
 
       const apiForecast = await getForecastFromAPI(spotId, spot.latitude, spot.longitude, days);
-      
+
       const forecasts: Forecast[] = apiForecast.map((forecast, index) => ({
         id: this.currentId + index,
         spotId,
@@ -503,7 +503,7 @@ export class MemStorage implements IStorage {
 
       // Store the forecasts
       this.forecasts.set(spotId, forecasts);
-      
+
       return forecasts;
     } catch (error) {
       console.error(`API forecast fetch failed for spot ${spotId}, falling back to stored data:`, error);
@@ -518,7 +518,7 @@ export class MemStorage implements IStorage {
       id,
       waveDirection: forecast.waveDirection || null
     };
-    
+
     if (!this.forecasts.has(forecast.spotId)) {
       this.forecasts.set(forecast.spotId, []);
     }
@@ -557,14 +557,14 @@ export class MemStorage implements IStorage {
     if (!existingUser) {
       throw new Error(`User with id ${id} not found`);
     }
-    
+
     const updatedUser: User = {
       ...existingUser,
       ...updates,
       id, // Ensure ID doesn't change
       updatedAt: new Date(),
     };
-    
+
     this.users.set(id, updatedUser);
     return updatedUser;
   }
@@ -604,7 +604,7 @@ export class MemStorage implements IStorage {
       spotId,
       addedAt: new Date()
     };
-    
+
     if (!this.userFavorites.has(userId)) {
       this.userFavorites.set(userId, []);
     }
@@ -648,7 +648,7 @@ export class MemStorage implements IStorage {
       duration: session.duration || null,
       waveHeight: session.waveHeight || null
     };
-    
+
     if (!this.userSessions.has(session.userId!)) {
       this.userSessions.set(session.userId!, []);
     }
@@ -663,7 +663,7 @@ export class MemStorage implements IStorage {
 
   async updateUserPreferences(userId: string, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences> {
     const existing = this.userPreferences.get(userId);
-    
+
     if (existing) {
       const updated: UserPreferences = {
         ...existing,
@@ -704,7 +704,7 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
       userAgent: subscription.userAgent || null
     };
-    
+
     if (!this.pushSubscriptions.has(userId)) {
       this.pushSubscriptions.set(userId, []);
     }
@@ -738,7 +738,7 @@ export class MemStorage implements IStorage {
       userId: notification.userId || null,
       spotId: notification.spotId || null
     };
-    
+
     if (!this.notificationLog.has(notification.userId!)) {
       this.notificationLog.set(notification.userId!, []);
     }
@@ -758,14 +758,14 @@ export class MemStorage implements IStorage {
     const cameraMapping: { [key: number]: any[] } = {
       1: [ // Bells Beach
         {
-          id: "bells-swellnet",
-          name: "Bells Beach Main",
-          provider: "Swellnet",
-          status: "live",
-          imageUrl: `https://cams.swellnet.com/cache/bells-beach-latest.jpg?t=${timestamp}`,
-          embedUrl: "https://www.swellnet.com/surfcams/bells-beach",
+          id: "bells-placeholder",
+          name: "Bells Beach View",
+          provider: "Static Image",
+          status: "available",
+          imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675&q=80",
           lastUpdated: new Date().toISOString(),
-          description: "Main view of the world-famous break"
+          description: "Scenic view of the world-famous Bells Beach break",
+          note: "Live camera feeds require premium subscriptions - visit Swellnet or Surfline for real-time feeds"
         }
       ],
       2: [ // Torquay Point
@@ -814,7 +814,7 @@ export class MemStorage implements IStorage {
         }
       ]
     };
-    
+
     return cameraMapping[spotId] || [];
   }
 }
@@ -854,7 +854,7 @@ export class DatabaseStorage implements IStorage {
       if (!spot) return undefined;
 
       const apiConditions = await getCurrentConditionsFromAPI(spotId, spot.latitude, spot.longitude);
-      
+
       // Create new conditions from API data
       const newCondition = {
         spotId,
@@ -891,7 +891,7 @@ export class DatabaseStorage implements IStorage {
   async getTideTimesFromBOM(spotId: number, date: string): Promise<TideTime[]> {
     try {
       const bomTideData = await getTideDataFromBOM(spotId, date);
-      
+
       // Convert BOM data to our TideTime format and store in database
       const tideData: InsertTideTime[] = bomTideData.map(bomTide => {
         const datetime = new Date(bomTide.datetime);
@@ -951,7 +951,7 @@ export class DatabaseStorage implements IStorage {
       if (!spot) return [];
 
       const apiForecast = await getForecastFromAPI(spotId, spot.latitude, spot.longitude, days);
-      
+
       // Clear existing forecasts for this spot to avoid duplicates
       await db.delete(forecasts).where(eq(forecasts.spotId, spotId));
 
@@ -1102,7 +1102,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateUserPreferences(userId: string, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences> {
     const existing = await this.getUserPreferences(userId);
-    
+
     if (existing) {
       const [updated] = await db
         .update(userPreferences)
@@ -1209,14 +1209,14 @@ export class DatabaseStorage implements IStorage {
     const cameraMapping: { [key: number]: any[] } = {
       1: [ // Bells Beach
         {
-          id: "bells-swellnet",
-          name: "Bells Beach Main",
-          provider: "Swellnet",
-          status: "live",
-          imageUrl: `https://cams.swellnet.com/cache/bells-beach-latest.jpg?t=${timestamp}`,
-          embedUrl: "https://www.swellnet.com/surfcams/bells-beach",
+          id: "bells-placeholder",
+          name: "Bells Beach View",
+          provider: "Static Image",
+          status: "available",
+          imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675&q=80",
           lastUpdated: new Date().toISOString(),
-          description: "Main view of the world-famous break"
+          description: "Scenic view of the world-famous Bells Beach break",
+          note: "Live camera feeds require premium subscriptions - visit Swellnet or Surfline for real-time feeds"
         }
       ],
       2: [ // Torquay Point
@@ -1265,7 +1265,7 @@ export class DatabaseStorage implements IStorage {
         }
       ]
     };
-    
+
     return cameraMapping[spotId] || [];
   }
 }
