@@ -38,6 +38,12 @@ export default function Profile() {
     surfingExperience: "intermediate",
     phoneNumber: "+61 4XX XXX XXX",
     instagramHandle: "@alexsurfer",
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    subscriptionStatus: "free",
+    subscriptionPlan: null,
+    subscriptionEndDate: null,
+    subscriptionCancelDate: null,
     createdAt: new Date("2024-01-15"),
     updatedAt: new Date(),
   };
@@ -65,7 +71,17 @@ export default function Profile() {
             )}
             
             {/* Favorites List */}
-            <FavoritesList userId={currentUserId} maxItems={3} />
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center">
+                  <MapPin className="h-5 w-5 text-ocean-blue mr-2" />
+                  My Favorite Beaches
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FavoritesList userId={currentUserId} />
+              </CardContent>
+            </Card>
             
             {/* Notification Settings */}
             <NotificationSettings userId={currentUserId} />

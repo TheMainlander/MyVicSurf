@@ -99,6 +99,9 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Enhanced "Get Started" button opens subscription selection before auth redirect
 ✓ Subscription plan selection persisted through localStorage during registration
 ✓ Upgrade button added to header for authenticated users to access pricing
+✓ Person icon in header now navigates to profile page for managing profile and favorites
+✓ Removed favorites sidebar in favor of dedicated profile page favorites management
+✓ Profile page enhanced with comprehensive favorites list and profile editing capabilities
 
 ## User Preferences
 

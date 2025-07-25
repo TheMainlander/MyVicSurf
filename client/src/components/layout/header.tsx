@@ -1,16 +1,12 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
-import FavoritesSidebar from "@/components/favorites/favorites-sidebar";
-import { User, LogIn, LogOut, MapPin } from "lucide-react";
+import { User, LogIn, LogOut } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Header() {
-  const [showFavorites, setShowFavorites] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
-
-  // Mock user ID for development - in production this would come from authentication
-  const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
+  const [, setLocation] = useLocation();
 
 
 
@@ -67,15 +63,17 @@ export default function Header() {
               </>
             )}
 
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-ocean-blue hover:text-blue-600 hover:bg-blue-50 p-1.5 rounded-md"
-              onClick={() => setShowFavorites(!showFavorites)}
-              title="View saved beaches"
-            >
-              <User className="h-3.5 w-3.5" />
-            </Button>
+            {isAuthenticated && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-ocean-blue hover:text-blue-600 hover:bg-blue-50 p-1.5 rounded-md"
+                onClick={() => setLocation('/profile')}
+                title="Manage profile and favorites"
+              >
+                <User className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -85,13 +83,6 @@ export default function Header() {
           <APIStatus className="text-xs px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-600" />
         </div>
       </div>
-
-      {/* Favorites Sidebar */}
-      <FavoritesSidebar 
-        userId={currentUserId}
-        isOpen={showFavorites}
-        onClose={() => setShowFavorites(false)}
-      />
     </header>
   );
 }
