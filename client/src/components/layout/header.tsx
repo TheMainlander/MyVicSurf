@@ -47,9 +47,9 @@ export default function Header() {
                 <Button
                   onClick={() => window.location.href = '/pricing'}
                   size="sm"
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 px-2.5 py-1.5 rounded-md text-xs font-medium"
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 px-3 py-1.5 rounded-md text-xs font-medium flex items-center justify-center"
                 >
-                  ⚡ Pro
+                  ⚡ Upgrade
                 </Button>
                 <Button
                   onClick={handleSignOut}
