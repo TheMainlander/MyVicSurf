@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
 import FavoritesSidebar from "@/components/favorites/favorites-sidebar";
-import { Heart, User, LogIn } from "lucide-react";
+import { Heart, User, LogIn, LogOut } from "lucide-react";
 
 export default function Header() {
   const [showFavorites, setShowFavorites] = useState(false);
@@ -16,6 +16,10 @@ export default function Header() {
 
   const handleSignIn = () => {
     window.location.href = "/api/login";
+  };
+
+  const handleSignOut = () => {
+    window.location.href = "/api/logout";
   };
 
   return (
@@ -42,6 +46,18 @@ export default function Header() {
               >
                 <LogIn className="h-4 w-4" />
                 Sign In
+              </Button>
+            )}
+
+            {isAuthenticated && (
+              <Button
+                onClick={handleSignOut}
+                size="sm"
+                variant="outline"
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:scale-105 transition-all duration-200 px-4 py-2 rounded-lg shadow-md gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
               </Button>
             )}
 
