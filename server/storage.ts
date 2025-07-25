@@ -85,6 +85,9 @@ export interface IStorage {
   // Notification Log
   createNotificationLog(notification: InsertNotificationLog): Promise<NotificationLog>;
   getUserNotifications(userId: string, limit?: number): Promise<NotificationLog[]>;
+  
+  // Beach Cameras
+  getBeachCameras(spotId: number): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -705,6 +708,67 @@ export class MemStorage implements IStorage {
     const notifications = this.notificationLog.get(userId) || [];
     return notifications.slice(0, limit);
   }
+
+  // Beach Cameras
+  async getBeachCameras(spotId: number): Promise<any[]> {
+    // Mock camera data based on Victorian beach locations
+    const cameraMapping: { [key: number]: any[] } = {
+      1: [ // Bells Beach
+        {
+          id: "bells-swellnet",
+          name: "Bells Beach Main",
+          provider: "Swellnet",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Main view of the world-famous break"
+        }
+      ],
+      2: [ // Torquay Point
+        {
+          id: "torquay-surfline",
+          name: "Torquay Front Beach",
+          provider: "Surfline",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Live view of Torquay's main beach"
+        },
+        {
+          id: "torquay-point",
+          name: "Torquay Point",
+          provider: "Local Council",
+          status: "offline",
+          imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          description: "Point break camera (currently offline)"
+        }
+      ],
+      3: [ // Jan Juc
+        {
+          id: "janjuc-slsc",
+          name: "Jan Juc SLSC Cam",
+          provider: "Jan Juc SLSC",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Live beach conditions from surf club"
+        }
+      ],
+      4: [ // Winkipop
+        {
+          id: "winki-swellnet",
+          name: "Winkipop",
+          provider: "Swellnet",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Premium right-hand point break"
+        }
+      ]
+    };
+    
+    return cameraMapping[spotId] || [];
+  }
 }
 
 // Database-backed storage for production
@@ -1088,6 +1152,67 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  // Beach Cameras
+  async getBeachCameras(spotId: number): Promise<any[]> {
+    // Mock camera data for Victorian beaches - in production would connect to actual camera APIs
+    const cameraMapping: { [key: number]: any[] } = {
+      1: [ // Bells Beach
+        {
+          id: "bells-swellnet",
+          name: "Bells Beach Main",
+          provider: "Swellnet",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Main view of the world-famous break"
+        }
+      ],
+      2: [ // Torquay Point
+        {
+          id: "torquay-surfline",
+          name: "Torquay Front Beach",
+          provider: "Surfline",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Live view of Torquay's main beach"
+        },
+        {
+          id: "torquay-point",
+          name: "Torquay Point",
+          provider: "Local Council",
+          status: "offline",
+          imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          description: "Point break camera (currently offline)"
+        }
+      ],
+      3: [ // Jan Juc
+        {
+          id: "janjuc-slsc",
+          name: "Jan Juc SLSC Cam",
+          provider: "Jan Juc SLSC",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Live beach conditions from surf club"
+        }
+      ],
+      4: [ // Winkipop
+        {
+          id: "winki-swellnet",
+          name: "Winkipop",
+          provider: "Swellnet",
+          status: "live",
+          imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450",
+          lastUpdated: new Date().toISOString(),
+          description: "Premium right-hand point break"
+        }
+      ]
+    };
+    
+    return cameraMapping[spotId] || [];
   }
 }
 

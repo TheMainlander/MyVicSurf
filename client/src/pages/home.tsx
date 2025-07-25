@@ -8,6 +8,7 @@ import TideInformation from "@/components/surf/tide-information";
 import ForecastTimeline from "@/components/surf/forecast-timeline";
 import SurfSpotsList from "@/components/surf/surf-spots-list";
 import FavoriteButton from "@/components/favorites/favorite-button";
+import BeachCameras from "@/components/surf/beach-cameras";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import type { SurfSpot } from "@shared/schema";
 
@@ -53,14 +54,18 @@ export default function Home() {
           </div>
           
           <div className="fade-in" style={{ animationDelay: '0.2s' }}>
-            <TideInformation spotId={selectedSpotId} />
+            <BeachCameras spotId={selectedSpotId} spotName={selectedSpot?.name} />
           </div>
           
           <div className="fade-in" style={{ animationDelay: '0.3s' }}>
-            <ForecastTimeline spotId={selectedSpotId} />
+            <TideInformation spotId={selectedSpotId} />
           </div>
           
           <div className="fade-in" style={{ animationDelay: '0.4s' }}>
+            <ForecastTimeline spotId={selectedSpotId} />
+          </div>
+          
+          <div className="fade-in" style={{ animationDelay: '0.5s' }}>
             <SurfSpotsList spotId={selectedSpotId} />
           </div>
         </div>

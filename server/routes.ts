@@ -413,6 +413,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Beach cameras endpoint
+  app.get("/api/surf-spots/:spotId/cameras", async (req, res) => {
+    try {
+      const spotId = parseInt(req.params.spotId);
+      const cameras = await storage.getBeachCameras(spotId);
+      res.json(cameras);
+    } catch (error) {
+      console.error("Error fetching beach cameras:", error);
+      res.status(500).json({ message: "Failed to fetch beach cameras" });
+    }
+  });
+
   // VAPID public key endpoint
   app.get("/api/vapid-public-key", (req, res) => {
     const publicKey = process.env.VAPID_PUBLIC_KEY || "BNJzp5DbZefY5Zu9KoLVJFJQdqhqLnz3FOq2z_BwHjEeojJ1KJRUhEJdnqKW_YQJpEjW2x7aSWgKXDq6qsKsZBE";
