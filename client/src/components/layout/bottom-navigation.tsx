@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { Home, MapPin, TrendingUp, Heart, User } from "lucide-react";
 
 interface BottomNavigationProps {
   activeTab?: string;
@@ -7,65 +8,84 @@ interface BottomNavigationProps {
 export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
   const [location] = useLocation();
   
-  const getActiveClass = (path: string) => {
+  const isActive = (path: string) => {
     if (activeTab) {
-      return activeTab === path ? "text-ocean-blue" : "text-coastal-grey hover:text-ocean-blue";
+      return activeTab === path;
     }
-    return location === path || (path === "home" && location === "/") 
-      ? "text-ocean-blue" 
-      : "text-coastal-grey hover:text-ocean-blue";
+    return location === path || (path === "home" && location === "/");
   };
 
+  const navItems = [
+    { path: "home", href: "/", icon: Home, label: "Home" },
+    { path: "spots", href: "/spots", icon: MapPin, label: "Spots" },
+    { path: "forecast", href: "/forecast", icon: TrendingUp, label: "Forecast" },
+    { path: "favorites", href: "/favorites", icon: Heart, label: "Favorites" },
+    { path: "profile", href: "/profile", icon: User, label: "Profile" },
+  ];
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200/50 z-50 shadow-lg">
-      <div className="max-w-md mx-auto px-4">
-        <div className="flex justify-around py-3">
-          <Link href="/" className={`flex flex-col items-center space-y-1 transition-all duration-200 py-2 px-3 rounded-xl ${
-            getActiveClass("home").includes("ocean-blue") 
-              ? "text-blue-600 bg-blue-50 scale-110 shadow-sm" 
-              : "text-gray-500 hover:text-blue-600 hover:bg-blue-50/50 hover:scale-105"
-          }`}>
-            <div className="text-lg">🏠</div>
-            <span className="text-xs font-medium">Home</span>
-          </Link>
-          
-          <Link href="/spots" className={`flex flex-col items-center space-y-1 transition-all duration-200 py-2 px-3 rounded-xl ${
-            getActiveClass("spots").includes("ocean-blue") 
-              ? "text-blue-600 bg-blue-50 scale-110 shadow-sm" 
-              : "text-gray-500 hover:text-blue-600 hover:bg-blue-50/50 hover:scale-105"
-          }`}>
-            <div className="text-lg">📍</div>
-            <span className="text-xs font-medium">Spots</span>
-          </Link>
-          
-          <Link href="/forecast" className={`flex flex-col items-center space-y-1 transition-all duration-200 py-2 px-3 rounded-xl ${
-            getActiveClass("forecast").includes("ocean-blue") 
-              ? "text-blue-600 bg-blue-50 scale-110 shadow-sm" 
-              : "text-gray-500 hover:text-blue-600 hover:bg-blue-50/50 hover:scale-105"
-          }`}>
-            <div className="text-lg">📈</div>
-            <span className="text-xs font-medium">Forecast</span>
-          </Link>
-          
-          <Link href="/favorites" className={`flex flex-col items-center space-y-1 transition-all duration-200 py-2 px-3 rounded-xl ${
-            getActiveClass("favorites").includes("ocean-blue") 
-              ? "text-red-500 bg-red-50 scale-110 shadow-sm" 
-              : "text-gray-500 hover:text-red-500 hover:bg-red-50/50 hover:scale-105"
-          }`}>
-            <div className="text-lg">❤️</div>
-            <span className="text-xs font-medium">Favorites</span>
-          </Link>
-          
-          <Link href="/profile" className={`flex flex-col items-center space-y-1 transition-all duration-200 py-2 px-3 rounded-xl ${
-            getActiveClass("profile").includes("ocean-blue") 
-              ? "text-blue-600 bg-blue-50 scale-110 shadow-sm" 
-              : "text-gray-500 hover:text-blue-600 hover:bg-blue-50/50 hover:scale-105"
-          }`}>
-            <div className="text-lg">👤</div>
-            <span className="text-xs font-medium">Profile</span>
-          </Link>
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200/60 z-50 shadow-2xl">
+      <div className="max-w-md mx-auto px-2">
+        <div className="flex justify-around items-center py-2">
+          {navItems.map((item) => {
+            const active = isActive(item.path);
+            const IconComponent = item.icon;
+            const isFavorites = item.path === "favorites";
+            
+            return (
+              <Link 
+                key={item.path}
+                href={item.href} 
+                className={`group relative flex flex-col items-center justify-center min-w-[64px] min-h-[64px] py-2 px-2 rounded-2xl transition-all duration-300 ease-out transform active:scale-95 touch-manipulation ${
+                  active
+                    ? isFavorites
+                      ? "text-red-500 bg-red-50 scale-105 shadow-lg shadow-red-500/20" 
+                      : "text-ocean-blue bg-ocean-blue/10 scale-105 shadow-lg shadow-ocean-blue/20"
+                    : "text-coastal-grey hover:text-ocean-blue hover:bg-ocean-blue/5 hover:scale-105"
+                }`}
+              >
+                {/* Active indicator dot */}
+                {active && (
+                  <div className={`absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full transition-all duration-300 ${
+                    isFavorites ? "bg-red-500" : "bg-ocean-blue"
+                  }`} />
+                )}
+                
+                {/* Icon container with scale animation */}
+                <div className={`transition-all duration-300 ${active ? 'scale-110' : 'group-hover:scale-105'}`}>
+                  <IconComponent 
+                    size={active ? 24 : 22} 
+                    className={`transition-all duration-300 ${
+                      active 
+                        ? isFavorites
+                          ? "stroke-2 text-red-500" 
+                          : "stroke-2 text-ocean-blue"
+                        : "stroke-1.5 text-coastal-grey group-hover:text-ocean-blue"
+                    }`}
+                  />
+                </div>
+                
+                {/* Label with dynamic styling */}
+                <span className={`text-xs font-medium mt-1.5 transition-all duration-300 ${
+                  active 
+                    ? isFavorites
+                      ? "text-red-500 font-semibold" 
+                      : "text-ocean-blue font-semibold"
+                    : "text-coastal-grey group-hover:text-ocean-blue"
+                }`}>
+                  {item.label}
+                </span>
+                
+                {/* Ripple effect on tap */}
+                <div className="absolute inset-0 rounded-2xl opacity-0 group-active:opacity-20 group-active:bg-current transition-opacity duration-150" />
+              </Link>
+            );
+          })}
         </div>
       </div>
+      
+      {/* Safe area padding for devices with home indicator */}
+      <div className="h-safe-area-inset-bottom bg-white/95" />
     </nav>
   );
 }
