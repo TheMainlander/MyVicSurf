@@ -16,6 +16,7 @@ interface OpenMeteoResponse {
     swell_wave_height: string;
     wind_speed_10m: string;
     wind_direction_10m: string;
+    temperature_2m: string;
   };
   hourly: {
     time: string[];
@@ -26,6 +27,7 @@ interface OpenMeteoResponse {
     swell_wave_height: number[];
     wind_speed_10m: number[];
     wind_direction_10m: number[];
+    temperature_2m: number[];
   };
 }
 
@@ -77,13 +79,14 @@ export async function fetchOpenMeteoForecast(latitude: number, longitude: number
     forecast_days: "7"
   });
 
-  // Get weather data (wind)
+  // Get weather data (wind and temperature)
   const weatherParams = new URLSearchParams({
     latitude: latitude.toString(),
     longitude: longitude.toString(),
     hourly: [
       "wind_speed_10m",
-      "wind_direction_10m"
+      "wind_direction_10m",
+      "temperature_2m"
     ].join(','),
     timezone: "Australia/Melbourne",
     forecast_days: "7"
@@ -111,7 +114,8 @@ export async function fetchOpenMeteoForecast(latitude: number, longitude: number
     hourly: {
       ...marineData.hourly,
       wind_speed_10m: weatherData.hourly.wind_speed_10m,
-      wind_direction_10m: weatherData.hourly.wind_direction_10m
+      wind_direction_10m: weatherData.hourly.wind_direction_10m,
+      temperature_2m: weatherData.hourly.temperature_2m
     }
   };
 }
@@ -127,11 +131,15 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
     const wavePeriod = data.hourly.wave_period[currentIndex];
     const windSpeed = data.hourly.wind_speed_10m[currentIndex];
     const windDirection = data.hourly.wind_direction_10m[currentIndex];
+    const airTemperature = data.hourly.temperature_2m[currentIndex];
     
     // Wind speed is already in km/h from the weather API
     const windSpeedKmh = windSpeed;
     
     const rating = calculateSurfRating(waveHeight, windSpeedKmh, waveDirection, windDirection);
+    
+    // Calculate approximate water temperature based on air temperature (water is typically cooler)
+    const waterTemperature = Math.max(14, Math.min(22, airTemperature - 2));
     
     return {
       spotId,
@@ -140,8 +148,8 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
       wavePeriod,
       windSpeed: windSpeedKmh,
       windDirection: degreesToCompass(windDirection),
-      airTemperature: 20, // Open-Meteo doesn't provide air temp in marine API, use default
-      waterTemperature: 18, // Default for Victoria waters
+      airTemperature: Math.round(airTemperature),
+      waterTemperature: Math.round(waterTemperature),
       rating,
       timestamp: new Date()
     };
@@ -173,11 +181,15 @@ export async function getForecastFromAPI(spotId: number, latitude: number, longi
         const waveDirection = data.hourly.wave_direction[middayIndex];
         const windSpeed = data.hourly.wind_speed_10m[middayIndex];
         const windDirection = data.hourly.wind_direction_10m[middayIndex];
+        const airTemperature = data.hourly.temperature_2m[middayIndex];
         
         // Wind speed is already in km/h from the weather API
         const windSpeedKmh = windSpeed;
         
         const rating = calculateSurfRating(waveHeight, windSpeedKmh, waveDirection, windDirection);
+        
+        // Calculate approximate water temperature based on air temperature (water is typically cooler)
+        const waterTemperature = Math.max(14, Math.min(22, airTemperature - 2));
         
         forecasts.push({
           spotId,
@@ -187,8 +199,8 @@ export async function getForecastFromAPI(spotId: number, latitude: number, longi
           windSpeed: windSpeedKmh,
           windDirection: degreesToCompass(windDirection),
           rating,
-          airTemperature: 20, // Default air temp
-          waterTemperature: 18, // Default water temp for Victoria
+          airTemperature: Math.round(airTemperature),
+          waterTemperature: Math.round(waterTemperature),
         });
       }
     }
