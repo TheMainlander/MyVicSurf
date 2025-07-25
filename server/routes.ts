@@ -340,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedUser);
     } catch (error) {
       console.error("Error updating user profile:", error);
-      if (error.message.includes("not found")) {
+      if ((error as Error).message.includes("not found")) {
         res.status(404).json({ message: "User not found" });
       } else {
         res.status(500).json({ message: "Failed to update user profile" });
