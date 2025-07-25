@@ -677,6 +677,7 @@ export class MemStorage implements IStorage {
         id: this.currentId++,
         userId,
         preferredUnits: "metric",
+        defaultLocation: null,
         emailNotifications: true,
         pushNotifications: true,
         optimalConditionAlerts: true,
@@ -997,6 +998,23 @@ export class DatabaseStorage implements IStorage {
       updatedAt: new Date()
     }).returning();
     return newUser;
+  }
+
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    
+    if (!updatedUser) {
+      throw new Error(`User with id ${id} not found`);
+    }
+    
+    return updatedUser;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {

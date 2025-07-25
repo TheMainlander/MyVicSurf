@@ -131,6 +131,7 @@ export const userPreferences = pgTable("user_preferences", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).unique(),
   preferredUnits: text("preferred_units").default("metric"), // metric, imperial
+  defaultLocation: text("default_location"), // user's preferred default surf spot
   emailNotifications: boolean("email_notifications").default(true),
   pushNotifications: boolean("push_notifications").default(true),
   optimalConditionAlerts: boolean("optimal_condition_alerts").default(true),

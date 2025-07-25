@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Settings, Bell, MapPin, Thermometer, Info } from "lucide-react";
 import APISettings from "@/components/settings/api-settings";
+import SettingsList from "@/components/settings/settings-list";
 import type { User } from "@shared/schema";
 
 export default function Profile() {
@@ -93,32 +94,8 @@ export default function Profile() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <Settings className="h-5 w-5 text-coastal-grey mr-2" />
-                  Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Surf Alerts
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  Default Location
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Thermometer className="h-4 w-4 mr-2" />
-                  Units (Metric)
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Info className="h-4 w-4 mr-2" />
-                  About VicSurf
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Settings Section */}
+            <SettingsList userId={currentUserId} />
           </div>
         </section>
       </main>
