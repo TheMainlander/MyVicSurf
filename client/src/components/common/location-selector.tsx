@@ -45,7 +45,7 @@ export default function LocationSelector({ selectedSpot, spots, onSpotChange }: 
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-3 bg-white shadow-sm">
+    <div className="max-w-md mx-auto px-4 py-3 bg-white shadow-sm ml-[156.5px] mr-[156.5px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <i className="fas fa-map-marker-alt text-ocean-blue"></i>
