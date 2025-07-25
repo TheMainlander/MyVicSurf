@@ -11,6 +11,9 @@ import Forecast from "@/pages/forecast";
 import Profile from "@/pages/profile";
 import Favorites from "@/pages/favorites";
 import Landing from "@/pages/landing";
+import Pricing from "@/pages/pricing";
+import Checkout from "@/pages/checkout";
+import PaymentSuccess from "@/pages/payment-success";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -28,6 +31,10 @@ function Router() {
           <Route path="/favorites" component={Favorites} />
         </>
       )}
+      {/* Payment routes - accessible to all users */}
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/checkout/:planId" component={Checkout} />
+      <Route path="/payment-success" component={PaymentSuccess} />
       <Route component={NotFound} />
     </Switch>
   );

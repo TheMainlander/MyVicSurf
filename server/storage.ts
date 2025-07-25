@@ -9,6 +9,8 @@ import {
   userPreferences,
   pushSubscriptions,
   notificationLog,
+  payments,
+  subscriptionPlans,
   type SurfSpot, 
   type SurfCondition, 
   type TideTime, 
@@ -19,6 +21,8 @@ import {
   type UserPreferences,
   type PushSubscription,
   type NotificationLog,
+  type Payment,
+  type SubscriptionPlan,
   type InsertSurfSpot,
   type InsertSurfCondition,
   type InsertTideTime,
@@ -29,6 +33,8 @@ import {
   type InsertUserPreferences,
   type InsertPushSubscription,
   type InsertNotificationLog,
+  type InsertPayment,
+  type InsertSubscriptionPlan,
   type UpsertUser
 } from "@shared/schema";
 import { getCurrentConditionsFromAPI, getForecastFromAPI, getTideDataFromBOM, getHourlyTideReport } from "./api-integrations";
@@ -89,6 +95,23 @@ export interface IStorage {
 
   // Beach Cameras
   getBeachCameras(spotId: number): Promise<any[]>;
+
+  // Payments
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  getPayment(paymentId: number): Promise<Payment | undefined>;
+  getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined>;
+  getUserPayments(userId: string, limit?: number): Promise<Payment[]>;
+  updatePaymentStatus(paymentId: number, status: string): Promise<Payment>;
+
+  // Subscription Plans
+  getSubscriptionPlans(): Promise<SubscriptionPlan[]>;
+  getActiveSubscriptionPlans(): Promise<SubscriptionPlan[]>;
+  getSubscriptionPlan(planId: number): Promise<SubscriptionPlan | undefined>;
+  createSubscriptionPlan(plan: InsertSubscriptionPlan): Promise<SubscriptionPlan>;
+
+  // User Subscription Management
+  updateUserSubscription(userId: string, updates: Partial<InsertUser>): Promise<User>;
+  getUserSubscriptionStatus(userId: string): Promise<User | undefined>;
 }
 
 // Database-backed storage for production
@@ -225,7 +248,7 @@ export class DatabaseStorage implements IStorage {
       // Convert API data to our Forecast format and store
       const forecastData: InsertForecast[] = apiForecast.map(forecast => ({
         spotId,
-        date: forecast.date,
+        date: forecast.date || new Date().toISOString().split('T')[0],
         waveHeight: forecast.waveHeight || 0,
         waveDirection: forecast.waveDirection || null,
         windSpeed: forecast.windSpeed || 0,
@@ -381,7 +404,7 @@ export class DatabaseStorage implements IStorage {
         spotId: userSessions.spotId,
         sessionDate: userSessions.sessionDate,
         duration: userSessions.duration,
-        waveCount: userSessions.waveCount,
+        waveHeight: userSessions.waveHeight,
         rating: userSessions.rating,
         notes: userSessions.notes,
         createdAt: userSessions.createdAt,
@@ -399,7 +422,7 @@ export class DatabaseStorage implements IStorage {
       spotId: s.spotId,
       sessionDate: s.sessionDate,
       duration: s.duration,
-      waveCount: s.waveCount,
+      waveHeight: s.waveHeight,
       rating: s.rating,
       notes: s.notes,
       createdAt: s.createdAt,
@@ -553,6 +576,93 @@ export class DatabaseStorage implements IStorage {
     };
 
     return cameraMapping[spotId] || [];
+  }
+
+  // Payment Methods
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const [newPayment] = await db.insert(payments).values(payment).returning();
+    return newPayment;
+  }
+
+  async getPayment(paymentId: number): Promise<Payment | undefined> {
+    const [payment] = await db
+      .select()
+      .from(payments)
+      .where(eq(payments.id, paymentId))
+      .limit(1);
+    return payment;
+  }
+
+  async getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined> {
+    const [payment] = await db
+      .select()
+      .from(payments)
+      .where(eq(payments.stripePaymentIntentId, stripePaymentIntentId))
+      .limit(1);
+    return payment;
+  }
+
+  async getUserPayments(userId: string, limit: number = 10): Promise<Payment[]> {
+    return await db
+      .select()
+      .from(payments)
+      .where(eq(payments.userId, userId))
+      .orderBy(desc(payments.createdAt))
+      .limit(limit);
+  }
+
+  async updatePaymentStatus(paymentId: number, status: string): Promise<Payment> {
+    const [updatedPayment] = await db
+      .update(payments)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(payments.id, paymentId))
+      .returning();
+    return updatedPayment;
+  }
+
+  // Subscription Plan Methods
+  async getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
+    return await db.select().from(subscriptionPlans);
+  }
+
+  async getActiveSubscriptionPlans(): Promise<SubscriptionPlan[]> {
+    return await db
+      .select()
+      .from(subscriptionPlans)
+      .where(eq(subscriptionPlans.isActive, true));
+  }
+
+  async getSubscriptionPlan(planId: number): Promise<SubscriptionPlan | undefined> {
+    const [plan] = await db
+      .select()
+      .from(subscriptionPlans)
+      .where(eq(subscriptionPlans.id, planId))
+      .limit(1);
+    return plan;
+  }
+
+  async createSubscriptionPlan(plan: InsertSubscriptionPlan): Promise<SubscriptionPlan> {
+    const [newPlan] = await db.insert(subscriptionPlans).values(plan).returning();
+    return newPlan;
+  }
+
+  // User Subscription Management
+  async updateUserSubscription(userId: string, updates: Partial<InsertUser>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
+  }
+
+  async getUserSubscriptionStatus(userId: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    return user;
   }
 }
 

@@ -38,6 +38,10 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Seed subscription plans on startup
+  const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
+  await seedSubscriptionPlans();
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

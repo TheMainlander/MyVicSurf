@@ -137,7 +137,7 @@ export default function FavoritesList({
                   </div>
                   
                   <p className="text-xs text-coastal-grey">
-                    Added {new Date(favorite.addedAt).toLocaleDateString()}
+                    Added {favorite.addedAt ? new Date(favorite.addedAt).toLocaleDateString() : 'Recently'}
                   </p>
                 </div>
                 

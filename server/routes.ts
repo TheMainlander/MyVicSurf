@@ -504,6 +504,141 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ publicKey });
   });
 
+  // Payment and Subscription Routes
+  app.get("/api/subscription-plans", async (req, res) => {
+    try {
+      const plans = await storage.getActiveSubscriptionPlans();
+      res.json(plans);
+    } catch (error) {
+      console.error("Error fetching subscription plans:", error);
+      res.status(500).json({ message: "Failed to fetch subscription plans" });
+    }
+  });
+
+  app.get("/api/subscription-plans/:planId", async (req, res) => {
+    try {
+      const planId = parseInt(req.params.planId);
+      const plan = await storage.getSubscriptionPlan(planId);
+      
+      if (!plan) {
+        return res.status(404).json({ message: "Subscription plan not found" });
+      }
+      
+      res.json(plan);
+    } catch (error) {
+      console.error("Error fetching subscription plan:", error);
+      res.status(500).json({ message: "Failed to fetch subscription plan" });
+    }
+  });
+
+  // Stripe payment intent for one-time payments
+  app.post("/api/create-payment-intent", async (req, res) => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return res.status(503).json({ 
+        message: "Payment processing not configured. Stripe secret key is missing." 
+      });
+    }
+
+    try {
+      const Stripe = (await import("stripe")).default;
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: "2025-06-30.basil",
+      });
+
+      const { amount, planId } = req.body;
+      
+      // Create payment record in database
+      let userId = req.user ? (req.user as any).id : "guest";
+      
+      const payment = await storage.createPayment({
+        userId,
+        amount: amount,
+        currency: "aud",
+        status: "pending",
+        paymentType: "subscription",
+        description: `Subscription plan ${planId}`,
+        metadata: { planId: planId.toString() }
+      });
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount),
+        currency: "aud",
+        metadata: {
+          paymentId: payment.id.toString(),
+          planId: planId.toString(),
+          userId: userId
+        }
+      });
+
+      // Update payment with Stripe ID
+      await storage.updatePaymentStatus(payment.id, "pending");
+      
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentId: payment.id 
+      });
+    } catch (error: any) {
+      console.error("Payment intent creation failed:", error);
+      res.status(500).json({ 
+        message: "Error creating payment intent: " + error.message 
+      });
+    }
+  });
+
+  // Get user subscription status
+  app.get("/api/users/:userId/subscription", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const user = await storage.getUserSubscriptionStatus(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        subscriptionStatus: user.subscriptionStatus || "free",
+        subscriptionPlan: user.subscriptionPlan || "free",
+        subscriptionStartDate: user.subscriptionStartDate,
+        subscriptionEndDate: user.subscriptionEndDate,
+        stripeCustomerId: user.stripeCustomerId,
+        stripeSubscriptionId: user.stripeSubscriptionId
+      });
+    } catch (error) {
+      console.error("Error fetching user subscription:", error);
+      res.status(500).json({ message: "Failed to fetch subscription status" });
+    }
+  });
+
+  // Get user payment history
+  app.get("/api/users/:userId/payments", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const payments = await storage.getUserPayments(userId, limit);
+      res.json(payments);
+    } catch (error) {
+      console.error("Error fetching user payments:", error);
+      res.status(500).json({ message: "Failed to fetch payment history" });
+    }
+  });
+
+  // Stripe webhook for payment confirmations (future implementation)
+  app.post("/api/stripe-webhook", async (req, res) => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return res.status(503).json({ message: "Stripe not configured" });
+    }
+
+    try {
+      // This would handle Stripe webhooks for payment confirmations
+      // Implementation would verify webhook signature and update payment status
+      res.json({ received: true });
+    } catch (error) {
+      console.error("Webhook handling failed:", error);
+      res.status(400).json({ message: "Webhook handling failed" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

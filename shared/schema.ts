@@ -104,6 +104,12 @@ export const users = pgTable("users", {
   surfingExperience: varchar("surfing_experience"), // beginner, intermediate, advanced, expert
   phoneNumber: varchar("phone_number"),
   instagramHandle: varchar("instagram_handle"),
+  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  subscriptionStatus: varchar("subscription_status").default("free"), // free, active, cancelled, past_due
+  subscriptionPlan: varchar("subscription_plan").default("free"), // free, premium, pro
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  subscriptionEndDate: timestamp("subscription_end_date"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -167,6 +173,36 @@ export const notificationLog = pgTable("notification_log", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const payments = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  stripePaymentIntentId: varchar("stripe_payment_intent_id").unique(),
+  stripeSessionId: varchar("stripe_session_id").unique(),
+  amount: integer("amount").notNull(), // Amount in cents
+  currency: varchar("currency").default("aud"),
+  status: varchar("status").notNull(), // pending, succeeded, failed, cancelled
+  paymentType: varchar("payment_type").notNull(), // subscription, one_time
+  description: text("description"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const subscriptionPlans = pgTable("subscription_plans", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  displayName: varchar("display_name").notNull(),
+  description: text("description"),
+  price: integer("price").notNull(), // Price in cents
+  currency: varchar("currency").default("aud"),
+  interval: varchar("interval").notNull(), // month, year
+  stripePriceId: varchar("stripe_price_id"),
+  features: text("features").array().default([]),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   favorites: many(userFavorites),
@@ -174,6 +210,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   preferences: one(userPreferences),
   pushSubscriptions: many(pushSubscriptions),
   notifications: many(notificationLog),
+  payments: many(payments),
 }));
 
 export const userFavoritesRelations = relations(userFavorites, ({ one }) => ({
@@ -223,6 +260,17 @@ export const notificationLogRelations = relations(notificationLog, ({ one }) => 
   }),
 }));
 
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  user: one(users, {
+    fields: [payments.userId],
+    references: [users.id],
+  }),
+}));
+
+export const subscriptionPlansRelations = relations(subscriptionPlans, ({ many }) => ({
+  // Future: can add relation to subscriptions if needed
+}));
+
 export const surfSpotsRelations = relations(surfSpots, ({ many }) => ({
   favorites: many(userFavorites),
   sessions: many(userSessions),
@@ -265,12 +313,26 @@ export const insertNotificationLogSchema = createInsertSchema(notificationLog).o
   sentAt: true,
 });
 
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertUserFavorite = z.infer<typeof insertUserFavoriteSchema>;
 export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
 export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
 export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
 export type InsertNotificationLog = z.infer<typeof insertNotificationLogSchema>;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -279,6 +341,8 @@ export type UserSession = typeof userSessions.$inferSelect;
 export type UserPreferences = typeof userPreferences.$inferSelect;
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type NotificationLog = typeof notificationLog.$inferSelect;
+export type Payment = typeof payments.$inferSelect;
+export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 
 export type SurfSpot = typeof surfSpots.$inferSelect;
 export type SurfCondition = typeof surfConditions.$inferSelect;
