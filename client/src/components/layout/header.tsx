@@ -45,7 +45,7 @@ export default function Header() {
                 size="sm"
                 className="bg-ocean-blue text-white hover:bg-blue-700 transition-all duration-300 px-3 py-2 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md"
               >
-                <LogIn className="h-4 w-4" />
+                <LogIn className="h-4 w-4 stroke-2" />
                 Sign In
               </Button>
             )}
@@ -57,7 +57,7 @@ export default function Header() {
                 variant="outline"
                 className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-300 px-3 py-2 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-4 w-4 stroke-2" />
                 Sign Out
               </Button>
             )}
@@ -65,11 +65,11 @@ export default function Header() {
             <Button 
               variant="ghost" 
               size="sm"
-              className="p-2.5 rounded-lg hover:bg-ocean-blue/10 transition-all duration-300 text-ocean-blue hover:text-ocean-blue shadow-sm hover:shadow-md hover:scale-105"
+              className="p-2.5 rounded-lg hover:bg-red-50 transition-all duration-300 text-red-500 hover:text-red-600 shadow-sm hover:shadow-md hover:scale-105"
               onClick={() => setShowFavorites(!showFavorites)}
               title="Quick access to favorite beaches"
             >
-              <Heart className="h-5 w-5 fill-current" />
+              <Heart className="h-5 w-5 stroke-2" />
             </Button>
           </div>
         </div>
