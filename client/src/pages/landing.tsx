@@ -61,11 +61,12 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image - Bells Beach, Victoria */}
+      {/* Background Image - Dynamic Surf Action */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-right bg-no-repeat"
         style={{
-          backgroundImage: `url('https://cdn.pixabay.com/photo/2014/11/05/06/49/beach-517410_1280.jpg')`
+          backgroundImage: `url('@assets/234969-825-auto_1753425546732.webp')`,
+          backgroundPosition: 'right center'
         }}
       ></div>
       

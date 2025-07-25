@@ -65,6 +65,9 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Created backend API endpoint for camera screenshot capture and streaming
 ✓ Enhanced user feedback with toast notifications for successful saves and error handling
 ✓ Automatic filename generation with beach name, camera name, and date timestamp
+✓ Removed "R" icon from register button, keeping clean text-only appearance
+✓ Updated home page background to dynamic surf action image with surfer positioned on right
+✓ Enhanced background positioning to showcase wave action while maintaining text readability
 
 ## User Preferences
 
