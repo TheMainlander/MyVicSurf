@@ -2,10 +2,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
+import FavoritesSidebar from "@/components/favorites/favorites-sidebar";
 
 export default function Header() {
   const [showSettings, setShowSettings] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
+  
+  // Mock user ID for development - in production this would come from authentication
+  const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
 
   const handleSettingsClick = () => {
     setShowSettings(!showSettings);
@@ -45,6 +50,16 @@ export default function Header() {
             <Button 
               variant="ghost" 
               size="sm"
+              className="p-2 rounded-lg hover:bg-coral-50 transition-all duration-200 hover:scale-110 text-gray-500 hover:text-coral relative"
+              onClick={() => setShowFavorites(true)}
+              title="Quick access to favorite beaches"
+            >
+              <i className="fas fa-heart text-lg"></i>
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="sm"
               className="p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 hover:scale-110 text-gray-500 hover:text-blue-600"
               onClick={handleSettingsClick}
             >
@@ -53,6 +68,13 @@ export default function Header() {
           </div>
         </div>
       </div>
+      
+      {/* Favorites Sidebar */}
+      <FavoritesSidebar 
+        userId={currentUserId}
+        isOpen={showFavorites}
+        onClose={() => setShowFavorites(false)}
+      />
     </header>
   );
 }

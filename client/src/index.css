@@ -102,6 +102,12 @@
   .text-coral {
     color: var(--coral);
   }
+  .hover\:text-coral:hover {
+    color: var(--coral);
+  }
+  .hover\:bg-coral-50:hover {
+    background-color: hsl(11, 100%, 97%);
+  }
   
   /* Enhanced animations */
   .wave-animation {
