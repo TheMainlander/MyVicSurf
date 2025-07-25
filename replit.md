@@ -49,6 +49,8 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Fixed temperature data integration with Open-Meteo Weather API for real-time air temperatures
 ✓ Implemented dynamic water temperature calculation based on actual air temperature data
 ✓ Replaced static 20°C placeholder with authentic temperature forecasts from weather API
+✓ Improved wind and temperature alignment in forecast cards with vertical column layout
+✓ Enhanced visual consistency across forecast timeline and full forecast page
 
 ## User Preferences
 

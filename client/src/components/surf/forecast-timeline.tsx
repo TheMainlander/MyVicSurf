@@ -104,20 +104,20 @@ export default function ForecastTimeline({ spotId }: ForecastTimelineProps) {
                     </div>
                   </div>
                   
-                  {/* Right section: Wind and Rating aligned properly */}
+                  {/* Right section: Wind, Temperature and Rating aligned properly */}
                   <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-1.5 min-w-[70px]">
-                      <i className="fas fa-wind text-coastal-grey text-sm w-3 text-center"></i>
-                      <div className="text-xs text-coastal-grey leading-tight">
+                    <div className="flex flex-col items-center min-w-[60px]">
+                      <i className="fas fa-wind text-coastal-grey text-sm mb-1"></i>
+                      <div className="text-xs text-coastal-grey text-center leading-tight">
                         <div>{Math.round(day.windSpeed)} km/h</div>
                         <div className="text-[10px] opacity-75">{day.windDirection}</div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-1.5 min-w-[50px]">
-                      <i className="fas fa-thermometer-half text-orange-400 text-sm w-3 text-center"></i>
-                      <span className="text-xs text-coastal-grey">
+                    <div className="flex flex-col items-center min-w-[45px]">
+                      <i className="fas fa-thermometer-half text-orange-400 text-sm mb-1"></i>
+                      <div className="text-xs text-coastal-grey text-center">
                         {Math.round(day.airTemperature)}°C
-                      </span>
+                      </div>
                     </div>
                     <Badge className={`${getRatingColor(day.rating)} text-white text-xs px-2.5 py-1 font-medium`}>
                       {getRatingText(day.rating)}
