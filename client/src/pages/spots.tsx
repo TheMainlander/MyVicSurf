@@ -4,6 +4,7 @@ import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import FavoriteButton from "@/components/favorites/favorite-button";
+import QuickShare from "@/components/social/quick-share";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -175,6 +176,13 @@ export default function Spots() {
                           {spot.description}
                         </p>
                       )}
+                      
+                      <div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
+                        <QuickShare spot={spot} conditions={spot.conditions} compact={true} />
+                        <span className="text-xs text-coastal-grey">
+                          Share this surf report
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import type { SurfCondition } from "@shared/schema";
+import ShareButton from "@/components/social/share-button";
+import type { SurfCondition, SurfSpot } from "@shared/schema";
 
 interface CurrentConditionsProps {
   spotId: number;
+  spot?: SurfSpot;
 }
 
-export default function CurrentConditions({ spotId }: CurrentConditionsProps) {
+export default function CurrentConditions({ spotId, spot }: CurrentConditionsProps) {
   const { data: conditions, isLoading } = useQuery<SurfCondition>({
     queryKey: ["/api/surf-spots", spotId, "conditions"],
     enabled: !!spotId,
@@ -108,7 +110,7 @@ export default function CurrentConditions({ spotId }: CurrentConditionsProps) {
             </div>
           </div>
           
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 text-center hover:scale-105 transition-all duration-200">
               <div className="text-2xl mb-1">💨</div>
               <div className="text-sm font-medium text-blue-700">
@@ -133,6 +135,17 @@ export default function CurrentConditions({ spotId }: CurrentConditionsProps) {
               <div className="text-xs text-cyan-600">Water Temp</div>
             </div>
           </div>
+          
+          {/* Social Sharing */}
+          {spot && (
+            <div className="flex justify-center pt-2 border-t border-gray-100">
+              <ShareButton 
+                spot={spot}
+                conditions={conditions}
+                className="text-ocean-blue"
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>

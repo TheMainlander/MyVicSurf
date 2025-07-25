@@ -50,7 +50,7 @@ export default function Home() {
         
         <div className="space-y-6">
           <div className="fade-in" style={{ animationDelay: '0.1s' }}>
-            <CurrentConditions spotId={selectedSpotId} />
+            <CurrentConditions spotId={selectedSpotId} spot={selectedSpot} />
           </div>
           
           <div className="fade-in" style={{ animationDelay: '0.2s' }}>

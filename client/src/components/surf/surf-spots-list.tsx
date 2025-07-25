@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import QuickShare from "@/components/social/quick-share";
 import type { SurfSpot, SurfCondition } from "@shared/schema";
 
 interface SpotWithConditions extends SurfSpot {
@@ -97,11 +98,14 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center justify-between text-xs text-coastal-grey">
+                  <div className="flex items-center justify-between text-xs text-coastal-grey mb-2">
                     <span>{getMockDistance(spot.name).toFixed(1)} km away</span>
                     {spot.conditions && (
                       <span>{spot.conditions.waveHeight.toFixed(1)}m waves</span>
                     )}
+                  </div>
+                  <div className="flex justify-end pt-1 border-t border-gray-100">
+                    <QuickShare spot={spot} conditions={spot.conditions} compact={true} />
                   </div>
                 </div>
               </div>
