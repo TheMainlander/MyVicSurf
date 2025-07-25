@@ -271,14 +271,6 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                 </div>
               </div>
             )}
-
-            {/* Camera Info */}
-            <div className="text-xs text-gray-500 space-y-1">
-              <p>🎥 Visual surf conditions help assess wave quality, crowd levels, and water clarity</p>
-              <p>📱 Professional surf camera feeds require premium subscriptions</p>
-              <p>💰 Access live Swellnet feeds for $7.33/month • Surfline Pro for premium cameras</p>
-              <p>🔗 Visit provider websites directly for full camera access</p>
-            </div>
           </>
         ) : (
           <div className="text-center py-8">

@@ -503,8 +503,7 @@ export class DatabaseStorage implements IStorage {
           status: "available",
           imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675&q=80",
           lastUpdated: new Date().toISOString(),
-          description: "Scenic view of the world-famous Bells Beach break",
-          note: "Live camera feeds may require subscriptions for real-time access"
+          description: "Live beach conditions view"
         }
       ],
       2: [ // Torquay Point
