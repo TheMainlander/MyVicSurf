@@ -16,9 +16,10 @@ interface CameraSource {
   provider: string;
   embedUrl?: string;
   imageUrl?: string;
-  status: "live" | "offline" | "unavailable";
+  status: "live" | "offline" | "unavailable" | "available";
   lastUpdated?: string;
   description?: string;
+  note?: string;
 }
 
 export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
@@ -76,6 +77,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
   const getCameraStatusColor = (status: string) => {
     switch (status) {
       case "live": return "bg-green-500";
+      case "available": return "bg-blue-500";
       case "offline": return "bg-red-500";
       case "unavailable": return "bg-gray-500";
       default: return "bg-gray-400";
@@ -85,6 +87,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
   const getCameraStatusText = (status: string) => {
     switch (status) {
       case "live": return "Live";
+      case "available": return "Available";
       case "offline": return "Offline";
       case "unavailable": return "No Cam";
       default: return "Unknown";
@@ -207,6 +210,21 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                     {selectedCamera.description && (
                       <p className="text-xs text-gray-500 mt-1">{selectedCamera.description}</p>
                     )}
+                    {selectedCamera.note && (
+                      <p className="text-xs text-blue-600 mt-1 italic">{selectedCamera.note}</p>
+                    )}
+                    {selectedCamera.embedUrl && (
+                      <div className="mt-2">
+                        <a
+                          href={selectedCamera.embedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-800 underline"
+                        >
+                          View full camera feed on {selectedCamera.provider}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -245,9 +263,10 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
 
             {/* Camera Info */}
             <div className="text-xs text-gray-500 space-y-1">
-              <p>🎥 Live visual surf conditions help assess wave quality, crowd levels, and water clarity</p>
-              <p>📱 Camera feeds refresh every 30 seconds • Click "Refresh" to update images manually</p>
-              <p>⚡ Real-time feeds from Swellnet, Surfline, and local surf clubs</p>
+              <p>🎥 Visual surf conditions help assess wave quality, crowd levels, and water clarity</p>
+              <p>📱 Professional surf camera feeds require premium subscriptions</p>
+              <p>💰 Access live Swellnet feeds for $7.33/month • Surfline Pro for premium cameras</p>
+              <p>🔗 Visit provider websites directly for full camera access</p>
             </div>
           </>
         ) : (
