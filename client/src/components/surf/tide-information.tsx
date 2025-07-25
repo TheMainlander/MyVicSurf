@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Waves, Clock, TrendingUp, TrendingDown } from "lucide-react";
 import type { TideTime } from "@shared/schema";
 
 interface TideInformationProps {
@@ -70,7 +71,7 @@ export default function TideInformation({ spotId }: TideInformationProps) {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-              <span className="text-2xl">🌊</span>
+              <Waves className="h-5 w-5 text-ocean-blue" />
               Tide Information
             </h2>
             <p className="text-sm text-gray-600">
@@ -104,10 +105,15 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                       ? 'bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200' 
                       : 'bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200'
                   }`}>
-                    <div className={`text-xs font-medium mb-1 capitalize ${
+                    <div className={`text-xs font-medium mb-1 capitalize flex items-center justify-center gap-1 ${
                       tide.type === 'high' ? 'text-blue-700' : 'text-gray-700'
                     }`}>
-                      {tide.type === 'high' ? '⬆️ High' : '⬇️ Low'} Tide
+                      {tide.type === 'high' ? (
+                        <TrendingUp className="h-3 w-3" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3" />
+                      )}
+                      {tide.type === 'high' ? 'High' : 'Low'} Tide
                     </div>
                     <div className="text-lg font-bold text-gray-800">
                       {formatTime(tide.time)}
@@ -121,31 +127,131 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                 ))}
               </div>
               
-              {/* Enhanced BOM Tide chart visualization */}
-              <div className="space-y-4">
-                <div className="h-24 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100 rounded-lg flex items-end justify-between px-3 pb-2 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-500/20 to-blue-400/10 rounded-lg"></div>
-                  {tides.map((tide, index) => {
-                    const maxHeight = Math.max(...tides.map(t => t.height));
-                    const normalizedHeight = (tide.height / maxHeight) * 80 + 20;
-                    return (
-                      <div 
-                        key={index}
-                        className={`w-2 rounded-full transition-all duration-300 ${
-                          tide.type === 'high' ? 'bg-blue-500' : 'bg-gray-400'
-                        }`}
-                        style={{ 
-                          height: `${normalizedHeight}%`
-                        }}
-                        title={`${tide.type} tide: ${tide.height.toFixed(1)}m at ${formatTime(tide.time)}`}
-                      ></div>
-                    );
-                  })}
+              {/* Enhanced Tidal Curve Visualization */}
+              <div className="space-y-6">
+                <div className="bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-50 rounded-xl p-6 border border-blue-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-ocean-blue" />
+                      Today's Tidal Pattern
+                    </h3>
+                    <div className="flex items-center gap-3 text-xs">
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-600">High Tide</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                        <span className="text-gray-600">Low Tide</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="relative h-32 bg-white rounded-lg border border-blue-200 overflow-hidden">
+                    {/* Tide curve visualization */}
+                    <div className="absolute inset-0 flex items-end justify-between px-4 pb-4">
+                      {tides.map((tide, index) => {
+                        const maxHeight = Math.max(...tides.map(t => t.height));
+                        const minHeight = Math.min(...tides.map(t => t.height));
+                        const heightRange = maxHeight - minHeight;
+                        const normalizedHeight = heightRange > 0 
+                          ? ((tide.height - minHeight) / heightRange) * 80 + 15
+                          : 50;
+                        
+                        return (
+                          <div key={index} className="flex flex-col items-center relative">
+                            {/* Connecting line */}
+                            {index < tides.length - 1 && (
+                              <div 
+                                className="absolute top-0 left-6 w-20 border-t-2 border-ocean-blue/40"
+                                style={{ 
+                                  transform: `translateY(-${normalizedHeight}%)`,
+                                  transformOrigin: 'left center'
+                                }}
+                              />
+                            )}
+                            
+                            {/* Tide point */}
+                            <div 
+                              className={`w-4 h-4 rounded-full border-2 border-white shadow-md transition-all duration-300 hover:scale-125 cursor-pointer ${
+                                tide.type === 'high' 
+                                  ? 'bg-blue-500 hover:bg-blue-600' 
+                                  : 'bg-gray-400 hover:bg-gray-500'
+                              }`}
+                              style={{ 
+                                marginBottom: `${normalizedHeight}%`
+                              }}
+                              title={`${tide.type === 'high' ? 'High' : 'Low'} tide: ${tide.height.toFixed(1)}m at ${formatTime(tide.time)}`}
+                            />
+                            
+                            {/* Tide info */}
+                            <div className="text-center mt-2">
+                              <div className="text-xs font-semibold text-gray-700">
+                                {formatTime(tide.time)}
+                              </div>
+                              <div className={`text-xs font-medium ${
+                                tide.type === 'high' ? 'text-blue-600' : 'text-gray-600'
+                              }`}>
+                                {tide.height.toFixed(1)}m
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Grid lines */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute bottom-8 left-0 right-0 border-t border-gray-200 opacity-50"></div>
+                      <div className="absolute bottom-16 left-0 right-0 border-t border-gray-200 opacity-30"></div>
+                      <div className="absolute bottom-24 left-0 right-0 border-t border-gray-200 opacity-20"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Current tide status */}
+                  <div className="mt-4 p-3 bg-white/60 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Waves className="h-4 w-4 text-ocean-blue" />
+                        <span className="text-sm font-medium text-gray-700">Current Status</span>
+                      </div>
+                      <div className="text-right">
+                        {(() => {
+                          const now = new Date();
+                          const currentTime = now.getHours() * 100 + now.getMinutes();
+                          const nextTide = tides.find(tide => {
+                            const tideTime = parseInt(tide.time.replace(':', ''));
+                            return tideTime > currentTime;
+                          });
+                          
+                          if (nextTide) {
+                            const tideTime = parseInt(nextTide.time.replace(':', ''));
+                            const timeDiff = Math.floor((tideTime - currentTime) / 100) * 60 + (tideTime - currentTime) % 100;
+                            return (
+                              <div className="text-sm">
+                                <div className="font-semibold text-gray-800">
+                                  Next {nextTide.type} tide in ~{Math.abs(timeDiff)}min
+                                </div>
+                                <div className="text-xs text-gray-600">
+                                  {nextTide.height.toFixed(1)}m at {formatTime(nextTide.time)}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div className="text-sm text-gray-600">
+                              Tide data available
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 {useBOM && (
-                  <div className="text-xs text-gray-500 text-center space-y-1">
-                    <p>Semi-diurnal tides with lunar cycle variations included</p>
+                  <div className="text-xs text-gray-500 text-center">
+                    <p>Real-time Bureau of Meteorology data with lunar cycle variations</p>
                   </div>
                 )}
 
@@ -154,7 +260,7 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                   <div className="mt-8 space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                        <span className="text-xl">⏰</span>
+                        <Clock className="h-5 w-5 text-ocean-blue" />
                         12-Hour Tide Timeline
                       </h3>
                       <div className="text-xs text-gray-500">
