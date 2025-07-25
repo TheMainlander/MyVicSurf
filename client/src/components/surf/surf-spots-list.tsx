@@ -89,7 +89,7 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
                   alt={spot.name}
                   className="w-24 h-24 object-cover"
                 />
-                <div className="flex-1 p-4 bg-white">
+                <div className="flex-1 p-5 bg-white">
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h4 className="font-bold text-gray-900 text-base leading-tight">{spot.name}</h4>
