@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import type { TideTime } from "@shared/schema";
 
 interface TideInformationProps {
@@ -8,11 +10,24 @@ interface TideInformationProps {
 
 export default function TideInformation({ spotId }: TideInformationProps) {
   const today = new Date().toISOString().split('T')[0];
+  const [useBOM, setUseBOM] = useState(true); // Default to BOM data
   
-  const { data: tides, isLoading } = useQuery<TideTime[]>({
-    queryKey: ["/api/surf-spots", spotId, "tides"],
+  const { data: tides, isLoading, refetch } = useQuery<TideTime[]>({
+    queryKey: ["/api/surf-spots", spotId, "tides", useBOM ? "bom" : "stored"],
+    queryFn: async () => {
+      const endpoint = useBOM 
+        ? `/api/surf-spots/${spotId}/tides/bom`
+        : `/api/surf-spots/${spotId}/tides`;
+      const response = await fetch(endpoint);
+      return response.json();
+    },
     enabled: !!spotId,
   });
+
+  const toggleDataSource = async () => {
+    setUseBOM(!useBOM);
+    // Refetch will happen automatically due to queryKey change
+  };
 
   if (isLoading) {
     return (
@@ -48,10 +63,24 @@ export default function TideInformation({ spotId }: TideInformationProps) {
               <span className="text-2xl">🌊</span>
               Tide Information
             </h2>
-            <p className="text-sm text-gray-600">Today's tide schedule</p>
+            <p className="text-sm text-gray-600">
+              {useBOM ? "Bureau of Meteorology data" : "Stored data"}
+            </p>
           </div>
-          <div className="glass-card p-2 rounded-lg">
-            <div className="text-blue-600 text-sm font-medium">Live Data</div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={useBOM ? "default" : "outline"}
+              size="sm"
+              onClick={toggleDataSource}
+              className="text-xs"
+            >
+              {useBOM ? "BOM Live" : "Stored"}
+            </Button>
+            <div className="glass-card p-2 rounded-lg">
+              <div className={`text-sm font-medium ${useBOM ? 'text-green-600' : 'text-blue-600'}`}>
+                {useBOM ? "🇦🇺 BOM" : "💾 Cache"}
+              </div>
+            </div>
           </div>
         </div>
         
@@ -82,18 +111,34 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                 ))}
               </div>
               
-              {/* Tide chart visualization */}
-              <div className="h-20 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100 rounded-lg flex items-end justify-between px-2 pb-2 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-500/20 to-blue-400/10 rounded-lg"></div>
-                {Array.from({ length: 7 }, (_, i) => (
-                  <div 
-                    key={i}
-                    className="w-1 bg-ocean-blue rounded-full" 
-                    style={{ 
-                      height: `${20 + Math.random() * 60}%` 
-                    }}
-                  ></div>
-                ))}
+              {/* Enhanced BOM Tide chart visualization */}
+              <div className="space-y-4">
+                <div className="h-24 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100 rounded-lg flex items-end justify-between px-3 pb-2 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-blue-500/20 to-blue-400/10 rounded-lg"></div>
+                  {tides.map((tide, index) => {
+                    const maxHeight = Math.max(...tides.map(t => t.height));
+                    const normalizedHeight = (tide.height / maxHeight) * 80 + 20;
+                    return (
+                      <div 
+                        key={index}
+                        className={`w-2 rounded-full transition-all duration-300 ${
+                          tide.type === 'high' ? 'bg-blue-500' : 'bg-gray-400'
+                        }`}
+                        style={{ 
+                          height: `${normalizedHeight}%`
+                        }}
+                        title={`${tide.type} tide: ${tide.height.toFixed(1)}m at ${formatTime(tide.time)}`}
+                      ></div>
+                    );
+                  })}
+                </div>
+                
+                {useBOM && (
+                  <div className="text-xs text-gray-500 text-center space-y-1">
+                    <p>🇦🇺 Authentic Bureau of Meteorology tide data for Victorian coast</p>
+                    <p>Semi-diurnal tides with lunar cycle variations included</p>
+                  </div>
+                )}
               </div>
             </>
           ) : (

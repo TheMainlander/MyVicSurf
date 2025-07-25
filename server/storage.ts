@@ -31,7 +31,7 @@ import {
   type InsertNotificationLog,
   type UpsertUser
 } from "@shared/schema";
-import { getCurrentConditionsFromAPI, getForecastFromAPI } from "./api-integrations";
+import { getCurrentConditionsFromAPI, getForecastFromAPI, getTideDataFromBOM } from "./api-integrations";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 
@@ -48,6 +48,7 @@ export interface IStorage {
 
   // Tide Times
   getTideTimesForDate(spotId: number, date: string): Promise<TideTime[]>;
+  getTideTimesFromBOM(spotId: number, date: string): Promise<TideTime[]>;
   createTideTime(tide: InsertTideTime): Promise<TideTime>;
 
   // Forecasts
@@ -399,6 +400,34 @@ export class MemStorage implements IStorage {
     return this.tideTimes.get(key) || [];
   }
 
+  async getTideTimesFromBOM(spotId: number, date: string): Promise<TideTime[]> {
+    try {
+      const bomTideData = await getTideDataFromBOM(spotId, date);
+      
+      // Convert BOM data to our TideTime format
+      const tideData: TideTime[] = bomTideData.map((bomTide, index) => {
+        const datetime = new Date(bomTide.datetime);
+        return {
+          id: Math.floor(Math.random() * 100000) + index, // Generate temporary ID for mem storage
+          spotId,
+          date,
+          time: datetime.toTimeString().substring(0, 5), // HH:MM format
+          height: bomTide.height,
+          type: bomTide.type
+        };
+      });
+
+      // Store in memory cache
+      const key = `${spotId}-${date}`;
+      this.tideTimes.set(key, tideData);
+      
+      return tideData;
+    } catch (error) {
+      console.error('Error fetching BOM tide data:', error);
+      return this.getTideTimesForDate(spotId, date);
+    }
+  }
+
   async createTideTime(tide: InsertTideTime): Promise<TideTime> {
     const id = this.currentId++;
     const newTide: TideTime = { ...tide, id };
@@ -734,6 +763,40 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(tideTimes)
       .where(and(eq(tideTimes.spotId, spotId), eq(tideTimes.date, date)));
+  }
+
+  async getTideTimesFromBOM(spotId: number, date: string): Promise<TideTime[]> {
+    try {
+      const bomTideData = await getTideDataFromBOM(spotId, date);
+      
+      // Convert BOM data to our TideTime format and store in database
+      const tideData: InsertTideTime[] = bomTideData.map(bomTide => {
+        const datetime = new Date(bomTide.datetime);
+        return {
+          spotId,
+          date,
+          time: datetime.toTimeString().substring(0, 5), // HH:MM format
+          height: bomTide.height,
+          type: bomTide.type
+        };
+      });
+
+      // Clear existing tide data for this spot and date to avoid duplicates
+      await db.delete(tideTimes).where(
+        and(eq(tideTimes.spotId, spotId), eq(tideTimes.date, date))
+      );
+
+      // Insert new BOM tide data
+      if (tideData.length > 0) {
+        const insertedTides = await db.insert(tideTimes).values(tideData).returning();
+        return insertedTides;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Error fetching BOM tide data:', error);
+      return this.getTideTimesForDate(spotId, date);
+    }
   }
 
   async createTideTime(tide: InsertTideTime): Promise<TideTime> {

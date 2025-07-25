@@ -155,10 +155,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const spotId = parseInt(req.params.id);
       const date = req.query.date as string || new Date().toISOString().split('T')[0];
-      const tides = await storage.getTideTimesForDate(spotId, date);
+      const useBOM = req.query.bom === 'true';
+      
+      let tides;
+      if (useBOM) {
+        tides = await storage.getTideTimesFromBOM(spotId, date);
+      } else {
+        tides = await storage.getTideTimesForDate(spotId, date);
+      }
+      
       res.json(tides);
     } catch (error) {
+      console.error("Error fetching tide times:", error);
       res.status(500).json({ message: "Failed to fetch tide times" });
+    }
+  });
+
+  // Get BOM tide data specifically (always fetches from BOM)
+  app.get("/api/surf-spots/:id/tides/bom", async (req, res) => {
+    try {
+      const spotId = parseInt(req.params.id);
+      const date = req.query.date as string || new Date().toISOString().split('T')[0];
+      const tides = await storage.getTideTimesFromBOM(spotId, date);
+      res.json(tides);
+    } catch (error) {
+      console.error("Error fetching BOM tide data:", error);
+      res.status(500).json({ message: "Failed to fetch BOM tide data" });
     }
   });
 
