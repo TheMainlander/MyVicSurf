@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import type { Forecast } from "@shared/schema";
 
 interface ForecastTimelineProps {
@@ -126,6 +128,17 @@ export default function ForecastTimeline({ spotId }: ForecastTimelineProps) {
             </Card>
           );
         })}
+        
+        {/* More link to full forecast page */}
+        {forecast && forecast.length > 3 && (
+          <div className="mt-4 text-center">
+            <Link href="/forecast">
+              <Button variant="outline" size="sm" className="text-ocean-blue border-ocean-blue hover:bg-blue-50">
+                More...
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
