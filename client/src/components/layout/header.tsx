@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
 import FavoritesSidebar from "@/components/favorites/favorites-sidebar";
-import { Heart, User, LogIn, LogOut } from "lucide-react";
+import { Heart, User, LogIn, LogOut, MapPin } from "lucide-react";
 
 export default function Header() {
   const [showFavorites, setShowFavorites] = useState(false);
