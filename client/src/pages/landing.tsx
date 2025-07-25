@@ -139,11 +139,8 @@ export default function Landing() {
                 <Button
                   onClick={handleLogin}
                   size="lg"
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 hover:scale-[1.02] transition-all duration-200 font-bold py-4 text-base shadow-xl rounded-xl flex items-center justify-center gap-3 border-2 border-transparent hover:border-white/20"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 hover:scale-[1.02] transition-all duration-200 font-bold py-4 text-base shadow-xl rounded-xl flex items-center justify-center border-2 border-transparent hover:border-white/20"
                 >
-                  <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center shadow-md backdrop-blur-sm">
-                    <div className="text-white text-sm font-bold">R</div>
-                  </div>
                   Register
                 </Button>
                 
