@@ -88,7 +88,7 @@ export default function TideInformation({ spotId }: TideInformationProps) {
             </Button>
             <div className="glass-card p-2 rounded-lg">
               <div className={`text-sm font-medium ${useBOM ? 'text-green-600' : 'text-blue-600'}`}>
-                {useBOM ? "🇦🇺 BOM" : "💾 Cache"}
+                {useBOM ? "Live" : "Cache"}
               </div>
             </div>
           </div>
@@ -145,7 +145,6 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                 
                 {useBOM && (
                   <div className="text-xs text-gray-500 text-center space-y-1">
-                    <p>🇦🇺 Authentic Bureau of Meteorology tide data for Victorian coast</p>
                     <p>Semi-diurnal tides with lunar cycle variations included</p>
                   </div>
                 )}
