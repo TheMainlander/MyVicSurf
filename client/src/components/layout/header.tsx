@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
 import FavoritesSidebar from "@/components/favorites/favorites-sidebar";
-import { Heart, User, LogIn, LogOut, MapPin } from "lucide-react";
+import { User, LogIn, LogOut, MapPin } from "lucide-react";
 
 export default function Header() {
   const [showFavorites, setShowFavorites] = useState(false);
@@ -65,11 +65,11 @@ export default function Header() {
             <Button 
               variant="ghost" 
               size="sm"
-              className="p-2.5 rounded-lg hover:bg-red-50 transition-all duration-300 text-red-500 hover:text-red-600 shadow-sm hover:shadow-md hover:scale-105"
+              className="p-2.5 rounded-lg hover:bg-blue-50 transition-all duration-300 text-ocean-blue hover:text-blue-600 shadow-sm hover:shadow-md hover:scale-105"
               onClick={() => setShowFavorites(!showFavorites)}
-              title="Quick access to favorite beaches"
+              title="View your saved beaches"
             >
-              <Heart className="h-5 w-5 stroke-2" />
+              <User className="h-5 w-5 stroke-2" />
             </Button>
           </div>
         </div>

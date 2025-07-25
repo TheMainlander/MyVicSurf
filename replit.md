@@ -84,6 +84,10 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Automatic nearest surf spot detection when location is shared
 ✓ Distance calculation using Haversine formula for accurate measurements
 ✓ Location utilities for distance formatting and permission management
+✓ Improved favorite button UX by replacing confusing dual heart icons
+✓ Changed header icon from heart to user profile icon for accessing saved beaches
+✓ Repositioned main favorite button as compact icon next to spot name
+✓ Enhanced visual hierarchy with spot name and favorite action in same row
 
 ## User Preferences
 
