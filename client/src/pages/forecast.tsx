@@ -96,21 +96,21 @@ export default function Forecast() {
                           <span className="text-sm font-medium">{day.waveHeight.toFixed(1)}m</span>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex flex-col items-center min-w-[60px]">
-                          <i className="fas fa-wind text-coastal-grey text-sm mb-1"></i>
-                          <div className="text-xs text-coastal-grey text-center leading-tight">
-                            <div>{Math.round(day.windSpeed)} km/h</div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-center min-w-[55px]">
+                          <i className="fas fa-wind text-coastal-grey text-sm block mb-1"></i>
+                          <div className="text-xs text-coastal-grey leading-tight">
+                            <div className="font-medium">{Math.round(day.windSpeed)} km/h</div>
                             <div className="text-[10px] opacity-75">{day.windDirection}</div>
                           </div>
                         </div>
-                        <div className="flex flex-col items-center min-w-[45px]">
-                          <i className="fas fa-thermometer-half text-orange-400 text-sm mb-1"></i>
-                          <div className="text-xs text-coastal-grey text-center">
+                        <div className="text-center min-w-[40px]">
+                          <i className="fas fa-thermometer-half text-orange-400 text-sm block mb-1"></i>
+                          <div className="text-xs text-coastal-grey font-medium">
                             {Math.round(day.airTemperature)}°C
                           </div>
                         </div>
-                        <Badge className={`${getRatingColor(day.rating)} text-white text-xs px-2.5 py-1 font-medium`}>
+                        <Badge className={`${getRatingColor(day.rating)} text-white text-xs px-2.5 py-1 font-medium ml-2`}>
                           {getRatingText(day.rating)}
                         </Badge>
                       </div>
