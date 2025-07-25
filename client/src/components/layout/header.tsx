@@ -29,20 +29,21 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             <div className="text-2xl wave-animation">🏄‍♀️</div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-ocean-blue to-cyan-600 bg-clip-text text-transparent">
                 VicSurf
               </h1>
-              <p className="text-xs text-gray-600">Victoria Surf Conditions</p>
+              <p className="text-xs text-coastal-grey">Victoria Surf Conditions</p>
             </div>
-            <APIStatus className="bg-green-50 border-green-200 text-green-700" />
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
+            <APIStatus className="bg-green-50 border-green-200 text-green-700 text-xs px-2 py-1 rounded-full" />
+            
             {!isAuthenticated && !isLoading && (
               <Button
                 onClick={handleSignIn}
                 size="sm"
-                className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-all duration-200 px-4 py-2 rounded-lg shadow-md gap-2"
+                className="bg-ocean-blue text-white hover:bg-blue-700 transition-all duration-300 px-3 py-2 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md"
               >
                 <LogIn className="h-4 w-4" />
                 Sign In
@@ -54,7 +55,7 @@ export default function Header() {
                 onClick={handleSignOut}
                 size="sm"
                 variant="outline"
-                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:scale-105 transition-all duration-200 px-4 py-2 rounded-lg shadow-md gap-2"
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-300 px-3 py-2 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md"
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out
@@ -64,7 +65,7 @@ export default function Header() {
             <Button 
               variant="ghost" 
               size="sm"
-              className="p-2 rounded-lg hover:bg-red-50 transition-all duration-200 hover:scale-110 text-gray-500 hover:text-red-500"
+              className="p-2.5 rounded-lg hover:bg-ocean-blue/10 transition-all duration-300 text-ocean-blue hover:text-ocean-blue shadow-sm hover:shadow-md hover:scale-105"
               onClick={() => setShowFavorites(!showFavorites)}
               title="Quick access to favorite beaches"
             >
