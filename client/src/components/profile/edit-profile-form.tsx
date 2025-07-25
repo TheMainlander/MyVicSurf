@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Edit, Save, X } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, Edit, Save, X, Camera, Upload } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +24,7 @@ const profileSchema = z.object({
   surfingExperience: z.enum(["beginner", "intermediate", "advanced", "expert"]).optional(),
   phoneNumber: z.string().optional(),
   instagramHandle: z.string().optional(),
+  profileImageUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -35,6 +37,8 @@ interface EditProfileFormProps {
 export default function EditProfileForm({ user, onCancel }: EditProfileFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(user.profileImageUrl || null);
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -47,6 +51,7 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
       surfingExperience: (user.surfingExperience as "beginner" | "intermediate" | "advanced" | "expert") || "intermediate",
       phoneNumber: user.phoneNumber || "",
       instagramHandle: user.instagramHandle || "",
+      profileImageUrl: user.profileImageUrl || "",
     },
   });
 
@@ -72,6 +77,26 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
     },
   });
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // For demo purposes, we'll create a data URL
+      // In production, you'd upload to a service like Cloudinary, AWS S3, etc.
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        setPreviewImage(dataUrl);
+        form.setValue("profileImageUrl", dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUrlChange = (url: string) => {
+    setPreviewImage(url);
+    form.setValue("profileImageUrl", url);
+  };
+
   const onSubmit = (data: ProfileFormData) => {
     updateProfileMutation.mutate(data);
   };
@@ -86,6 +111,62 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Profile Picture Section */}
+          <div className="flex flex-col items-center space-y-4">
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={previewImage || undefined} alt="Profile preview" />
+              <AvatarFallback className="bg-ocean-blue text-white text-xl">
+                {form.watch("displayName")?.[0] || form.watch("firstName")?.[0] || user.email?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPreviewImage(null);
+                  form.setValue("profileImageUrl", "");
+                }}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Remove
+              </Button>
+            </div>
+            
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="profileImageUrl">Profile Image URL (Optional)</Label>
+            <Input
+              id="profileImageUrl"
+              {...form.register("profileImageUrl")}
+              placeholder="https://example.com/your-image.jpg"
+              onChange={(e) => handleImageUrlChange(e.target.value)}
+            />
+            {form.formState.errors.profileImageUrl && (
+              <p className="text-sm text-red-500 mt-1">
+                {form.formState.errors.profileImageUrl.message}
+              </p>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="firstName">First Name</Label>

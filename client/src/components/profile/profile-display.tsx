@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, MapPin, Calendar, Phone, Instagram, Edit, Mail } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, Edit, MapPin, Calendar, Phone, Instagram, Globe } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
 interface ProfileDisplayProps {
@@ -45,21 +46,23 @@ export default function ProfileDisplay({ user, onEdit }: ProfileDisplayProps) {
           </Button>
         </div>
       </CardHeader>
+      <CardContent className="text-center space-y-4">
+        <Avatar className="mx-auto w-20 h-20">
+          <AvatarImage src={user.profileImageUrl || undefined} alt={user.displayName || user.firstName || "User"} />
+          <AvatarFallback className="bg-ocean-blue text-white text-xl">
+            {user.displayName?.[0] || user.firstName?.[0] || user.email?.[0]?.toUpperCase() || "U"}
+          </AvatarFallback>
+        </Avatar>
+        <h3 className="text-xl font-semibold text-gray-900">{displayName}</h3>
+        {user.email && (
+          <div className="flex items-center justify-center mt-2 text-coastal-grey">
+            <Mail className="h-4 w-4 mr-1" />
+            <span className="text-sm">{user.email}</span>
+          </div>
+        )}
+      </CardContent>
       <CardContent className="space-y-6">
         {/* Profile Avatar and Name */}
-        <div className="text-center">
-          <div className="w-20 h-20 bg-ocean-blue rounded-full flex items-center justify-center mx-auto mb-4">
-            <User className="h-8 w-8 text-white" />
-          </div>
-          <h3 className="text-xl font-semibold text-gray-900">{displayName}</h3>
-          {user.email && (
-            <div className="flex items-center justify-center mt-2 text-coastal-grey">
-              <Mail className="h-4 w-4 mr-1" />
-              <span className="text-sm">{user.email}</span>
-            </div>
-          )}
-        </div>
-
         {/* Basic Information */}
         <div className="space-y-4">
           {(user.firstName || user.lastName) && (

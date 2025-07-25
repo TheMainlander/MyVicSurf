@@ -331,6 +331,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.params.userId;
       const updateData = req.body;
       
+      // Validate profile image URL if provided
+      if (updateData.profileImageUrl && updateData.profileImageUrl.trim() === "") {
+        updateData.profileImageUrl = null;
+      }
+      
       const updatedUser = await storage.updateUser(userId, updateData);
       res.json(updatedUser);
     } catch (error) {
