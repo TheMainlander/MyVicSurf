@@ -58,6 +58,19 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
 
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
+    // Force refetch the cameras data
+    if (spotId) {
+      fetch(`/api/surf-spots/${spotId}/cameras?refresh=true`)
+        .then(response => response.json())
+        .then(data => {
+          // Update camera data and refresh selected camera
+          if (data && data.length > 0) {
+            const currentCamera = data.find((cam: any) => cam.id === selectedCamera?.id) || data[0];
+            setSelectedCamera(currentCamera);
+          }
+        })
+        .catch(error => console.error('Error refreshing cameras:', error));
+    }
   };
 
   const getCameraStatusColor = (status: string) => {
@@ -163,7 +176,12 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
+                          // Fallback to a generic surf image if camera feed fails
                           target.src = "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=450";
+                          // Update camera status to offline
+                          if (selectedCamera) {
+                            setSelectedCamera({...selectedCamera, status: "offline"});
+                          }
                         }}
                       />
                       {selectedCamera.lastUpdated && (
@@ -228,7 +246,8 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
             {/* Camera Info */}
             <div className="text-xs text-gray-500 space-y-1">
               <p>🎥 Live visual surf conditions help assess wave quality, crowd levels, and water clarity</p>
-              <p>📱 Camera feeds update every 30 seconds to 2 minutes depending on provider</p>
+              <p>📱 Camera feeds refresh every 30 seconds • Click "Refresh" to update images manually</p>
+              <p>⚡ Real-time feeds from Swellnet, Surfline, and local surf clubs</p>
             </div>
           </>
         ) : (
@@ -242,6 +261,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
             </p>
             <div className="text-xs text-gray-400 space-y-1">
               <p>• Camera availability depends on local surf clubs and councils</p>
+              <p>• Some cameras may require premium subscriptions from providers</p>
               <p>• Check back later as new cameras are added regularly</p>
             </div>
           </div>
