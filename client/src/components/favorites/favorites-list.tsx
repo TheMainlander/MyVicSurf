@@ -106,7 +106,7 @@ export default function FavoritesList({
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent>
+      <CardContent className="p-6 text-left pt-[14px] pb-[14px]">
         <div className="space-y-4">
           {displayFavorites.map((favorite) => (
             <div 
