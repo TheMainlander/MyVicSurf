@@ -33,7 +33,7 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
       <section className="py-6">
         <Card className="rounded-2xl shadow-lg">
           <CardContent className="p-6 text-center">
-            <p className="text-coastal-grey">No current conditions available</p>
+            <p className="text-secondary">No current conditions available</p>
           </CardContent>
         </Card>
       </section>
@@ -100,13 +100,13 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
               <div className="text-3xl font-bold text-ocean-blue">
                 {conditions.waveHeight.toFixed(1)}m
               </div>
-              <div className="text-sm text-coastal-grey">Wave Height</div>
+              <div className="text-sm text-secondary font-medium">Wave Height</div>
             </div>
             <div className="text-center">
               <div className={`text-3xl font-bold ${getRatingColor(conditions.rating)}`}>
                 {getRatingText(conditions.rating)}
               </div>
-              <div className="text-sm text-coastal-grey">Surf Rating</div>
+              <div className="text-sm text-secondary font-medium">Surf Rating</div>
             </div>
           </div>
           
@@ -116,23 +116,23 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
               <div className="text-sm font-medium text-blue-700">
                 {Math.round(conditions.windSpeed)} km/h
               </div>
-              <div className="text-xs text-blue-600">
+              <div className="text-xs text-blue-700 font-medium">
                 {conditions.windDirection} Wind
               </div>
             </div>
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 text-center hover:scale-105 transition-all duration-200">
               <div className="text-2xl mb-1">🌡️</div>
-              <div className="text-sm font-medium text-orange-700">
+              <div className="text-sm font-bold text-orange-800">
                 {Math.round(conditions.airTemperature)}°C
               </div>
-              <div className="text-xs text-orange-600">Air Temp</div>
+              <div className="text-xs text-orange-700 font-medium">Air Temp</div>
             </div>
             <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-lg p-3 text-center hover:scale-105 transition-all duration-200">
               <div className="text-2xl mb-1">🌊</div>
-              <div className="text-sm font-medium text-cyan-700">
+              <div className="text-sm font-bold text-cyan-800">
                 {Math.round(conditions.waterTemperature)}°C
               </div>
-              <div className="text-xs text-cyan-600">Water Temp</div>
+              <div className="text-xs text-cyan-700 font-medium">Water Temp</div>
             </div>
           </div>
           

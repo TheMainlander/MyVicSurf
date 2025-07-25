@@ -24,17 +24,21 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* Custom VicSurf colors */
+  /* Custom VicSurf colors - Enhanced for readability */
   --ocean-blue: hsl(207, 90%, 54%);
   --ocean-light: hsl(210, 100%, 56%);
   --sand-beige: hsl(45, 60%, 85%);
   --sand-dark: hsl(33, 53%, 68%);
   --coral: hsl(11, 100%, 64%);
   --coral-light: hsl(16, 100%, 70%);
-  --coastal-grey: hsl(215, 20%, 65%);
+  --coastal-grey: hsl(215, 25%, 45%);
+  --coastal-grey-light: hsl(215, 20%, 65%);
   --wave-green: hsl(158, 64%, 52%);
   --warning-orange: hsl(38, 92%, 50%);
   --alert-red: hsl(0, 84%, 60%);
+  --text-primary: hsl(215, 25%, 15%);
+  --text-secondary: hsl(215, 20%, 35%);
+  --text-muted: hsl(215, 15%, 55%);
 }
 
 .dark {
@@ -66,7 +70,8 @@
   }
 
   body {
-    @apply font-sans antialiased bg-slate-50 text-slate-800;
+    @apply font-sans antialiased bg-slate-50;
+    color: var(--text-primary);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -96,11 +101,23 @@
   .text-coastal-grey {
     color: var(--coastal-grey);
   }
+  .text-coastal-grey-light {
+    color: var(--coastal-grey-light);
+  }
   .text-wave-green {
     color: var(--wave-green);
   }
   .text-coral {
     color: var(--coral);
+  }
+  .text-primary {
+    color: var(--text-primary);
+  }
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  .text-muted {
+    color: var(--text-muted);
   }
   .hover\:text-coral:hover {
     color: var(--coral);

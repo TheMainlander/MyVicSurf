@@ -8,7 +8,7 @@ import { Heart, User, LogIn } from "lucide-react";
 export default function Header() {
   const [showFavorites, setShowFavorites] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   // Mock user ID for development - in production this would come from authentication
   const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
 
@@ -32,7 +32,7 @@ export default function Header() {
             </div>
             <APIStatus className="bg-green-50 border-green-200 text-green-700" />
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {!isAuthenticated && !isLoading && (
               <Button
@@ -44,7 +44,7 @@ export default function Header() {
                 Sign In
               </Button>
             )}
-            
+
             <Button 
               variant="ghost" 
               size="sm"
@@ -57,7 +57,7 @@ export default function Header() {
           </div>
         </div>
       </div>
-      
+
       {/* Favorites Sidebar */}
       <FavoritesSidebar 
         userId={currentUserId}

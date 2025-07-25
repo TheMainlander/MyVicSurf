@@ -137,7 +137,7 @@ export default function Spots() {
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
                           <h3 className="font-medium text-sm">{spot.name}</h3>
-                          <p className="text-xs text-coastal-grey">{spot.region}</p>
+                          <p className="text-xs text-secondary font-medium">{spot.region}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           {spot.conditions && (
@@ -154,7 +154,7 @@ export default function Spots() {
                       </div>
                       
                       {spot.conditions && (
-                        <div className="flex items-center justify-between text-xs text-coastal-grey">
+                        <div className="flex items-center justify-between text-xs text-secondary">
                           <div className="flex items-center space-x-3">
                             <span className="flex items-center">
                               <i className="fas fa-water text-ocean-blue mr-1"></i>
@@ -172,14 +172,14 @@ export default function Spots() {
                       )}
                       
                       {spot.description && (
-                        <p className="text-xs text-coastal-grey mt-2 line-clamp-2">
+                        <p className="text-xs text-secondary mt-2 line-clamp-2 font-medium">
                           {spot.description}
                         </p>
                       )}
                       
                       <div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
                         <QuickShare spot={spot} conditions={spot.conditions} compact={true} />
-                        <span className="text-xs text-coastal-grey">
+                        <span className="text-xs text-muted">
                           Share this surf report
                         </span>
                       </div>
