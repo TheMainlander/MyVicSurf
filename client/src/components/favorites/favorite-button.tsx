@@ -21,7 +21,7 @@ export default function FavoriteButton({
   const queryClient = useQueryClient();
 
   // Check if spot is favorited
-  const { data: favoriteStatus } = useQuery({
+  const { data: favoriteStatus } = useQuery<{ isFavorited: boolean }>({
     queryKey: ["/api/users", userId, "favorites", spotId, "check"],
     enabled: !!userId && !!spotId,
   });
