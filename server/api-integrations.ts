@@ -208,7 +208,7 @@ const TIDE_STATION_MAP: Record<number, string> = {
   1: 'IDV60801.94806', // Bells Beach -> Torquay/Point Danger
   2: 'IDV60801.94806', // Torquay Point -> Torquay/Point Danger  
   3: 'IDV60801.94806', // Jan Juc -> Torquay/Point Danger
-  4: 'IDV60801.94806', // Winki Pop -> Torquay/Point Danger
+  4: 'IDV60801.94806', // Winkipop -> Torquay/Point Danger
   // Additional stations for other areas
   5: 'IDV60801.94801', // Melbourne area -> Port Phillip Bay
   6: 'IDV60801.94804', // Western Port -> Stony Point
@@ -315,7 +315,7 @@ function getVictorianBeachOffset(spotId: number): number {
     1: 0.1,   // Bells Beach - slightly higher due to exposure
     2: 0.05,  // Torquay Point - protected bay
     3: 0.08,  // Jan Juc - open beach
-    4: 0.12,  // Winki Pop - exposed reef break
+    4: 0.12,  // Winkipop - exposed reef break
   };
   return offsets[spotId] || 0;
 }

@@ -52,7 +52,7 @@ export default function Landing() {
       location: "Surf Coast, Victoria"
     },
     { 
-      name: "Winki Pop", 
+      name: "Winkipop", 
       description: "Advanced surfers paradise with powerful reef break",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Winki_Pop%2C_Victoria%2C_Australia_%2835728698534%29.jpg/1280px-Winki_Pop%2C_Victoria%2C_Australia_%2835728698534%29.jpg",
       location: "Torquay, Victoria"
@@ -122,7 +122,7 @@ export default function Landing() {
             </p>
             <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto slide-up drop-shadow-md" style={{ animationDelay: '0.4s' }}>
               Get real-time surf reports, forecasts, and tide information for Victoria's premier surf spots. 
-              Track conditions at Bells Beach, Torquay Point, Jan Juc, and Winki Pop.
+              Track conditions at Bells Beach, Torquay Point, Jan Juc, and Winkipop.
             </p>
             
             {/* Enhanced Registration Section */}

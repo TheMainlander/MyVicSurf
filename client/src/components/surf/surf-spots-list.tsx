@@ -66,7 +66,7 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
     const distances: Record<string, number> = {
       "Torquay Point": 2.3,
       "Jan Juc": 4.1,
-      "Winki Pop": 1.8,
+      "Winkipop": 1.8,
       "Bells Beach": 0.5
     };
     return distances[spotName] || Math.random() * 5 + 1;

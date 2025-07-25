@@ -12,7 +12,7 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Real-time surf conditions display with API integration
 ✓ Tide information with visual charts
 ✓ 7-day forecast timeline
-✓ Victoria surf spots database (Bells Beach, Torquay Point, Jan Juc, Winki Pop)
+✓ Victoria surf spots database (Bells Beach, Torquay Point, Jan Juc, Winkipop)
 ✓ Bottom navigation working properly
 ✓ PostgreSQL database with user accounts and preferences
 ✓ User favorites functionality with add/remove capabilities

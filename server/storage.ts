@@ -174,7 +174,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: 4,
-        name: "Winki Pop",
+        name: "Winkipop",
         latitude: -38.373,
         longitude: 144.289,
         description: "High-performance right-hand reef break adjacent to Bells Beach. Offers longer rides and works in more diverse conditions.",

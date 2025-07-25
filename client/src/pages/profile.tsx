@@ -70,7 +70,7 @@ export default function Profile() {
                     <Badge variant="outline">8 sessions</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-medium">Winki Pop</span>
+                    <span className="font-medium">Winkipop</span>
                     <Badge variant="outline">5 sessions</Badge>
                   </div>
                   <div className="flex items-center justify-between">

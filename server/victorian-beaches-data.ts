@@ -58,7 +58,7 @@ export const victorianBeachesData = [
   },
 
   {
-    name: "Winki Pop",
+    name: "Winkipop",
     latitude: -38.373,
     longitude: 144.289,
     description: "High-performance right-hand reef break adjacent to Bells Beach. Offers longer rides and works in more diverse conditions.",
@@ -71,7 +71,7 @@ export const victorianBeachesData = [
     accessInfo: "Access via Bells Beach Road, then walk along coastal track. No direct vehicle access.",
     bestConditions: "Any size southwest swell, any wind direction, any tide. Very consistent.",
     hazards: ["rocks", "very_crowded", "experienced_surfers_only"],
-    externalId: "winki-pop-vic",
+    externalId: "winkipop-vic",
     apiSource: "open-meteo"
   },
 
