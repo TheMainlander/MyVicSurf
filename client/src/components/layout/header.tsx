@@ -55,7 +55,7 @@ export default function Header() {
                 onClick={handleSignOut}
                 size="sm"
                 variant="outline"
-                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-300 px-3 py-2 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md"
+                className="border-gray-200 text-coastal-grey hover:bg-gray-50 hover:border-gray-300 hover:text-ocean-blue transition-all duration-300 px-3 py-2 rounded-lg gap-2 text-sm font-medium shadow-sm hover:shadow-md"
               >
                 <LogOut className="h-4 w-4 stroke-2" />
                 Sign Out
