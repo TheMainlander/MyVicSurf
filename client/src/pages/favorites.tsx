@@ -1,6 +1,7 @@
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import FavoritesList from "@/components/favorites/favorites-list";
+import { Heart } from "lucide-react";
 
 export default function Favorites() {
   // Mock user ID for development - in production this would come from authentication
@@ -14,7 +15,7 @@ export default function Favorites() {
         <section className="py-6">
           <div className="mb-6">
             <h2 className="text-xl font-semibold flex items-center">
-              <i className="fas fa-heart text-coral mr-2"></i>
+              <Heart className="h-5 w-5 text-red-500 mr-2" />
               Your Favorites
             </h2>
             <p className="text-coastal-grey text-sm">

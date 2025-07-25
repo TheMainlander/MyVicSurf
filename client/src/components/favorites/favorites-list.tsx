@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Heart, MapPin } from "lucide-react";
 import FavoriteButton from "./favorite-button";
 import type { UserFavorite, SurfSpot } from "@shared/schema";
 
@@ -29,7 +30,7 @@ export default function FavoritesList({
         {showHeader && (
           <CardHeader>
             <CardTitle className="text-lg flex items-center">
-              <i className="fas fa-heart text-coral mr-2"></i>
+              <Heart className="h-5 w-5 text-red-500 mr-2" />
               Your Favorites
             </CardTitle>
           </CardHeader>
@@ -54,14 +55,14 @@ export default function FavoritesList({
         {showHeader && (
           <CardHeader>
             <CardTitle className="text-lg flex items-center">
-              <i className="fas fa-heart text-coral mr-2"></i>
+              <Heart className="h-5 w-5 text-red-500 mr-2" />
               Your Favorites
             </CardTitle>
           </CardHeader>
         )}
         <CardContent>
           <div className="text-center py-6">
-            <i className="far fa-heart text-4xl text-coastal-grey mb-3"></i>
+            <Heart className="h-16 w-16 text-gray-300 mx-auto mb-3" />
             <p className="text-coastal-grey mb-4">No favorite spots yet</p>
             <p className="text-sm text-coastal-grey">
               Start exploring spots and add them to your favorites
@@ -98,7 +99,7 @@ export default function FavoritesList({
       {showHeader && (
         <CardHeader>
           <CardTitle className="text-lg flex items-center">
-            <i className="fas fa-heart text-coral mr-2"></i>
+            <Heart className="h-5 w-5 text-red-500 mr-2" />
             Your Favorites
             <Badge variant="secondary" className="ml-auto">
               {favorites?.length || 0}
@@ -116,7 +117,7 @@ export default function FavoritesList({
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <Link 
-                    href={`/spot/${favorite.spot.id}`}
+                    href={`/?spot=${favorite.spot.id}`}
                     className="text-decoration-none"
                   >
                     <h3 className="font-semibold text-ocean-blue hover:underline">
