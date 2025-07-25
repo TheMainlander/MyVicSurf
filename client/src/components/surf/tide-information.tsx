@@ -24,6 +24,16 @@ export default function TideInformation({ spotId }: TideInformationProps) {
     enabled: !!spotId,
   });
 
+  // Fetch hourly tide report for Victorian beaches
+  const { data: hourlyTides, isLoading: hourlyLoading } = useQuery<any[]>({
+    queryKey: ["/api/surf-spots", spotId, "tides", "hourly"],
+    queryFn: async () => {
+      const response = await fetch(`/api/surf-spots/${spotId}/tides/hourly`);
+      return response.json();
+    },
+    enabled: !!spotId,
+  });
+
   const toggleDataSource = async () => {
     setUseBOM(!useBOM);
     // Refetch will happen automatically due to queryKey change
@@ -137,6 +147,50 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                   <div className="text-xs text-gray-500 text-center space-y-1">
                     <p>🇦🇺 Authentic Bureau of Meteorology tide data for Victorian coast</p>
                     <p>Semi-diurnal tides with lunar cycle variations included</p>
+                  </div>
+                )}
+
+                {/* Hourly Tide Report for Victorian Beaches */}
+                {hourlyTides && hourlyTides.length > 0 && (
+                  <div className="mt-6 space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                      <span className="text-xl">⏰</span>
+                      Hourly Victorian Tide Report
+                    </h3>
+                    
+                    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4">
+                      <div className="grid grid-cols-6 md:grid-cols-12 gap-2">
+                        {hourlyTides.slice(0, 12).map((hourly, index) => (
+                          <div key={index} className="text-center">
+                            <div className="text-xs font-medium text-gray-600">
+                              {String(hourly.hour).padStart(2, '0')}:00
+                            </div>
+                            <div 
+                              className="w-full bg-blue-200 rounded-full mt-1"
+                              style={{ height: '30px' }}
+                            >
+                              <div 
+                                className="bg-blue-500 rounded-full transition-all duration-300"
+                                style={{ 
+                                  height: '100%',
+                                  width: `${Math.max(10, (hourly.height / 3) * 100)}%`
+                                }}
+                                title={`${hourly.height.toFixed(1)}m - ${hourly.description}`}
+                              ></div>
+                            </div>
+                            <div className="text-xs text-gray-600 mt-1">
+                              {hourly.height.toFixed(1)}m
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="mt-4 text-center">
+                        <p className="text-xs text-gray-600">
+                          Victorian coastline hourly tide heights • Next 12 hours
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

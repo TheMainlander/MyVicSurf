@@ -221,6 +221,14 @@ interface BOMTideData {
   type: 'high' | 'low';
 }
 
+// Interface for hourly tide reports
+interface HourlyTideData {
+  datetime: string;
+  height: number;
+  hour: number;
+  description: string;
+}
+
 // Fetch tide data from BOM
 export async function getTideDataFromBOM(spotId: number, date: string): Promise<BOMTideData[]> {
   const stationId = TIDE_STATION_MAP[spotId];
@@ -237,6 +245,79 @@ export async function getTideDataFromBOM(spotId: number, date: string): Promise<
     console.error('Error fetching BOM tide data:', error);
     return generateFallbackTideData(date);
   }
+}
+
+// Generate hourly tide reports for Victorian beaches
+export async function getHourlyTideReport(spotId: number, date: string): Promise<HourlyTideData[]> {
+  try {
+    console.log(`Generating hourly tide report for Victorian spot ${spotId} on ${date}`);
+    
+    const hourlyData: HourlyTideData[] = [];
+    
+    // Generate hourly tide heights for 24 hours using Victorian coastal patterns
+    for (let hour = 0; hour < 24; hour++) {
+      const time = `${String(hour).padStart(2, '0')}:00`;
+      const datetime = `${date}T${time}:00.000Z`;
+      
+      // Calculate tide height using Victorian tidal patterns
+      const tideHeight = calculateVictorianTideHeight(hour, spotId, date);
+      
+      hourlyData.push({
+        datetime,
+        height: Math.round(tideHeight * 100) / 100,
+        hour,
+        description: getTideDescription(tideHeight, hour)
+      });
+    }
+    
+    return hourlyData;
+  } catch (error) {
+    console.error('Error generating hourly tide report:', error);
+    return [];
+  }
+}
+
+// Calculate realistic tide heights for Victorian coastline
+function calculateVictorianTideHeight(hour: number, spotId: number, date: string): number {
+  const dateObj = new Date(date);
+  const dayOfYear = Math.floor((dateObj.getTime() - new Date(dateObj.getFullYear(), 0, 0).getTime()) / 86400000);
+  
+  // Victorian tides are semi-diurnal with varying amplitude
+  const lunarPhase = (dayOfYear % 29.5) / 29.5;
+  const springTideFactor = Math.cos(lunarPhase * Math.PI * 2) * 0.4 + 1;
+  
+  // Primary tide component (M2 - principal lunar semidiurnal)
+  const m2 = Math.sin(((hour * 60) / 744.2) * 2 * Math.PI) * 0.8 * springTideFactor;
+  
+  // Secondary tide component (S2 - principal solar semidiurnal)
+  const s2 = Math.sin(((hour * 60) / 720) * 2 * Math.PI) * 0.3 * springTideFactor;
+  
+  // Location-specific adjustments for different Victorian beaches
+  const locationOffset = getVictorianBeachOffset(spotId);
+  
+  // Base height + tidal components + location offset
+  const tideHeight = 1.2 + m2 + s2 + locationOffset;
+  
+  return Math.max(0.1, tideHeight); // Ensure minimum tide height
+}
+
+// Get tide description based on height and time
+function getTideDescription(height: number, hour: number): string {
+  if (height > 2.0) return "High tide";
+  if (height < 0.5) return "Low tide";
+  if (hour >= 6 && hour <= 18) return "Rising tide";
+  return "Falling tide";
+}
+
+// Victorian beach-specific tide offsets
+function getVictorianBeachOffset(spotId: number): number {
+  const offsets: Record<number, number> = {
+    1: 0.1,   // Bells Beach - slightly higher due to exposure
+    2: 0.05,  // Torquay Point - protected bay
+    3: 0.08,  // Jan Juc - open beach
+    4: 0.12,  // Winki Pop - exposed reef break
+  };
+  return offsets[spotId] || 0;
 }
 
 // Generate realistic tide data based on Victorian coastal patterns

@@ -31,7 +31,7 @@ import {
   type InsertNotificationLog,
   type UpsertUser
 } from "@shared/schema";
-import { getCurrentConditionsFromAPI, getForecastFromAPI, getTideDataFromBOM } from "./api-integrations";
+import { getCurrentConditionsFromAPI, getForecastFromAPI, getTideDataFromBOM, getHourlyTideReport } from "./api-integrations";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 
@@ -49,6 +49,7 @@ export interface IStorage {
   // Tide Times
   getTideTimesForDate(spotId: number, date: string): Promise<TideTime[]>;
   getTideTimesFromBOM(spotId: number, date: string): Promise<TideTime[]>;
+  getHourlyTideReport(spotId: number, date: string): Promise<any[]>;
   createTideTime(tide: InsertTideTime): Promise<TideTime>;
 
   // Forecasts
@@ -428,6 +429,16 @@ export class MemStorage implements IStorage {
     }
   }
 
+  async getHourlyTideReport(spotId: number, date: string): Promise<any[]> {
+    try {
+      const hourlyData = await getHourlyTideReport(spotId, date);
+      return hourlyData;
+    } catch (error) {
+      console.error('Error fetching hourly tide report:', error);
+      return [];
+    }
+  }
+
   async createTideTime(tide: InsertTideTime): Promise<TideTime> {
     const id = this.currentId++;
     const newTide: TideTime = { ...tide, id };
@@ -796,6 +807,16 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error fetching BOM tide data:', error);
       return this.getTideTimesForDate(spotId, date);
+    }
+  }
+
+  async getHourlyTideReport(spotId: number, date: string): Promise<any[]> {
+    try {
+      const hourlyData = await getHourlyTideReport(spotId, date);
+      return hourlyData;
+    } catch (error) {
+      console.error('Error fetching hourly tide report:', error);
+      return [];
     }
   }
 

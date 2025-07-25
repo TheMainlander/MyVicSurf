@@ -184,6 +184,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get hourly tide report for Victorian beaches
+  app.get("/api/surf-spots/:id/tides/hourly", async (req, res) => {
+    try {
+      const spotId = parseInt(req.params.id);
+      const date = req.query.date as string || new Date().toISOString().split('T')[0];
+      const hourlyTides = await storage.getHourlyTideReport(spotId, date);
+      res.json(hourlyTides);
+    } catch (error) {
+      console.error("Error fetching hourly tide report:", error);
+      res.status(500).json({ message: "Failed to fetch hourly tide report" });
+    }
+  });
+
   // Get forecast for a spot (using real API)
   app.get("/api/surf-spots/:id/forecast", async (req, res) => {
     try {
