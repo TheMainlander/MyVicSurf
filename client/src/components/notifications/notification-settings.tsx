@@ -116,9 +116,11 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg flex items-center">
-          <i className="fas fa-bell text-ocean-blue mr-2"></i>
-          Push Notifications
+        <CardTitle className="text-lg flex items-center justify-between">
+          <div className="flex items-center">
+            <i className="fas fa-bell text-ocean-blue mr-2"></i>
+            Push Notifications
+          </div>
           {getPermissionBadge()}
         </CardTitle>
       </CardHeader>
