@@ -60,6 +60,7 @@ export interface IStorage {
   // Users
   getUser(id: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, updates: Partial<InsertUser>): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
 
@@ -311,6 +312,24 @@ export class MemStorage implements IStorage {
       Math.max(...Array.from(this.surfSpots.keys())) + 1,
       forecasts.length + 1
     );
+
+    // Initialize mock user for development
+    const mockUser: User = {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      email: "surfer@example.com",
+      firstName: "Alex",
+      lastName: "Surfer",
+      displayName: "Wave Rider",
+      profileImageUrl: null,
+      location: "Melbourne, Victoria",
+      bio: "Passionate surfer exploring Victoria's amazing coastline. Love catching waves at Bells Beach!",
+      surfingExperience: "intermediate",
+      phoneNumber: "+61 4XX XXX XXX",
+      instagramHandle: "@alexsurfer",
+      createdAt: new Date("2024-01-15"),
+      updatedAt: new Date(),
+    };
+    this.users.set(mockUser.id, mockUser);
   }
 
   async getSurfSpots(): Promise<SurfSpot[]> {
@@ -519,12 +538,35 @@ export class MemStorage implements IStorage {
       email: user.email || null,
       firstName: user.firstName || null,
       lastName: user.lastName || null,
+      displayName: user.displayName || null,
       profileImageUrl: user.profileImageUrl || null,
+      location: user.location || null,
+      bio: user.bio || null,
+      surfingExperience: user.surfingExperience || null,
+      phoneNumber: user.phoneNumber || null,
+      instagramHandle: user.instagramHandle || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
     this.users.set(newUser.id, newUser);
     return newUser;
+  }
+
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<User> {
+    const existingUser = this.users.get(id);
+    if (!existingUser) {
+      throw new Error(`User with id ${id} not found`);
+    }
+    
+    const updatedUser: User = {
+      ...existingUser,
+      ...updates,
+      id, // Ensure ID doesn't change
+      updatedAt: new Date(),
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
   }
 
   async upsertUser(user: UpsertUser): Promise<User> {

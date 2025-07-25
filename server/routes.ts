@@ -311,6 +311,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User profile routes
+  app.get("/api/users/:userId", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      res.status(500).json({ message: "Failed to fetch user profile" });
+    }
+  });
+
+  app.patch("/api/users/:userId", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const updateData = req.body;
+      
+      const updatedUser = await storage.updateUser(userId, updateData);
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      if (error.message.includes("not found")) {
+        res.status(404).json({ message: "User not found" });
+      } else {
+        res.status(500).json({ message: "Failed to update user profile" });
+      }
+    }
+  });
+
   // User sessions routes
   app.get("/api/users/:userId/sessions", async (req, res) => {
     try {

@@ -1,15 +1,47 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import FavoritesList from "@/components/favorites/favorites-list";
 import NotificationSettings from "@/components/notifications/notification-settings";
+import EditProfileForm from "@/components/profile/edit-profile-form";
+import ProfileDisplay from "@/components/profile/profile-display";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BarChart3, Settings, Bell, MapPin, Thermometer, Info } from "lucide-react";
 import APISettings from "@/components/settings/api-settings";
+import type { User } from "@shared/schema";
 
 export default function Profile() {
   // Mock user ID for development - in production this would come from authentication
   const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+  // Fetch user profile data
+  const { data: user, isLoading: userLoading } = useQuery<User>({
+    queryKey: [`/api/users/${currentUserId}`],
+    enabled: !!currentUserId,
+  });
+
+  // Create mock user if none exists
+  const mockUser: User = {
+    id: currentUserId,
+    email: "surfer@example.com",
+    firstName: "Alex",
+    lastName: "Surfer",
+    displayName: "Wave Rider",
+    profileImageUrl: null,
+    location: "Melbourne, Victoria",
+    bio: "Passionate surfer exploring Victoria's amazing coastline. Love catching waves at Bells Beach!",
+    surfingExperience: "intermediate",
+    phoneNumber: "+61 4XX XXX XXX",
+    instagramHandle: "@alexsurfer",
+    createdAt: new Date("2024-01-15"),
+    updatedAt: new Date(),
+  };
+
+  const currentUser = user || mockUser;
   
   return (
     <div className="min-h-screen bg-slate-50">
@@ -17,15 +49,20 @@ export default function Profile() {
       
       <main className="max-w-md mx-auto px-4 pb-20">
         <section className="py-6">
-          <div className="text-center mb-6">
-            <div className="w-20 h-20 bg-ocean-blue rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="fas fa-user text-2xl text-white"></i>
-            </div>
-            <h2 className="text-xl font-semibold">Surf Profile</h2>
-            <p className="text-coastal-grey text-sm">Track your surf sessions</p>
-          </div>
-
           <div className="space-y-4">
+            {/* Profile Section */}
+            {isEditingProfile ? (
+              <EditProfileForm 
+                user={currentUser} 
+                onCancel={() => setIsEditingProfile(false)} 
+              />
+            ) : (
+              <ProfileDisplay 
+                user={currentUser} 
+                onEdit={() => setIsEditingProfile(true)} 
+              />
+            )}
+            
             {/* Favorites List */}
             <FavoritesList userId={currentUserId} maxItems={3} />
             
@@ -38,7 +75,7 @@ export default function Profile() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center">
-                  <i className="fas fa-chart-bar text-ocean-blue mr-2"></i>
+                  <BarChart3 className="h-5 w-5 text-ocean-blue mr-2" />
                   Session Stats
                 </CardTitle>
               </CardHeader>
@@ -59,50 +96,25 @@ export default function Profile() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center">
-                  <i className="fas fa-heart text-coral mr-2"></i>
-                  Favorite Spots
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">Bells Beach</span>
-                    <Badge variant="outline">8 sessions</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">Winkipop</span>
-                    <Badge variant="outline">5 sessions</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">Jan Juc</span>
-                    <Badge variant="outline">3 sessions</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <i className="fas fa-cog text-coastal-grey mr-2"></i>
+                  <Settings className="h-5 w-5 text-coastal-grey mr-2" />
                   Settings
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button variant="outline" className="w-full justify-start">
-                  <i className="fas fa-bell mr-2"></i>
+                  <Bell className="h-4 w-4 mr-2" />
                   Surf Alerts
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
-                  <i className="fas fa-map-marker-alt mr-2"></i>
+                  <MapPin className="h-4 w-4 mr-2" />
                   Default Location
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
-                  <i className="fas fa-thermometer-half mr-2"></i>
+                  <Thermometer className="h-4 w-4 mr-2" />
                   Units (Metric)
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
-                  <i className="fas fa-info-circle mr-2"></i>
+                  <Info className="h-4 w-4 mr-2" />
                   About VicSurf
                 </Button>
               </CardContent>

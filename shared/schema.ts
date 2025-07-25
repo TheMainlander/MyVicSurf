@@ -97,7 +97,13 @@ export const users = pgTable("users", {
   email: varchar("email"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
+  displayName: varchar("display_name"),
   profileImageUrl: varchar("profile_image_url"),
+  location: varchar("location"),
+  bio: text("bio"),
+  surfingExperience: varchar("surfing_experience"), // beginner, intermediate, advanced, expert
+  phoneNumber: varchar("phone_number"),
+  instagramHandle: varchar("instagram_handle"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -266,7 +272,6 @@ export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema
 export type InsertNotificationLog = z.infer<typeof insertNotificationLogSchema>;
 
 export type UpsertUser = typeof users.$inferInsert;
-
 export type User = typeof users.$inferSelect;
 export type UserFavorite = typeof userFavorites.$inferSelect;
 export type UserSession = typeof userSessions.$inferSelect;
