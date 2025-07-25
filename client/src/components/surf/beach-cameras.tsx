@@ -149,7 +149,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
           </p>
         )}
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {cameras && cameras.length > 0 ? (
           <>
@@ -203,7 +203,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="text-sm text-gray-600">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{selectedCamera.name}</span>
@@ -300,3 +300,4 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
     </Card>
   );
 }
+`
