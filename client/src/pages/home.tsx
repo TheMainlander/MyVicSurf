@@ -29,21 +29,17 @@ export default function Home() {
   // Mock user ID for development - in production this would come from authentication
   const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
 
-  const { data: spots, isLoading: spotsLoading } = useQuery<SurfSpot[]>({
-    queryKey: ["/api/surf-spots"],
-  });
-
   const handleLocationShared = (latitude: number, longitude: number) => {
     setUserLocation({ lat: latitude, lng: longitude });
     setShowLocationPrompt(false);
     
     // Find closest surf spot and set as selected
     if (spots) {
-      const distances = spots.map((spot: SurfSpot) => ({
+      const distances = spots.map(spot => ({
         ...spot,
         distance: calculateDistance(latitude, longitude, spot.latitude, spot.longitude)
       }));
-      const closestSpot = distances.reduce((prev: any, current: any) => 
+      const closestSpot = distances.reduce((prev, current) => 
         prev.distance < current.distance ? prev : current
       );
       setSelectedSpotId(closestSpot.id);
@@ -64,7 +60,11 @@ export default function Home() {
 
   const toRadian = (value: number) => (value * Math.PI) / 180;
 
-  const selectedSpot = spots?.find((spot: SurfSpot) => spot.id === selectedSpotId);
+  const { data: spots, isLoading: spotsLoading } = useQuery<SurfSpot[]>({
+    queryKey: ["/api/surf-spots"],
+  });
+
+  const selectedSpot = spots?.find(spot => spot.id === selectedSpotId);
 
   if (spotsLoading) {
     return <LoadingOverlay message="Loading surf conditions..." />;
