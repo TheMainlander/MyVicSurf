@@ -177,29 +177,29 @@ export default function AdminUsersPage() {
 
         {/* Admin Stats */}
         {adminInfo && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             <Card>
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-black">{adminInfo.stats.totalUsers}</div>
-                <div className="text-sm text-gray-900">Total Users</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-black">{adminInfo.stats.totalUsers}</div>
+                <div className="text-xs text-gray-700">Total Users</div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-black">{adminInfo.stats.activeUsers}</div>
-                <div className="text-sm text-gray-900">Active Users</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-black">{adminInfo.stats.activeUsers}</div>
+                <div className="text-xs text-gray-700">Active Users</div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-black">{adminInfo.stats.adminUsers}</div>
-                <div className="text-sm text-gray-900">Admins</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-black">{adminInfo.stats.adminUsers}</div>
+                <div className="text-xs text-gray-700">Admins</div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-black">{adminInfo.stats.superAdminUsers}</div>
-                <div className="text-sm text-gray-900">Super Admins</div>
+              <CardContent className="p-3">
+                <div className="text-lg font-bold text-black">{adminInfo.stats.superAdminUsers}</div>
+                <div className="text-xs text-gray-700">Super Admins</div>
               </CardContent>
             </Card>
           </div>
