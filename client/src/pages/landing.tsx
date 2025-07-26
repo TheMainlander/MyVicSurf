@@ -252,18 +252,18 @@ export default function Landing() {
             </div>
 
           {/* Call to Action */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20 mt-6">
-            <h3 className="text-2xl font-bold text-white mb-4 text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 mt-6">
+            <h3 className="text-xl font-bold text-white mb-3 text-center">
               Ready to Catch the Perfect Wave?
             </h3>
-            <p className="text-white/80 mb-6 text-center max-w-2xl mx-auto">
+            <p className="text-white/80 mb-4 text-center max-w-2xl mx-auto">
               Join VicSurf today and never miss optimal surf conditions again
             </p>
             <div className="text-center">
               <Button
                 onClick={handleLogin}
                 size="lg"
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 hover:scale-105 transition-all duration-200 font-bold px-12 py-4 text-lg rounded-xl shadow-xl"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 hover:scale-105 transition-all duration-200 font-bold px-8 py-3 text-base rounded-xl shadow-xl"
               >
                 Sign In to Continue
               </Button>
