@@ -6,17 +6,25 @@ import LocationSelector from "@/components/common/location-selector";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock } from "lucide-react";
 import type { SurfSpot, Forecast } from "@shared/schema";
 
 export default function Forecast() {
   const [selectedSpotId, setSelectedSpotId] = useState(1);
+  const [forecastDays, setForecastDays] = useState(7);
 
   const { data: spots, isLoading: spotsLoading } = useQuery<SurfSpot[]>({
     queryKey: ["/api/surf-spots"],
   });
 
   const { data: forecast, isLoading: forecastLoading } = useQuery<Forecast[]>({
-    queryKey: ["/api/surf-spots", selectedSpotId, "forecast"],
+    queryKey: ["/api/surf-spots", selectedSpotId, "forecast", forecastDays],
+    queryFn: async () => {
+      const response = await fetch(`/api/surf-spots/${selectedSpotId}/forecast?days=${forecastDays}&api=true`);
+      if (!response.ok) throw new Error('Failed to fetch forecast');
+      return response.json();
+    },
     enabled: !!selectedSpotId,
   });
 
@@ -74,10 +82,38 @@ export default function Forecast() {
       
       <main className="max-w-md mx-auto px-4 pb-20">
         <section className="py-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center">
-            <i className="fas fa-calendar-alt text-ocean-blue mr-2"></i>
-            7-Day Forecast
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold flex items-center">
+              <Calendar className="h-5 w-5 text-ocean-blue mr-2" />
+              Extended Forecast
+            </h2>
+            <div className="flex gap-2">
+              <Button
+                variant={forecastDays === 7 ? "default" : "outline"}
+                size="sm"
+                onClick={() => setForecastDays(7)}
+                className="text-xs"
+              >
+                7 Days
+              </Button>
+              <Button
+                variant={forecastDays === 14 ? "default" : "outline"}
+                size="sm"
+                onClick={() => setForecastDays(14)}
+                className="text-xs"
+              >
+                14 Days
+              </Button>
+              <Button
+                variant={forecastDays === 16 ? "default" : "outline"}
+                size="sm"
+                onClick={() => setForecastDays(16)}
+                className="text-xs"
+              >
+                16 Days
+              </Button>
+            </div>
+          </div>
           
           <div className="space-y-3">
             {forecast?.map((day, index) => {

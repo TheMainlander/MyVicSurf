@@ -20,7 +20,7 @@ export default function ForecastTimeline({ spotId }: ForecastTimelineProps) {
       <section className="py-2">
         <h3 className="text-lg font-semibold mb-3 flex items-center">
           <i className="fas fa-calendar-alt text-ocean-blue mr-2"></i>
-          7-Day Forecast
+          Extended Forecast
         </h3>
         <div className="space-y-2">
           {Array.from({ length: 3 }, (_, i) => (

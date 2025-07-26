@@ -71,7 +71,10 @@ function calculateSurfRating(waveHeight: number, windSpeed: number, waveDirectio
   return "poor";
 }
 
-export async function fetchOpenMeteoForecast(latitude: number, longitude: number): Promise<OpenMeteoResponse> {
+export async function fetchOpenMeteoForecast(latitude: number, longitude: number, days: number = 7): Promise<OpenMeteoResponse> {
+  // Support extended forecasting up to 16 days
+  const forecastDays = Math.min(Math.max(days, 1), 16).toString();
+  
   // Get marine data (waves)
   const marineParams = new URLSearchParams({
     latitude: latitude.toString(),
@@ -84,7 +87,7 @@ export async function fetchOpenMeteoForecast(latitude: number, longitude: number
       "swell_wave_height"
     ].join(','),
     timezone: "Australia/Melbourne",
-    forecast_days: "7"
+    forecast_days: forecastDays
   });
 
   // Get weather data (wind and temperature)
@@ -97,7 +100,7 @@ export async function fetchOpenMeteoForecast(latitude: number, longitude: number
       "temperature_2m"
     ].join(','),
     timezone: "Australia/Melbourne",
-    forecast_days: "7"
+    forecast_days: forecastDays
   });
 
   const [marineResponse, weatherResponse] = await Promise.all([
@@ -130,7 +133,7 @@ export async function fetchOpenMeteoForecast(latitude: number, longitude: number
 
 export async function getCurrentConditionsFromAPI(spotId: number, latitude: number, longitude: number): Promise<Partial<SurfCondition>> {
   try {
-    const data = await fetchOpenMeteoForecast(latitude, longitude);
+    const data = await fetchOpenMeteoForecast(latitude, longitude, 1);
     
     // Get current hour data (first entry)
     const currentIndex = 0;
@@ -236,7 +239,7 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
 
 export async function getForecastFromAPI(spotId: number, latitude: number, longitude: number, days: number = 7): Promise<Partial<Forecast>[]> {
   try {
-    const data = await fetchOpenMeteoForecast(latitude, longitude);
+    const data = await fetchOpenMeteoForecast(latitude, longitude, days);
     
     const forecasts: Partial<Forecast>[] = [];
     
@@ -244,7 +247,9 @@ export async function getForecastFromAPI(spotId: number, latitude: number, longi
     const hoursPerDay = 24;
     const middayHour = 12;
     
-    for (let day = 0; day < Math.min(days, 7); day++) {
+    // Support extended forecasting up to 16 days
+    const maxDays = Math.min(days, 16);
+    for (let day = 0; day < maxDays; day++) {
       const dayStartIndex = day * hoursPerDay;
       const middayIndex = dayStartIndex + middayHour;
       
