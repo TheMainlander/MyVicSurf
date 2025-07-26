@@ -151,9 +151,9 @@ export interface IStorage {
   deleteMarketingDocument(id: number): Promise<void>;
 
   // Feedback methods
-  async createFeedback(data: InsertUserFeedback): Promise<UserFeedback>;
-  async getFeedback(id: number): Promise<UserFeedback | null>;
-  async getAllFeedback(filters?: { 
+  createFeedback(data: InsertUserFeedback): Promise<UserFeedback>;
+  getFeedback(id: number): Promise<UserFeedback | null>;
+  getAllFeedback(filters?: { 
     feedbackType?: string; 
     status?: string; 
     spotId?: number; 
@@ -162,21 +162,21 @@ export interface IStorage {
     limit?: number;
     offset?: number;
   }): Promise<UserFeedback[]>;
-  async updateFeedback(id: number, data: Partial<UserFeedback>): Promise<UserFeedback>;
-  async deleteFeedback(id: number): Promise<void>;
-  async voteFeedback(feedbackId: number, userId: string, voteType: 'upvote' | 'downvote'): Promise<void>;
-  async removeVoteFeedback(feedbackId: number, userId: string): Promise<void>;
-  async getFeedbackVotes(feedbackId: number): Promise<FeedbackVote[]>;
+  updateFeedback(id: number, data: Partial<UserFeedback>): Promise<UserFeedback>;
+  deleteFeedback(id: number): Promise<void>;
+  voteFeedback(feedbackId: number, userId: string, voteType: 'upvote' | 'downvote'): Promise<void>;
+  removeVoteFeedback(feedbackId: number, userId: string): Promise<void>;
+  getFeedbackVotes(feedbackId: number): Promise<FeedbackVote[]>;
 
   // Home Panel Management
-  async getHomePanels(): Promise<HomePanel[]>;
-  async getHomePanel(id: number): Promise<HomePanel | undefined>;
-  async createHomePanel(panel: InsertHomePanel): Promise<HomePanel>;
-  async updateHomePanel(id: number, updates: Partial<InsertHomePanel>): Promise<HomePanel>;
-  async deleteHomePanel(id: number): Promise<void>;
-  async updatePanelOrder(panelId: number, newSortOrder: number): Promise<HomePanel>;
-  async togglePanelEnabled(panelId: number, isEnabled: boolean): Promise<HomePanel>;
-  async getEnabledHomePanels(): Promise<HomePanel[]>;
+  getHomePanels(): Promise<HomePanel[]>;
+  getHomePanel(id: number): Promise<HomePanel | undefined>;
+  createHomePanel(panel: InsertHomePanel): Promise<HomePanel>;
+  updateHomePanel(id: number, updates: Partial<InsertHomePanel>): Promise<HomePanel>;
+  deleteHomePanel(id: number): Promise<void>;
+  updatePanelOrder(panelId: number, newSortOrder: number): Promise<HomePanel>;
+  togglePanelEnabled(panelId: number, isEnabled: boolean): Promise<HomePanel>;
+  getEnabledHomePanels(): Promise<HomePanel[]>;
 }
 
 // Database-backed storage for production
@@ -209,23 +209,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSurfSpot(id: number): Promise<boolean> {
     const result = await db.delete(surfSpots).where(eq(surfSpots.id, id));
-    return result.rowCount > 0;
-  }
-
-  async updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined> {
-    const [updatedSpot] = await db
-      .update(surfSpots)
-      .set(spotData)
-      .where(eq(surfSpots.id, id))
-      .returning();
-    return updatedSpot;
-  }
-
-  async deleteSurfSpot(id: number): Promise<boolean> {
-    const result = await db
-      .delete(surfSpots)
-      .where(eq(surfSpots.id, id));
-    return result.rowCount > 0;
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   async getNearbySpots(spotId: number, maxDistance: number = 100): Promise<SurfSpot[]> {
@@ -975,16 +959,16 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
-    query = query.orderBy(desc(userFeedback.createdAt));
+    query = query.orderBy(desc(userFeedback.createdAt)) as any;
 
     if (filters?.limit) {
-      query = query.limit(filters.limit);
+      query = query.limit(filters.limit) as any;
     }
     if (filters?.offset) {
-      query = query.offset(filters.offset);
+      query = query.offset(filters.offset) as any;
     }
 
     return await query;
