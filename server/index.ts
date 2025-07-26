@@ -4,76 +4,8 @@ import { setupVite, serveStatic, log } from "./vite";
 import { pushNotificationService } from "./push-notifications";
 
 const app = express();
-
-// Enable trust proxy for HTTPS handling behind Replit's proxy
-app.set('trust proxy', true);
-
-// HTTPS redirect middleware for production
-if (process.env.NODE_ENV === 'production') {
-  app.use((req, res, next) => {
-    if (req.header('x-forwarded-proto') !== 'https') {
-      res.redirect(`https://${req.header('host')}${req.url}`);
-      return;
-    }
-    next();
-  });
-}
-
-// Security headers for HTTPS
-app.use((req, res, next) => {
-  if (process.env.NODE_ENV === 'production') {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-  }
-  next();
-});
-
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
-
-// Add health check endpoints BEFORE any other routes or middleware
-// Root health check for deployment monitoring
-app.get("/", (req, res, next) => {
-  const userAgent = req.get('User-Agent') || '';
-  const acceptHeader = req.get('Accept') || '';
-  
-  // Deployment health check detection
-  const isHealthCheck = userAgent.includes('Health') || 
-                       userAgent.includes('Monitor') || 
-                       userAgent.includes('curl') ||
-                       userAgent.includes('Wget') ||
-                       userAgent.includes('Python') ||
-                       userAgent.includes('Go-http-client') ||
-                       userAgent.includes('kube-probe') ||
-                       userAgent.includes('ELB-HealthChecker') ||
-                       req.headers['x-health-check'] ||
-                       req.query.health === 'check' ||
-                       (acceptHeader.includes('application/json') && !acceptHeader.includes('text/html'));
-  
-  if (isHealthCheck) {
-    return res.status(200).json({ 
-      status: "healthy", 
-      app: "VicSurf",
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development'
-    });
-  }
-  
-  // Let frontend serving handle regular requests
-  next();
-});
-
-// Alternative health endpoint for explicit monitoring
-app.get("/health", (req, res) => {
-  res.status(200).json({ 
-    status: "healthy", 
-    app: "VicSurf",
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -106,57 +38,31 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Seed subscription plans on startup
+  const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
+  await seedSubscriptionPlans();
+  
+  // Seed carousel images on startup
+  const { seedCarouselImages } = await import("./carousel-seed");
+  await seedCarouselImages();
+  
+  // Seed admin user on startup
+  const { seedAdminUser } = await import("./admin-seed");
+  await seedAdminUser();
+  
+  // Seed marketing documents on startup
+  const { seedMarketingDocuments } = await import("./marketing-documents-seed");
+  await seedMarketingDocuments();
+  
+  // Seed system admin documents on startup
+  const { seedSystemDocuments } = await import("./system-documents-seed");
+  await seedSystemDocuments();
+  
+  // Seed home panels on startup
+  const { seedHomePanels } = await import("./panel-seed");
+  await seedHomePanels();
+
   const server = await registerRoutes(app);
-
-  // Add health check endpoint for API
-  app.get("/api/health", (req, res) => {
-    res.status(200).json({ 
-      status: "healthy", 
-      database: "connected",
-      timestamp: new Date().toISOString(),
-      https: req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'enabled' : 'disabled',
-      protocol: req.protocol
-    });
-  });
-
-
-
-
-  // Run seeding operations in the background after server starts
-  const runSeeding = async () => {
-    try {
-      log("Starting database seeding operations...");
-      
-      // Seed subscription plans on startup
-      const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
-      await seedSubscriptionPlans();
-      
-      // Seed carousel images on startup
-      const { seedCarouselImages } = await import("./carousel-seed");
-      await seedCarouselImages();
-      
-      // Seed admin user on startup
-      const { seedAdminUser } = await import("./admin-seed");
-      await seedAdminUser();
-      
-      // Seed marketing documents on startup
-      const { seedMarketingDocuments } = await import("./marketing-documents-seed");
-      await seedMarketingDocuments();
-      
-      // Seed system admin documents on startup
-      const { seedSystemDocuments } = await import("./system-documents-seed");
-      await seedSystemDocuments();
-      
-      // Seed home panels on startup
-      const { seedHomePanels } = await import("./panel-seed");
-      await seedHomePanels();
-
-      log("Database seeding completed successfully");
-    } catch (error) {
-      console.error("Error during database seeding:", error);
-      // Don't exit the process, just log the error
-    }
-  };
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -203,8 +109,5 @@ app.use((req, res, next) => {
       pushNotificationService.startOptimalConditionsChecker();
       log("Push notification service started");
     }
-
-    // Start seeding operations in background after server is listening
-    runSeeding();
   });
 })();

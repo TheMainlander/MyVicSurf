@@ -61,8 +61,7 @@ const COMPONENT_OPTIONS = [
   { value: "TideInformation", label: "Tide Information" },
   { value: "ForecastTimeline", label: "Forecast Timeline" },
   { value: "SurfSpotsList", label: "Surf Spots List" },
-  { value: "SimpleFeedbackForm", label: "Feedback Form" },
-  { value: "WeatherAlerts", label: "Weather Alerts" }
+  { value: "SimpleFeedbackForm", label: "Feedback Form" }
 ];
 
 const PANEL_TYPES = [
@@ -72,7 +71,7 @@ const PANEL_TYPES = [
 ];
 
 const ROLE_OPTIONS = [
-  { value: "public", label: "Public (No login required)" },
+  { value: "", label: "Public (No login required)" },
   { value: "user", label: "Logged in users" },
   { value: "admin", label: "Admin only" },
   { value: "super_admin", label: "Super Admin only" }
@@ -87,7 +86,7 @@ export default function AdminPanels() {
     description: "",
     componentName: "",
     panelType: "standard",
-    requiredRole: "public",
+    requiredRole: "",
     isEnabled: true,
     sortOrder: 0
   });
@@ -194,7 +193,7 @@ export default function AdminPanels() {
       description: "",
       componentName: "",
       panelType: "standard",
-      requiredRole: "public",
+      requiredRole: "",
       isEnabled: true,
       sortOrder: 0
     });
