@@ -225,7 +225,7 @@ export default function Landing() {
 
             </div>
             {/* Features Grid - Below Surf Spots */}
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="grid md:grid-cols-3 gap-8 mb-16 mt-16">
               <div className="glass rounded-2xl p-10 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '1.8s' }}>
                 <div className="text-4xl mb-6">🌊</div>
                 <h3 className="text-2xl font-bold text-white mb-6">Real-Time Conditions</h3>
