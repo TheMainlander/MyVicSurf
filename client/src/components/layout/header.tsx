@@ -26,11 +26,12 @@ export default function Header() {
         {/* Top Row - Brand and Actions */}
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2">
+            {/* Hamburger Menu - Temporarily Hidden */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-ocean-blue hover:bg-blue-50 p-1.5 rounded-md mr-1 relative z-10"
+              className="hidden text-ocean-blue hover:bg-blue-50 p-1.5 rounded-md mr-1 relative z-10"
               title={isMenuOpen ? "Close Menu" : "Open Menu"}
               aria-expanded={isMenuOpen}
               aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
@@ -94,8 +95,8 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
+      {/* Mobile Menu Overlay - Temporarily Hidden */}
+      {false && isMenuOpen && (
         <div 
           className="fixed inset-0 z-[99999] bg-black/30 backdrop-blur-sm" 
           onClick={() => setIsMenuOpen(false)}
