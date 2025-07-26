@@ -24,7 +24,12 @@ function Router() {
   return (
     <Switch>
       {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={Landing} />
+          {/* Admin routes accessible for authentication redirect */}
+          <Route path="/admin" component={AdminPage} />
+          <Route path="/admin/users" component={AdminUsersPage} />
+        </>
       ) : (
         <>
           <Route path="/" component={Home} />
