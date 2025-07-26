@@ -127,7 +127,12 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Added security headers: HSTS, X-Frame-Options, X-XSS-Protection, X-Content-Type-Options
 ✓ Enhanced health check endpoint to report HTTPS status and protocol information
 ✓ Added Content Security Policy headers to upgrade insecure requests to HTTPS
-✓ Created comprehensive HTTPS deployment guide with testing and troubleshooting steps for all admin operations
+✓ Created comprehensive HTTPS deployment guide with testing and troubleshooting steps
+✓ LOCATION PERSISTENCE FEATURE: Added duration selection when users share location
+✓ Created privacy-focused dialog allowing users to choose storage duration (session, 1h, 24h, 7d, 30d, permanent)
+✓ Implemented secure local storage system with automatic expiration handling
+✓ Added location settings management panel in user profile page
+✓ Enhanced location permission component with duration controls and status display
 ✓ Added email address editing capability to user profiles with SSO integration and security protection
 ✓ Implemented email conflict prevention and authentication-based profile access control
 ✓ Enhanced profile update validation with specific error handling for email conflicts and permissions
