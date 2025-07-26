@@ -20,7 +20,7 @@ export default function Header() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-md mx-auto px-4 py-3">
+      <div className="max-w-2xl mx-auto px-4 py-3">
         {/* Top Row - Brand and Actions */}
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2">
@@ -30,7 +30,7 @@ export default function Header() {
             </h1>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             {!isAuthenticated && !isLoading && (
               <Button
                 onClick={handleSignIn}
@@ -47,15 +47,17 @@ export default function Header() {
                 <Button
                   onClick={() => window.location.href = '/pricing'}
                   size="sm"
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 px-3 py-1.5 rounded-md text-xs font-medium flex items-center justify-center"
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 px-2 py-1.5 rounded-md text-xs font-medium whitespace-nowrap"
                 >
                   ⚡ Upgrade
                 </Button>
-                <APIStatus className="text-xs px-2 py-1 rounded-full bg-green-50 border border-green-200 text-green-600" />
+                <div className="text-xs px-2 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-600 whitespace-nowrap">
+                  <APIStatus />
+                </div>
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  className="text-ocean-blue hover:text-blue-600 hover:bg-blue-50 p-1.5 rounded-md"
+                  className="text-ocean-blue hover:text-blue-600 hover:bg-blue-50 p-1.5 rounded-md min-w-[32px] min-h-[32px] flex items-center justify-center"
                   onClick={() => setLocation('/profile')}
                   title="Manage profile and favorites"
                 >
@@ -65,7 +67,7 @@ export default function Header() {
                   onClick={handleSignOut}
                   size="sm"
                   variant="ghost"
-                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1.5 rounded-md"
+                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1.5 rounded-md min-w-[32px] min-h-[32px] flex items-center justify-center"
                   title="Sign Out"
                 >
                   <LogOut className="h-3.5 w-3.5" />
