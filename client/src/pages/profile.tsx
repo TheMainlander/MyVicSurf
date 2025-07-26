@@ -44,7 +44,11 @@ export default function Profile() {
     stripeSubscriptionId: null,
     subscriptionStatus: "free",
     subscriptionPlan: null,
+    subscriptionStartDate: null,
     subscriptionEndDate: null,
+    role: "user",
+    isActive: true,
+    lastLoginAt: new Date(),
     createdAt: new Date("2024-01-15"),
     updatedAt: new Date(),
   };
