@@ -102,7 +102,7 @@ export default function Landing() {
           </div>
         </header>
       
-        <main className="container mx-auto px-4 py-16">
+        <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto text-center">
             {/* Hero Section */}
           <div className="mb-12 fade-in">
