@@ -222,20 +222,7 @@ export default function Landing() {
                 <ChevronRight className="w-6 h-6" />
               </button>
 
-              {/* Dots Indicator */}
-              <div className="flex justify-center space-x-2 mt-6">
-                {carouselImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => emblaApi?.scrollTo(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                      index === selectedIndex 
-                        ? 'bg-cyan-400 shadow-lg shadow-cyan-400/50' 
-                        : 'bg-white/30 hover:bg-white/50'
-                    }`}
-                  />
-                ))}
-              </div>
+
             </div>
             {/* Features Grid - Below Surf Spots */}
             <div className="grid md:grid-cols-3 gap-8 mb-16">
