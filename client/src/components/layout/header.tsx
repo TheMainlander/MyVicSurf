@@ -64,9 +64,7 @@ export default function Header() {
                 >
                   ⚡ Upgrade
                 </Button>
-                <div className="text-xs px-2 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-600 whitespace-nowrap">
-                  <APIStatus />
-                </div>
+                <APIStatus className="whitespace-nowrap" />
                 <Button 
                   variant="ghost" 
                   size="sm"
