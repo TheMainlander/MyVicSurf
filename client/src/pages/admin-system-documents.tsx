@@ -104,28 +104,43 @@ export default function AdminSystemDocuments() {
     }
   });
 
-  const handleDownloadDocument = async (doc: Document, format: string) => {
+  const handleDownloadDocument = async (doc: Document, format?: string) => {
+    setIsExporting(true);
     try {
-      const response = await apiRequest('GET', `/api/admin/documents/${doc.id}/download?format=${format}`);
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `${doc.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${format}`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+      const downloadFormat = format || doc.format;
+      const response = await apiRequest('GET', `/api/admin/documents/${doc.id}/download?format=${downloadFormat}`);
+      
+      if (!response.ok) {
+        throw new Error('Download failed');
       }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${doc.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${downloadFormat}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Export Complete",
+        description: `${doc.title} exported as ${downloadFormat.toUpperCase()}`,
+      });
     } catch (error) {
       toast({
-        title: "Download Failed",
-        description: "Unable to download document. Please try again.",
+        title: "Export Failed", 
+        description: "Could not export the document. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsExporting(false);
     }
+  };
+
+  const handleQuickExport = async (doc: Document, format: 'md' | 'pdf' | 'html' | 'txt') => {
+    await handleDownloadDocument(doc, format);
   };
 
   const getTypeIcon = (type: string) => {
