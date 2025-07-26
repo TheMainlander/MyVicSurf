@@ -24,7 +24,6 @@ import AdminSalesMarketingPage from "@/pages/admin-sales-marketing";
 import AdminSystemDocumentsPage from "@/pages/admin-system-documents";
 import AdminCarouselPage from "@/pages/admin-carousel";
 import AdminBeachesPage from "@/pages/admin-beaches";
-import AdminPanelsPage from "@/pages/admin-panels";
 import PostRegistrationHandler from "@/components/registration/post-registration-handler";
 import Feedback from "@/pages/feedback";
 
@@ -46,7 +45,6 @@ function Router() {
       <Route path="/admin/sales-marketing" component={AdminSalesMarketingPage} />
       <Route path="/admin/system-documents" component={AdminSystemDocumentsPage} />
       <Route path="/admin/help" component={AdminHelpPage} />
-      <Route path="/admin/panels" component={AdminPanelsPage} />
       
       {/* Main app routes */}
       <Route path="/" component={isAuthenticated ? Home : Landing} />

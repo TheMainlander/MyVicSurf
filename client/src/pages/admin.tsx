@@ -4,7 +4,7 @@ import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink, FileText, MapPin, LayoutPanelTop } from "lucide-react";
+import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink, FileText, MapPin } from "lucide-react";
 import AdminNavigationHeader from "@/components/admin/admin-navigation-header";
 
 interface AdminInfo {
@@ -85,15 +85,6 @@ export default function AdminPage() {
       icon: <MapPin className="h-8 w-8 text-teal-600" />,
       path: '/admin/beaches',
       badge: beachStats ? `${beachStats.count} beaches` : undefined,
-      requiresRole: 'admin'
-    },
-    {
-      id: 'panel-management',
-      title: 'Panel Management',
-      description: 'Manage home page panel layout and ordering',
-      icon: <LayoutPanelTop className="h-8 w-8 text-indigo-600" />,
-      path: '/admin/panels',
-      badge: 'Drag & Drop',
       requiresRole: 'admin'
     },
     {
