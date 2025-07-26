@@ -38,10 +38,23 @@ export default function Header() {
             >
               {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
-            <div className="text-xl wave-animation">🏄‍♀️</div>
-            <h1 className="text-lg font-bold text-ocean-blue">
-              VicSurf
-            </h1>
+            <div 
+              className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => setLocation('/')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setLocation('/');
+                }
+              }}
+              title="Go to Home"
+            >
+              <div className="text-xl wave-animation">🏄‍♀️</div>
+              <h1 className="text-lg font-bold text-ocean-blue">
+                VicSurf
+              </h1>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
