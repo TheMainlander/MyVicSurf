@@ -122,8 +122,8 @@ export default function Comparison() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 py-6 pb-24">
-        <div className="mb-6">
+      <main className="max-w-7xl mx-auto px-4 py-3 pb-20">
+        <div className="mb-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <BarChart3 className="h-6 w-6 text-ocean-blue" />
@@ -159,7 +159,7 @@ export default function Comparison() {
             <div className="animate-spin w-8 h-8 border-4 border-ocean-blue border-t-transparent rounded-full" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {comparisonData.map((data, index) => {
               const qualityScore = getSurfQualityScore(data.conditions);
               const nextForecast = data.forecast[0];
@@ -177,8 +177,8 @@ export default function Comparison() {
                     </Button>
                   )}
 
-                  <CardHeader className="pb-4">
-                    <div className="space-y-3">
+                  <CardHeader className="pb-3">
+                    <div className="space-y-2">
                       <div>
                         <CardTitle className="text-lg text-gray-900 pr-8">
                           {data.spot.name}
@@ -197,13 +197,13 @@ export default function Comparison() {
                     </div>
                   </CardHeader>
 
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3">
                     {/* Current Conditions */}
                     {data.conditions ? (
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         <h4 className="font-medium text-gray-900 text-sm">Current Conditions</h4>
                         
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-2">
                           <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center space-x-2">
                               <Waves className="h-4 w-4 text-blue-600" />
@@ -280,7 +280,7 @@ export default function Comparison() {
 
                     {/* Action Button */}
                     <Link href={`/spot/${data.spot.id}`}>
-                      <Button variant="outline" className="w-full mt-4">
+                      <Button variant="outline" className="w-full mt-3">
                         View Full Details
                       </Button>
                     </Link>
@@ -293,11 +293,11 @@ export default function Comparison() {
 
         {/* Add Spot Card */}
         {selectedSpots.length < 6 && allSpots.length > selectedSpots.length && (
-          <Card className="border-2 border-dashed border-gray-300 hover:border-ocean-blue transition-colors mt-6">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Plus className="h-8 w-8 text-gray-400 mb-3" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">Add Another Spot</h3>
-              <p className="text-sm text-gray-500 text-center mb-4">
+          <Card className="border-2 border-dashed border-gray-300 hover:border-ocean-blue transition-colors mt-3">
+            <CardContent className="flex flex-col items-center justify-center py-6">
+              <Plus className="h-6 w-6 text-gray-400 mb-2" />
+              <h3 className="text-base font-medium text-gray-600 mb-1">Add Another Spot</h3>
+              <p className="text-sm text-gray-500 text-center mb-3">
                 Compare up to 6 surf spots to find the best conditions
               </p>
               <Select onValueChange={addSpot}>
