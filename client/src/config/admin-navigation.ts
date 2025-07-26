@@ -62,6 +62,18 @@ export const ADMIN_ROUTES: AdminRoute[] = [
     showInNavigation: true
   },
   
+  // Carousel management
+  {
+    id: 'admin-carousel',
+    path: '/admin/carousel',
+    title: 'Carousel Management',
+    description: 'Manage landing page images',
+    icon: ImageIcon,
+    parentId: 'admin-root',
+    requiresRole: 'admin',
+    showInNavigation: true
+  },
+  
   // Sales & Marketing
   {
     id: 'admin-sales-marketing',

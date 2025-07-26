@@ -20,6 +20,7 @@ import AdminPage from "@/pages/admin";
 import AdminUsersPage from "@/pages/admin-users";
 import AdminHelpPage from "@/pages/admin-help";
 import AdminSalesMarketingPage from "@/pages/admin-sales-marketing";
+import AdminCarouselPage from "@/pages/admin-carousel";
 import PostRegistrationHandler from "@/components/registration/post-registration-handler";
 import Feedback from "@/pages/feedback";
 
@@ -35,6 +36,7 @@ function Router() {
       
       {/* Admin routes - always accessible for auth redirects */}
       <Route path="/admin" component={AdminPage} />
+      <Route path="/admin/carousel" component={AdminCarouselPage} />
       <Route path="/admin/users" component={AdminUsersPage} />
       <Route path="/admin/sales-marketing" component={AdminSalesMarketingPage} />
       <Route path="/admin/help" component={AdminHelpPage} />

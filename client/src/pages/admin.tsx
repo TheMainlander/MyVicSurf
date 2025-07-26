@@ -1,153 +1,122 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Save, X, Users, HelpCircle, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink } from "lucide-react";
 import AdminNavigationHeader from "@/components/admin/admin-navigation-header";
-import AdminQuickNav from "@/components/admin/admin-quick-nav";
-import type { CarouselImage } from "@shared/schema";
 
-interface CarouselImageForm {
-  name: string;
+interface AdminInfo {
+  currentAdmin: {
+    id: string;
+    email: string;
+    displayName: string;
+    role: string;
+  };
+  stats: {
+    totalUsers: number;
+    adminUsers: number;
+    superAdminUsers: number;
+    activeUsers: number;
+  };
+  permissions: {
+    canManageUsers: boolean;
+    canManageRoles: boolean;
+    canManageCarousel: boolean;
+  };
+}
+
+interface AdminPanelData {
+  id: string;
+  title: string;
   description: string;
-  imageUrl: string;
-  location: string;
-  sortOrder: number;
+  icon: React.ReactNode;
+  path: string;
+  badge?: string;
+  requiresRole?: 'admin' | 'super_admin';
 }
 
 export default function AdminPage() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [isAdding, setIsAdding] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [formData, setFormData] = useState<CarouselImageForm>({
-    name: "",
-    description: "",
-    imageUrl: "",
-    location: "",
-    sortOrder: 0
+  // Fetch admin info and stats
+  const { data: adminInfo, isLoading } = useQuery<AdminInfo>({
+    queryKey: ['/api/admin/info'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/admin/info');
+      return await response.json();
+    }
   });
 
-  // Fetch carousel images
-  const { data: images = [], isLoading } = useQuery({
+  // Fetch carousel images for stats
+  const { data: carouselStats } = useQuery({
     queryKey: ['/api/admin/carousel-images'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/admin/carousel-images');
-      return await response.json() as CarouselImage[];
+      const images = await response.json();
+      return { count: images.length };
     }
   });
 
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: async (data: CarouselImageForm) => {
-      const response = await apiRequest('POST', '/api/admin/carousel-images', data);
-      return await response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/carousel-images'] });
-      setIsAdding(false);
-      resetForm();
-      toast({
-        title: "Success",
-        description: "Carousel image created successfully"
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to create carousel image",
-        variant: "destructive"
-      });
+  // Fetch marketing documents for stats
+  const { data: marketingStats } = useQuery({
+    queryKey: ['/api/admin/marketing-documents'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/admin/marketing-documents');
+      const documents = await response.json();
+      return { count: documents.length };
     }
   });
 
-  // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<CarouselImageForm> }) => {
-      const response = await apiRequest('PUT', `/api/admin/carousel-images/${id}`, data);
-      return await response.json();
+  const adminPanels: AdminPanelData[] = [
+    {
+      id: 'carousel-management',
+      title: 'Carousel Management',
+      description: 'Manage landing page images',
+      icon: <ImageIcon className="h-8 w-8 text-blue-600" />,
+      path: '/admin/carousel',
+      badge: carouselStats ? `${carouselStats.count} images` : undefined,
+      requiresRole: 'admin'
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/carousel-images'] });
-      setEditingId(null);
-      resetForm();
-      toast({
-        title: "Success",
-        description: "Carousel image updated successfully"
-      });
+    {
+      id: 'user-management',
+      title: 'User Management',
+      description: 'Manage user accounts',
+      icon: <Users className="h-8 w-8 text-green-600" />,
+      path: '/admin/users',
+      badge: adminInfo ? `${adminInfo.stats.totalUsers} users` : undefined,
+      requiresRole: 'admin'
     },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update carousel image",
-        variant: "destructive"
-      });
+    {
+      id: 'sales-marketing',
+      title: 'Sales & Marketing',
+      description: 'Marketing documents and campaigns',
+      icon: <TrendingUp className="h-8 w-8 text-purple-600" />,
+      path: '/admin/sales-marketing',
+      badge: marketingStats ? `${marketingStats.count} documents` : undefined,
+      requiresRole: 'admin'
+    },
+    {
+      id: 'documentation',
+      title: 'Full Documentation',
+      description: 'Complete admin guide',
+      icon: <HelpCircle className="h-8 w-8 text-indigo-600" />,
+      path: '/admin/help',
+      badge: 'Help & Guides',
+      requiresRole: 'admin'
     }
-  });
+  ];
 
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await apiRequest('DELETE', `/api/admin/carousel-images/${id}`);
-      return await response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/carousel-images'] });
-      toast({
-        title: "Success",
-        description: "Carousel image deleted successfully"
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to delete carousel image",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      description: "",
-      imageUrl: "",
-      location: "",
-      sortOrder: 0
-    });
+  const hasAccess = (panel: AdminPanelData): boolean => {
+    if (!panel.requiresRole || !adminInfo) return true;
+    
+    const roleHierarchy = ['user', 'admin', 'super_admin'];
+    const userRoleLevel = roleHierarchy.indexOf(adminInfo.currentAdmin.role);
+    const requiredRoleLevel = roleHierarchy.indexOf(panel.requiresRole);
+    
+    return userRoleLevel >= requiredRoleLevel;
   };
 
-  const handleEdit = (image: CarouselImage) => {
-    setEditingId(image.id);
-    setFormData({
-      name: image.name,
-      description: image.description || "",
-      imageUrl: image.imageUrl,
-      location: image.location || "",
-      sortOrder: image.sortOrder || 0
-    });
-  };
 
-  const handleSave = () => {
-    if (editingId) {
-      updateMutation.mutate({ id: editingId, data: formData });
-    } else {
-      createMutation.mutate(formData);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsAdding(false);
-    setEditingId(null);
-    resetForm();
-  };
 
   if (isLoading) {
     return (
@@ -169,173 +138,110 @@ export default function AdminPage() {
         <AdminNavigationHeader
           currentPath="/admin"
           title="Admin Panel"
-          description="Manage carousel images and user accounts"
-          additionalActions={
-            <>
-              <Button
-                variant="outline"
-                className="border-gray-600 text-gray-800 hover:bg-gray-200"
-                onClick={() => window.location.href = '/admin/users'}
-              >
-                <Users className="h-4 w-4 mr-2" />
-                Manage Users
-              </Button>
-              <Button
-                variant="outline"
-                className="border-gray-600 text-gray-800 hover:bg-gray-200"
-                onClick={() => window.location.href = '/admin/sales-marketing'}
-              >
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Sales & Marketing
-              </Button>
-              <Button
-                variant="outline"
-                className="border-gray-600 text-gray-800 hover:bg-gray-200"
-                onClick={() => window.location.href = '/admin/help'}
-              >
-                <HelpCircle className="h-4 w-4 mr-2" />
-                Admin Help
-              </Button>
-            </>
-          }
+          description="Centralized administration dashboard for VicSurf"
         />
         
-        <AdminQuickNav currentPath="/admin" userRole="super_admin" />
+        {/* Admin Overview Stats */}
+        {adminInfo && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.totalUsers}</div>
+                  <div className="text-sm text-gray-600">Total Users</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.activeUsers}</div>
+                  <div className="text-sm text-gray-600">Active Users</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{carouselStats?.count || 0}</div>
+                  <div className="text-sm text-gray-600">Carousel Images</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{marketingStats?.count || 0}</div>
+                  <div className="text-sm text-gray-600">Marketing Docs</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-        {/* Action Buttons */}
-        <div className="mb-6 flex gap-4">
-          <Button
-            onClick={() => setIsAdding(true)}
-            className="bg-gray-800 text-white hover:bg-gray-700"
-            disabled={isAdding || editingId !== null}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Image
-          </Button>
+        {/* Admin Panels */}
+        <div className="space-y-4">
+          {adminPanels
+            .filter(panel => hasAccess(panel))
+            .map((panel) => (
+              <Card 
+                key={panel.id} 
+                className="hover:shadow-lg transition-shadow cursor-pointer group"
+                onClick={() => window.location.href = panel.path}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        {panel.icon}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-700">
+                          {panel.title}
+                        </h3>
+                        <p className="text-gray-600 mt-1">
+                          {panel.description}
+                        </p>
+                        {panel.badge && (
+                          <Badge variant="secondary" className="mt-2">
+                            {panel.badge}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
         </div>
 
-        {/* Add/Edit Form */}
-        {(isAdding || editingId) && (
-          <Card className="mb-6">
+        {/* Current Admin Info */}
+        {adminInfo && (
+          <Card className="mt-8">
             <CardHeader>
-              <CardTitle className="text-gray-900">{editingId ? 'Edit Image' : 'Add New Image'}</CardTitle>
+              <CardTitle className="text-gray-900">Current Session</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Beach name"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Beach description"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="imageUrl">Image URL</Label>
-                <Input
-                  id="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                  placeholder="https://..."
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  placeholder="Location"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="sortOrder">Sort Order</Label>
-                <Input
-                  id="sortOrder"
-                  type="number"
-                  value={formData.sortOrder}
-                  onChange={(e) => setFormData(prev => ({ ...prev, sortOrder: parseInt(e.target.value) || 0 }))}
-                  placeholder="0"
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleSave}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="bg-gray-800 text-white hover:bg-gray-700"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="border-gray-600 text-gray-800 hover:bg-gray-200"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Cancel
-                </Button>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Admin:</span>
+                  <span className="text-gray-900 font-medium">{adminInfo.currentAdmin.displayName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Email:</span>
+                  <span className="text-gray-900">{adminInfo.currentAdmin.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Role:</span>
+                  <Badge variant={adminInfo.currentAdmin.role === 'super_admin' ? 'default' : 'secondary'}>
+                    {adminInfo.currentAdmin.role.replace('_', ' ').toUpperCase()}
+                  </Badge>
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
-
-        {/* Images List */}
-        <div className="space-y-4">
-          {images.map((image) => (
-            <Card key={image.id}>
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4">
-                  <img
-                    src={image.imageUrl}
-                    alt={image.name}
-                    className="w-24 h-16 object-cover rounded"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-black">{image.name}</h3>
-                    <p className="text-sm text-gray-900 mb-1">{image.description}</p>
-                    <p className="text-xs text-gray-800">{image.location} • Order: {image.sortOrder}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(image)}
-                      disabled={isAdding || editingId !== null}
-                      className="border-gray-300 text-black hover:bg-gray-50"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => deleteMutation.mutate(image.id)}
-                      disabled={deleteMutation.isPending || isAdding || editingId !== null}
-                      className="border-gray-300 text-black hover:bg-gray-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </main>
 
       <BottomNavigation />
