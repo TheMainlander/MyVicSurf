@@ -57,6 +57,9 @@ export interface IStorage {
   getSurfSpots(): Promise<SurfSpot[]>;
   getSurfSpot(id: number): Promise<SurfSpot | undefined>;
   createSurfSpot(spot: InsertSurfSpot): Promise<SurfSpot>;
+  updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined>;
+  deleteSurfSpot(id: number): Promise<boolean>;
+  getNearbySpots(spotId: number, maxDistance?: number): Promise<SurfSpot[]>;
 
   // Surf Conditions
   getCurrentConditions(spotId: number): Promise<SurfCondition | undefined>;
@@ -180,6 +183,20 @@ export class DatabaseStorage implements IStorage {
   async createSurfSpot(spot: InsertSurfSpot): Promise<SurfSpot> {
     const [newSpot] = await db.insert(surfSpots).values(spot).returning();
     return newSpot;
+  }
+
+  async updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined> {
+    const [updatedSpot] = await db
+      .update(surfSpots)
+      .set(spotData)
+      .where(eq(surfSpots.id, id))
+      .returning();
+    return updatedSpot;
+  }
+
+  async deleteSurfSpot(id: number): Promise<boolean> {
+    const result = await db.delete(surfSpots).where(eq(surfSpots.id, id));
+    return result.rowCount > 0;
   }
 
   async updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined> {

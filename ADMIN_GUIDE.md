@@ -77,6 +77,45 @@ Super Admin > Admin > User
 - **Session Tracking**: Login times and activity monitoring
 - **Account Status**: Active/inactive account controls
 
+## Beach Management (NEW FEATURE)
+
+### Overview
+VicSurf provides comprehensive beach and surf spot management capabilities for admins. This system allows you to maintain accurate, up-to-date information about Victorian beaches and surf spots with full CRUD operations.
+
+### Accessing Beach Management
+- **URL**: `/admin/beaches`
+- **Required Role**: Admin or Super Admin
+- **Features**: Create, edit, delete, and maintain all beach content
+
+### Adding New Beaches
+1. Navigate to `/admin/beaches`
+2. Click "Add New Beach" button
+3. Fill required fields (beach name and region)
+4. Add GPS coordinates and classification details
+5. Upload hero image URL for visual appeal
+6. Write comprehensive beach description
+7. List facilities (parking, toilets, showers, etc.)
+8. Document safety hazards and access information
+9. Click "Create Beach" to save
+
+### Editing Existing Beaches
+1. Find beach in the admin beaches list
+2. Click edit icon (pencil) next to beach name
+3. Modify information using inline form
+4. Save changes with checkmark icon
+
+### Deleting Beaches
+⚠️ **Warning**: Deletion is permanent and cannot be undone
+1. Click trash icon next to beach
+2. Confirm deletion in popup dialog
+
+### Best Practices
+- Use high-quality, ocean-related images
+- Include accurate GPS coordinates
+- Document all safety hazards
+- Keep facility information current
+- Write clear, engaging descriptions
+
 ## Navigation System
 
 ### Centralized Navigation Architecture
