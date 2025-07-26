@@ -61,7 +61,8 @@ const COMPONENT_OPTIONS = [
   { value: "TideInformation", label: "Tide Information" },
   { value: "ForecastTimeline", label: "Forecast Timeline" },
   { value: "SurfSpotsList", label: "Surf Spots List" },
-  { value: "SimpleFeedbackForm", label: "Feedback Form" }
+  { value: "SimpleFeedbackForm", label: "Feedback Form" },
+  { value: "WeatherAlerts", label: "Weather Alerts" }
 ];
 
 const PANEL_TYPES = [
