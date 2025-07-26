@@ -8,9 +8,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock } from "lucide-react";
+import { useSEO, SEOConfigs } from "@/hooks/useSEO";
 import type { SurfSpot, Forecast } from "@shared/schema";
 
 export default function Forecast() {
+  // SEO optimization
+  useSEO(SEOConfigs.forecast);
+  
   const [selectedSpotId, setSelectedSpotId] = useState(1);
   const [forecastDays, setForecastDays] = useState(7);
 

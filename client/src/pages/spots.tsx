@@ -8,6 +8,7 @@ import QuickShare from "@/components/social/quick-share";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSEO, SEOConfigs } from "@/hooks/useSEO";
 import type { SurfSpot, SurfCondition } from "@shared/schema";
 
 interface SpotWithConditions extends SurfSpot {
@@ -15,6 +16,9 @@ interface SpotWithConditions extends SurfSpot {
 }
 
 export default function Spots() {
+  // SEO optimization
+  useSEO(SEOConfigs.spots);
+  
   // Mock user ID for development - in production this would come from authentication
   const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
   

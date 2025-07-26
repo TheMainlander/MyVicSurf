@@ -12,6 +12,7 @@ import LoadingOverlay from "@/components/common/loading-overlay";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Info, AlertTriangle } from "lucide-react";
+import { useSEO, generateSpotSEO, generateWeatherSchema } from "@/hooks/useSEO";
 import type { SurfSpot } from "@shared/schema";
 
 export default function Spot() {
@@ -25,6 +26,23 @@ export default function Spot() {
     queryKey: [`/api/surf-spots/${spotId}`],
     enabled: !!spotId
   });
+
+  const { data: conditions } = useQuery({
+    queryKey: [`/api/surf-spots/${spotId}/conditions`],
+    enabled: !!spotId
+  });
+
+  // SEO optimization with dynamic spot data
+  if (spot) {
+    const spotSEO = generateSpotSEO(spot.name, spot);
+    
+    // Add weather structured data if conditions are available
+    if (conditions) {
+      spotSEO.structuredData = generateWeatherSchema(spot.name, conditions);
+    }
+    
+    useSEO(spotSEO);
+  }
 
   if (spotLoading || !spot) {
     return <LoadingOverlay message="Loading surf spot details..." />;

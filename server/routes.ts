@@ -1322,6 +1322,87 @@ ${document.content}
     }
   });
 
+  // SEO and Sitemap Routes
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const { sitemapGenerator } = await import('./sitemap-generator');
+      const sitemap = sitemapGenerator.generateSitemapIndex();
+      
+      res.set({
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+      });
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating sitemap index:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  app.get("/sitemap-main.xml", async (req, res) => {
+    try {
+      const { sitemapGenerator } = await import('./sitemap-generator');
+      const sitemap = await sitemapGenerator.generateMainSitemap();
+      
+      res.set({
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=3600'
+      });
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating main sitemap:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  app.get("/sitemap-spots.xml", async (req, res) => {
+    try {
+      const { sitemapGenerator } = await import('./sitemap-generator');
+      const sitemap = await sitemapGenerator.generateSpotsSitemap();
+      
+      res.set({
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=1800' // Cache for 30 minutes
+      });
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating spots sitemap:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  app.get("/sitemap-forecasts.xml", async (req, res) => {
+    try {
+      const { sitemapGenerator } = await import('./sitemap-generator');
+      const sitemap = await sitemapGenerator.generateForecastSitemap();
+      
+      res.set({
+        'Content-Type': 'application/xml', 
+        'Cache-Control': 'public, max-age=900' // Cache for 15 minutes (forecast data changes frequently)
+      });
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating forecast sitemap:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  app.get("/robots.txt", async (req, res) => {
+    try {
+      const { sitemapGenerator } = await import('./sitemap-generator');
+      const robotsTxt = sitemapGenerator.generateRobotsTxt();
+      
+      res.set({
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+      });
+      res.send(robotsTxt);
+    } catch (error) {
+      console.error("Error generating robots.txt:", error);
+      res.status(500).send("Error generating robots.txt");
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

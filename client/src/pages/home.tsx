@@ -15,10 +15,14 @@ import LocationPermission from "@/components/location/location-permission";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import PremiumFeaturesPanel from "@/components/premium/premium-features-panel";
 import SimpleFeedbackForm from "@/components/feedback/simple-feedback-form";
+import { useSEO, SEOConfigs } from "@/hooks/useSEO";
 
 import type { SurfSpot } from "@shared/schema";
 
 export default function Home() {
+  // SEO optimization
+  useSEO(SEOConfigs.home);
+  
   const [selectedSpotId, setSelectedSpotId] = useState(1); // Default to Bells Beach
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
