@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Settings, Bell, MapPin, Thermometer, Info } from "lucide-react";
 import APISettings from "@/components/settings/api-settings";
-import SettingsList from "@/components/settings/settings-list";
+import { SettingsWithLocation } from "@/components/settings/settings-list";
 import type { User } from "@shared/schema";
 
 export default function Profile() {
@@ -45,7 +45,7 @@ export default function Profile() {
     subscriptionStatus: "free",
     subscriptionPlan: null,
     subscriptionEndDate: null,
-    subscriptionCancelDate: null,
+    subscriptionEndDate: null,
     createdAt: new Date("2024-01-15"),
     updatedAt: new Date(),
   };
@@ -113,7 +113,7 @@ export default function Profile() {
             </Card>
 
             {/* Settings Section */}
-            <SettingsList userId={currentUserId} />
+            <SettingsWithLocation userId={currentUserId} />
           </div>
         </section>
       </main>

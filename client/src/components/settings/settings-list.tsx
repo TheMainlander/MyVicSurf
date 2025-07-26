@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Settings, Bell, MapPin, Thermometer, Info, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import LocationSettings from "./location-settings";
 import type { UserPreferences, SurfSpot } from "@shared/schema";
 
 interface SettingsListProps {
@@ -299,5 +300,18 @@ export default function SettingsList({ userId }: SettingsListProps) {
         </Dialog>
       </CardContent>
     </Card>
+  );
+}
+
+interface SettingsWithLocationProps {
+  userId: string;
+}
+
+export function SettingsWithLocation({ userId }: SettingsWithLocationProps) {
+  return (
+    <div className="space-y-6">
+      <SettingsList userId={userId} />
+      <LocationSettings />
+    </div>
   );
 }

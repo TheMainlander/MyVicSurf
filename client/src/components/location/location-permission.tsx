@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { MapPin, Navigation, AlertCircle, CheckCircle, X, Clock } from 'lucide-react';
 import { useGeolocation } from '@/hooks/use-geolocation';
+import { useLocationPersistence } from '@/hooks/use-location-persistence';
+import LocationPersistenceDialog from './location-persistence-dialog';
 
 interface LocationPermissionProps {
   onLocationShared?: (latitude: number, longitude: number) => void;
@@ -17,6 +19,7 @@ export default function LocationPermission({
   showCompact = false 
 }: LocationPermissionProps) {
   const [hasRequested, setHasRequested] = useState(false);
+  const [showPersistenceDialog, setShowPersistenceDialog] = useState(false);
   const { 
     latitude, 
     longitude, 
@@ -26,35 +29,103 @@ export default function LocationPermission({
     supported, 
     getCurrentPosition 
   } = useGeolocation();
+  
+  const { 
+    storedLocation, 
+    storeLocation, 
+    hasStoredLocation,
+    getLocationAge,
+    getExpirationInfo 
+  } = useLocationPersistence();
 
   const handleRequestLocation = () => {
-    setHasRequested(true);
-    getCurrentPosition();
+    setShowPersistenceDialog(true);
   };
 
-  // Call onLocationShared when we get coordinates
-  React.useEffect(() => {
-    if (latitude && longitude && onLocationShared) {
-      onLocationShared(latitude, longitude);
+  const handlePersistenceConfirm = (duration: string) => {
+    setHasRequested(true);
+    getCurrentPosition();
+    
+    // Store the duration preference for when we get coordinates
+    sessionStorage.setItem('vicsurf-pending-duration', duration);
+  };
+
+  const handlePersistenceCancel = () => {
+    setShowPersistenceDialog(false);
+    if (onDismiss) {
+      onDismiss();
     }
-  }, [latitude, longitude, onLocationShared]);
+  };
+
+  // Call onLocationShared when we get coordinates and store them
+  React.useEffect(() => {
+    if (latitude && longitude) {
+      const pendingDuration = sessionStorage.getItem('vicsurf-pending-duration') || '24hours';
+      storeLocation(latitude, longitude, pendingDuration);
+      sessionStorage.removeItem('vicsurf-pending-duration');
+      
+      if (onLocationShared) {
+        onLocationShared(latitude, longitude);
+      }
+    }
+  }, [latitude, longitude, onLocationShared, storeLocation]);
+
+  // Use stored location if available
+  React.useEffect(() => {
+    if (hasStoredLocation && storedLocation && onLocationShared) {
+      onLocationShared(storedLocation.latitude, storedLocation.longitude);
+    }
+  }, [hasStoredLocation, storedLocation, onLocationShared]);
 
   if (showCompact) {
+    if (hasStoredLocation && storedLocation) {
+      return (
+        <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <div className="flex-1">
+            <span className="text-sm text-green-800 block">
+              Location shared • {getLocationAge()}
+            </span>
+            <span className="text-xs text-green-600">
+              {getExpirationInfo()}
+            </span>
+          </div>
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => setShowPersistenceDialog(true)}
+            className="text-green-700 border-green-300 hover:bg-green-100"
+          >
+            <Clock className="h-3 w-3 mr-1" />
+            Update
+          </Button>
+        </div>
+      );
+    }
+
     return (
-      <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-        <MapPin className="h-4 w-4 text-blue-600" />
-        <span className="text-sm text-blue-800 flex-1">
-          Share your location for nearby surf spots
-        </span>
-        <Button 
-          size="sm" 
-          onClick={handleRequestLocation}
-          disabled={loading || !supported}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          {loading ? 'Getting...' : 'Share'}
-        </Button>
-      </div>
+      <>
+        <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <MapPin className="h-4 w-4 text-blue-600" />
+          <span className="text-sm text-blue-800 flex-1">
+            Share your location for nearby surf spots
+          </span>
+          <Button 
+            size="sm" 
+            onClick={handleRequestLocation}
+            disabled={loading || !supported}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            {loading ? 'Getting...' : 'Share'}
+          </Button>
+        </div>
+        <LocationPersistenceDialog
+          isOpen={showPersistenceDialog}
+          onClose={() => setShowPersistenceDialog(false)}
+          onConfirm={handlePersistenceConfirm}
+          onCancel={handlePersistenceCancel}
+        />
+      </>
     );
   }
 
@@ -140,6 +211,13 @@ export default function LocationPermission({
             {loading ? 'Getting Location...' : hasRequested ? 'Try Again' : 'Share My Location'}
           </Button>
         </div>
+
+        <LocationPersistenceDialog
+          isOpen={showPersistenceDialog}
+          onClose={() => setShowPersistenceDialog(false)}
+          onConfirm={handlePersistenceConfirm}
+          onCancel={handlePersistenceCancel}
+        />
       </CardContent>
     </Card>
   );
