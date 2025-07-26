@@ -329,18 +329,6 @@ export const feedbackVotes = pgTable("feedback_votes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const containerOrder = pgTable("container_order", {
-  id: serial("id").primaryKey(),
-  containerId: text("container_id").notNull().unique(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  icon: text("icon").notNull(),
-  sortOrder: integer("sort_order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   favorites: many(userFavorites),
@@ -509,12 +497,6 @@ export const insertFeedbackVoteSchema = createInsertSchema(feedbackVotes).omit({
   createdAt: true,
 });
 
-export const insertContainerOrderSchema = createInsertSchema(containerOrder).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertUserFavorite = z.infer<typeof insertUserFavoriteSchema>;
 export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
@@ -526,7 +508,6 @@ export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema
 export type InsertCarouselImage = z.infer<typeof insertCarouselImageSchema>;
 export type InsertUserFeedback = z.infer<typeof insertUserFeedbackSchema>;
 export type InsertFeedbackVote = z.infer<typeof insertFeedbackVoteSchema>;
-export type InsertContainerOrder = z.infer<typeof insertContainerOrderSchema>;
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -540,7 +521,6 @@ export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type CarouselImage = typeof carouselImages.$inferSelect;
 export type UserFeedback = typeof userFeedback.$inferSelect;
 export type FeedbackVote = typeof feedbackVotes.$inferSelect;
-export type ContainerOrder = typeof containerOrder.$inferSelect;
 
 export type SurfSpot = typeof surfSpots.$inferSelect;
 export type SurfCondition = typeof surfConditions.$inferSelect;

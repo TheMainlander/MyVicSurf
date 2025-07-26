@@ -57,10 +57,6 @@ app.use((req, res, next) => {
   // Seed system admin documents on startup
   const { seedSystemDocuments } = await import("./system-documents-seed");
   await seedSystemDocuments();
-  
-  // Seed container order on startup
-  const { seedContainerOrder } = await import("./container-order-seed");
-  await seedContainerOrder();
 
   const server = await registerRoutes(app);
 

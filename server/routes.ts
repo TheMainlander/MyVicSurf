@@ -766,43 +766,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Container Order Admin Routes
-  app.get('/api/admin/container-order', requireAdmin, async (req, res) => {
-    try {
-      const containers = await storage.getContainerOrder();
-      res.json(containers);
-    } catch (error) {
-      console.error('Error fetching container order:', error);
-      res.status(500).json({ message: 'Failed to fetch container order' });
-    }
-  });
-
-  app.post('/api/admin/container-order', requireAdmin, async (req, res) => {
-    try {
-      const { containers } = req.body;
-      
-      if (!containers || !Array.isArray(containers)) {
-        return res.status(400).json({ message: 'Invalid container order data' });
-      }
-      
-      const updatedOrder = await storage.updateContainerOrder(containers);
-      res.json(updatedOrder);
-    } catch (error) {
-      console.error('Error updating container order:', error);
-      res.status(500).json({ message: 'Failed to update container order' });
-    }
-  });
-
-  app.post('/api/admin/container-order/reset', requireAdmin, async (req, res) => {
-    try {
-      const resetOrder = await storage.resetContainerOrder();
-      res.json(resetOrder);
-    } catch (error) {
-      console.error('Error resetting container order:', error);
-      res.status(500).json({ message: 'Failed to reset container order' });
-    }
-  });
-
   // Serve admin guide documentation
   app.get('/ADMIN_GUIDE.md', (req, res) => {
     const __filename = fileURLToPath(import.meta.url);

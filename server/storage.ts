@@ -16,7 +16,6 @@ import {
   marketingDocuments,
   userFeedback,
   feedbackVotes,
-  containerOrder,
   type SurfSpot, 
   type SurfCondition, 
   type TideTime, 
@@ -30,7 +29,6 @@ import {
   type Payment,
   type SubscriptionPlan,
   type CarouselImage,
-  type ContainerOrder,
   type InsertSurfSpot,
   type InsertSurfCondition,
   type InsertTideTime,
@@ -46,7 +44,6 @@ import {
   type InsertCarouselImage,
   type InsertUserFeedback,
   type InsertFeedbackVote,
-  type InsertContainerOrder,
   type UserFeedback,
   type FeedbackVote,
   type UpsertUser
@@ -151,9 +148,9 @@ export interface IStorage {
   deleteMarketingDocument(id: number): Promise<void>;
 
   // Feedback methods
-  createFeedback(data: InsertUserFeedback): Promise<UserFeedback>;
-  getFeedback(id: number): Promise<UserFeedback | null>;
-  getAllFeedback(filters?: { 
+  async createFeedback(data: InsertUserFeedback): Promise<UserFeedback>;
+  async getFeedback(id: number): Promise<UserFeedback | null>;
+  async getAllFeedback(filters?: { 
     feedbackType?: string; 
     status?: string; 
     spotId?: number; 
@@ -162,16 +159,11 @@ export interface IStorage {
     limit?: number;
     offset?: number;
   }): Promise<UserFeedback[]>;
-  updateFeedback(id: number, data: Partial<UserFeedback>): Promise<UserFeedback>;
-  deleteFeedback(id: number): Promise<void>;
-  voteFeedback(feedbackId: number, userId: string, voteType: 'upvote' | 'downvote'): Promise<void>;
-  removeVoteFeedback(feedbackId: number, userId: string): Promise<void>;
-  getFeedbackVotes(feedbackId: number): Promise<FeedbackVote[]>;
-
-  // Container Order methods
-  getContainerOrder(): Promise<ContainerOrder[]>;
-  updateContainerOrder(containers: { containerId: string; sortOrder: number; }[]): Promise<ContainerOrder[]>;
-  resetContainerOrder(): Promise<ContainerOrder[]>;
+  async updateFeedback(id: number, data: Partial<UserFeedback>): Promise<UserFeedback>;
+  async deleteFeedback(id: number): Promise<void>;
+  async voteFeedback(feedbackId: number, userId: string, voteType: 'upvote' | 'downvote'): Promise<void>;
+  async removeVoteFeedback(feedbackId: number, userId: string): Promise<void>;
+  async getFeedbackVotes(feedbackId: number): Promise<FeedbackVote[]>;
 }
 
 // Database-backed storage for production
@@ -1041,54 +1033,6 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(feedbackVotes)
       .where(eq(feedbackVotes.feedbackId, feedbackId));
-  }
-
-  // Container Order Methods
-  async getContainerOrder(): Promise<ContainerOrder[]> {
-    return await db
-      .select()
-      .from(containerOrder)
-      .orderBy(containerOrder.sortOrder);
-  }
-
-  async updateContainerOrder(containers: { containerId: string; sortOrder: number; }[]): Promise<ContainerOrder[]> {
-    // Update each container's sort order
-    for (const container of containers) {
-      await db
-        .update(containerOrder)
-        .set({ 
-          sortOrder: container.sortOrder,
-          updatedAt: new Date()
-        })
-        .where(eq(containerOrder.containerId, container.containerId));
-    }
-
-    // Return updated order
-    return await this.getContainerOrder();
-  }
-
-  async resetContainerOrder(): Promise<ContainerOrder[]> {
-    const DEFAULT_ORDER = [
-      'beach-management',
-      'carousel-management', 
-      'user-management',
-      'sales-marketing',
-      'system-documents',
-      'documentation'
-    ];
-
-    // Reset to default order
-    for (let i = 0; i < DEFAULT_ORDER.length; i++) {
-      await db
-        .update(containerOrder)
-        .set({ 
-          sortOrder: i + 1,
-          updatedAt: new Date()
-        })
-        .where(eq(containerOrder.containerId, DEFAULT_ORDER[i]));
-    }
-
-    return await this.getContainerOrder();
   }
 }
 
