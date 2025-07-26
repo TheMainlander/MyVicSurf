@@ -38,29 +38,39 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Seed subscription plans on startup
-  const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
-  await seedSubscriptionPlans();
-  
-  // Seed carousel images on startup
-  const { seedCarouselImages } = await import("./carousel-seed");
-  await seedCarouselImages();
-  
-  // Seed admin user on startup
-  const { seedAdminUser } = await import("./admin-seed");
-  await seedAdminUser();
-  
-  // Seed marketing documents on startup
-  const { seedMarketingDocuments } = await import("./marketing-documents-seed");
-  await seedMarketingDocuments();
-  
-  // Seed system admin documents on startup
-  const { seedSystemDocuments } = await import("./system-documents-seed");
-  await seedSystemDocuments();
-  
-  // Seed container order on startup
-  const { seedContainerOrder } = await import("./container-order-seed");
-  await seedContainerOrder();
+  // Seed data on startup with error handling to prevent server crashes
+  try {
+    console.log("Starting database seeding process...");
+    
+    // Seed subscription plans on startup
+    const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
+    await seedSubscriptionPlans();
+    
+    // Seed carousel images on startup
+    const { seedCarouselImages } = await import("./carousel-seed");
+    await seedCarouselImages();
+    
+    // Seed admin user on startup
+    const { seedAdminUser } = await import("./admin-seed");
+    await seedAdminUser();
+    
+    // Seed marketing documents on startup
+    const { seedMarketingDocuments } = await import("./marketing-documents-seed");
+    await seedMarketingDocuments();
+    
+    // Seed system admin documents on startup
+    const { seedSystemDocuments } = await import("./system-documents-seed");
+    await seedSystemDocuments();
+    
+    // Seed container order on startup
+    const { seedContainerOrder } = await import("./container-order-seed");
+    await seedContainerOrder();
+    
+    console.log("Database seeding completed successfully");
+  } catch (error) {
+    console.error("Error during database seeding:", error);
+    console.warn("Continuing to start server despite seeding errors...");
+  }
 
   const server = await registerRoutes(app);
 
@@ -97,17 +107,45 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
+  
   server.listen({
     port,
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`VicSurf server running on port ${port}`);
+    log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    log(`Health check available at: http://0.0.0.0:${port}/`);
     
     // Start push notification monitoring
     if (process.env.DATABASE_URL) {
-      pushNotificationService.startOptimalConditionsChecker();
-      log("Push notification service started");
+      try {
+        pushNotificationService.startOptimalConditionsChecker();
+        log("Push notification service started");
+      } catch (error) {
+        console.error("Failed to start push notification service:", error);
+      }
     }
   });
-})();
+
+  // Handle server shutdown gracefully
+  process.on('SIGTERM', () => {
+    log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      log('Server closed');
+      process.exit(0);
+    });
+  });
+
+  process.on('SIGINT', () => {
+    log('SIGINT received, shutting down gracefully');
+    server.close(() => {
+      log('Server closed');
+      process.exit(0);
+    });
+  });
+
+})().catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+});

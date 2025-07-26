@@ -76,5 +76,5 @@ export async function seedContainerOrder() {
 
 // Run if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  seedContainerOrder().then(() => process.exit(0));
+  seedContainerOrder();
 }

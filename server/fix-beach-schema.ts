@@ -21,5 +21,5 @@ async function fixBeachSchema() {
 }
 
 if (require.main === module) {
-  fixBeachSchema().then(() => process.exit(0));
+  fixBeachSchema();
 }
