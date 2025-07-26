@@ -234,7 +234,7 @@ export default function BeachCameras({ spotId, spotName }: BeachCamerasProps) {
         )}
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         {cameras && cameras.length > 0 ? (
           <>
             {/* Camera Feed Display */}

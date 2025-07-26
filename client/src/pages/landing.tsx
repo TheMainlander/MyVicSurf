@@ -120,10 +120,10 @@ export default function Landing() {
             </p>
             
             {/* Enhanced Registration Section */}
-            <div className="slide-up space-y-6 max-w-md mx-auto" style={{ animationDelay: '0.6s' }}>
-              <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
-                <h3 className="text-2xl font-bold text-white mb-2 text-center">Start Your Surf Journey</h3>
-                <p className="text-cyan-300 text-sm font-medium mb-6 text-center">
+            <div className="slide-up space-y-4 max-w-md mx-auto" style={{ animationDelay: '0.6s' }}>
+              <div className="bg-black/30 backdrop-blur-md rounded-xl p-6 border border-white/20 shadow-2xl">
+                <h3 className="text-xl font-bold text-white mb-2 text-center">Start Your Surf Journey</h3>
+                <p className="text-cyan-300 text-sm font-medium mb-4 text-center">
                   Join 1,000+ surfers tracking perfect waves
                 </p>
                 
@@ -225,38 +225,38 @@ export default function Landing() {
 
             </div>
             {/* Features Grid - Below Surf Spots */}
-            <div className="grid md:grid-cols-3 gap-8 mb-16 mt-16">
-              <div className="glass rounded-2xl p-10 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '1.8s' }}>
-                <div className="text-4xl mb-6">🌊</div>
-                <h3 className="text-2xl font-bold text-white mb-6">Real-Time Conditions</h3>
-                <p className="text-white/80 leading-relaxed">
+            <div className="grid md:grid-cols-3 gap-4 mb-12 mt-12">
+              <div className="glass rounded-xl p-6 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '1.8s' }}>
+                <div className="text-3xl mb-4">🌊</div>
+                <h3 className="text-xl font-bold text-white mb-3">Real-Time Conditions</h3>
+                <p className="text-white/80 text-sm leading-relaxed">
                   Live wave heights, wind conditions, and water temperature from trusted sources
                 </p>
               </div>
 
-              <div className="glass rounded-2xl p-10 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.0s' }}>
-                <div className="text-4xl mb-6">📈</div>
-                <h3 className="text-2xl font-bold text-white mb-6">7-Day Forecasts</h3>
-                <p className="text-white/80 leading-relaxed">
+              <div className="glass rounded-xl p-6 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.0s' }}>
+                <div className="text-3xl mb-4">📈</div>
+                <h3 className="text-xl font-bold text-white mb-3">7-Day Forecasts</h3>
+                <p className="text-white/80 text-sm leading-relaxed">
                   Plan your surf sessions with detailed forecasts and optimal condition alerts
                 </p>
               </div>
 
-              <div className="glass rounded-2xl p-10 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.2s' }}>
-                <div className="text-4xl mb-6">❤️</div>
-                <h3 className="text-2xl font-bold text-white mb-6">Personal Favorites</h3>
-                <p className="text-white/80 leading-relaxed">
+              <div className="glass rounded-xl p-6 hover:scale-105 transition-all duration-300 slide-up text-center" style={{ animationDelay: '2.2s' }}>
+                <div className="text-3xl mb-4">❤️</div>
+                <h3 className="text-xl font-bold text-white mb-3">Personal Favorites</h3>
+                <p className="text-white/80 text-sm leading-relaxed">
                   Save your favorite spots and get push notifications for optimal conditions
                 </p>
               </div>
             </div>
 
           {/* Call to Action */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-12 border border-white/20 mt-8">
-            <h3 className="text-3xl font-bold text-white mb-6 text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20 mt-6">
+            <h3 className="text-2xl font-bold text-white mb-4 text-center">
               Ready to Catch the Perfect Wave?
             </h3>
-            <p className="text-white/80 mb-8 text-center text-lg max-w-2xl mx-auto">
+            <p className="text-white/80 mb-6 text-center max-w-2xl mx-auto">
               Join VicSurf today and never miss optimal surf conditions again
             </p>
             <div className="text-center">

@@ -17,12 +17,12 @@ export default function ForecastTimeline({ spotId }: ForecastTimelineProps) {
 
   if (isLoading) {
     return (
-      <section className="py-4">
-        <h3 className="text-lg font-semibold mb-4 flex items-center">
+      <section className="py-2">
+        <h3 className="text-lg font-semibold mb-3 flex items-center">
           <i className="fas fa-calendar-alt text-ocean-blue mr-2"></i>
           7-Day Forecast
         </h3>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {Array.from({ length: 3 }, (_, i) => (
             <Card key={i} className="shadow-md animate-pulse">
               <CardContent className="p-4">
@@ -88,7 +88,7 @@ export default function ForecastTimeline({ spotId }: ForecastTimelineProps) {
           const dateInfo = formatDate(day.date);
           return (
             <Card key={`${day.spotId}-${day.date}`} className="shadow-md">
-              <CardContent className="p-4">
+              <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   {/* Left section: Date and Wave info */}
                   <div className="flex items-center space-x-4">

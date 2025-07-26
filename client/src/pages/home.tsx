@@ -74,7 +74,7 @@ export default function Home() {
         />
       </div>
       
-      <main className="max-w-md mx-auto px-4 pb-20 space-y-6">
+      <main className="max-w-md mx-auto px-4 pb-20 space-y-3">
         {showLocationPrompt && (
           <div className="fade-in">
             <LocationPermission 
@@ -98,7 +98,7 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="space-y-6">
+        <div className="space-y-3">
           <div className="fade-in" style={{ animationDelay: '0.1s' }}>
             <CurrentConditions spotId={selectedSpotId} spot={selectedSpot} />
           </div>

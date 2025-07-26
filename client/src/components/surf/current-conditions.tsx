@@ -95,8 +95,8 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
           </div>
         </div>
         
-        <div className="p-6">
-          <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="p-4">
+          <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-gray-900">
                 {conditions.waveHeight.toFixed(1)}m

@@ -20,12 +20,12 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
 
   if (isLoading) {
     return (
-      <section className="py-4">
-        <h3 className="text-lg font-semibold mb-4 flex items-center">
+      <section className="py-2">
+        <h3 className="text-lg font-semibold mb-3 flex items-center">
           <i className="fas fa-map-marked-alt text-ocean-blue mr-2"></i>
           Nearby Spots
         </h3>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {Array.from({ length: 3 }, (_, i) => (
             <Card key={i} className="shadow-md overflow-hidden animate-pulse">
               <CardContent className="p-0">
@@ -74,12 +74,12 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
   };
 
   return (
-    <section className="py-4">
-      <h3 className="text-lg font-semibold mb-4 flex items-center">
+    <section className="py-2">
+      <h3 className="text-lg font-semibold mb-3 flex items-center">
         <i className="fas fa-map-marked-alt text-ocean-blue mr-2"></i>
         Nearby Spots
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {nearbySpots?.slice(0, 3).map((spot) => (
           <Card key={spot.id} className="shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 bg-white">
             <CardContent className="p-0">
@@ -89,7 +89,7 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
                   alt={spot.name}
                   className="w-24 h-24 object-cover"
                 />
-                <div className="flex-1 p-5 bg-white">
+                <div className="flex-1 p-3 bg-white">
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h4 className="font-bold text-gray-900 text-base leading-tight">{spot.name}</h4>

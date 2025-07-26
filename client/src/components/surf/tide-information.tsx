@@ -67,8 +67,8 @@ export default function TideInformation({ spotId }: TideInformationProps) {
 
   return (
     <section>
-      <div className="surf-card p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="surf-card p-4">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               <Waves className="h-5 w-5 text-ocean-blue" />
