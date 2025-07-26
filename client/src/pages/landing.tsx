@@ -322,6 +322,25 @@ export default function Landing() {
               <p className="text-white/60 text-sm mt-4">
                 Share the stoke with fellow surfers
               </p>
+              
+              {/* Replit Attribution */}
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <a 
+                  href="https://replit.com/refer/Producto-Builds"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20 hover:bg-white/20 transition-all duration-200 hover:scale-105"
+                >
+                  <div className="flex items-center space-x-1">
+                    <span className="text-white/80 text-sm">Proudly Built by a Human and my</span>
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" fill="#F26207"/>
+                      <path d="M12 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" fill="white"/>
+                    </svg>
+                    <span className="text-white font-medium text-sm">Replit AI</span>
+                  </div>
+                </a>
+              </div>
             </div>
           </footer>
           </div>
