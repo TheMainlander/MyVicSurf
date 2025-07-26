@@ -73,13 +73,29 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
       });
       onCancel();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Profile update error:", error);
-      toast({
-        title: "Update failed",
-        description: "Failed to update your profile. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Handle specific error cases
+      if (error?.status === 409) {
+        toast({
+          title: "Email already in use",
+          description: "This email address is already registered with another account.",
+          variant: "destructive",
+        });
+      } else if (error?.status === 403) {
+        toast({
+          title: "Permission denied",
+          description: "You can only update your own profile.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Update failed",
+          description: "Failed to update your profile. Please try again.",
+          variant: "destructive",
+        });
+      }
     },
   });
 

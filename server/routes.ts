@@ -334,9 +334,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.params.userId;
       const updateData = req.body;
       
+      // For authenticated users, verify they can only update their own profile
+      if (authConfigured && req.isAuthenticated && req.isAuthenticated()) {
+        const currentUser = await storage.getUser((req.user as any)?.claims?.sub);
+        if (currentUser && currentUser.id !== userId) {
+          return res.status(403).json({ message: "Cannot update another user's profile" });
+        }
+      }
+      
       // Validate profile image URL if provided
       if (updateData.profileImageUrl && updateData.profileImageUrl.trim() === "") {
         updateData.profileImageUrl = null;
+      }
+      
+      // Email validation to prevent conflicts with SSO
+      if (updateData.email) {
+        const existingUserWithEmail = await storage.getUserByEmail(updateData.email);
+        if (existingUserWithEmail && existingUserWithEmail.id !== userId) {
+          return res.status(409).json({ 
+            message: "Email address is already in use by another account" 
+          });
+        }
       }
       
       const updatedUser = await storage.updateUser(userId, updateData);
