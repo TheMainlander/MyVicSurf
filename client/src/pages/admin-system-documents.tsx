@@ -111,7 +111,29 @@ export default function AdminSystemDocuments() {
       const response = await apiRequest('GET', `/api/admin/documents/${doc.id}/download?format=${downloadFormat}`);
       
       if (!response.ok) {
-        throw new Error('Download failed');
+        // Try to get error details from response
+        let errorMessage = 'Download failed';
+        let errorDetails = '';
+        
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+          errorDetails = errorData.details || '';
+        } catch (e) {
+          // Response wasn't JSON, use default message
+        }
+        
+        if (downloadFormat === 'pdf' && errorDetails) {
+          // Special handling for PDF export errors
+          toast({
+            title: "PDF Export Not Available",
+            description: errorDetails,
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        throw new Error(errorMessage);
       }
       
       const blob = await response.blob();
@@ -129,9 +151,13 @@ export default function AdminSystemDocuments() {
         description: `${doc.title} exported as ${downloadFormat.toUpperCase()}`,
       });
     } catch (error) {
+      console.error('Export error:', error);
+      const isPDF = (format || doc.format) === 'pdf';
       toast({
         title: "Export Failed", 
-        description: "Could not export the document. Please try again.",
+        description: isPDF 
+          ? "PDF export failed. Try downloading as HTML or Markdown instead."
+          : "Could not export the document. Please try again.",
         variant: "destructive",
       });
     } finally {

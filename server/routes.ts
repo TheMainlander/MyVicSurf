@@ -986,56 +986,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       switch (requestedFormat) {
         case 'pdf': {
-          // Generate PDF from markdown content
-          const htmlPdfNode = await import('html-pdf-node');
-          const markedModule = await import('marked');
-          
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <title>${document.title}</title>
-              <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
-                h1, h2, h3 { color: #333; }
-                h1 { border-bottom: 2px solid #0066cc; padding-bottom: 10px; }
-                h2 { border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-                .header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-                .meta { color: #666; font-size: 0.9em; }
-                pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
-                code { background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
-                blockquote { border-left: 4px solid #0066cc; margin: 0; padding-left: 20px; color: #666; }
-                table { border-collapse: collapse; width: 100%; margin: 20px 0; }
-                th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                th { background-color: #f5f5f5; font-weight: bold; }
-              </style>
-            </head>
-            <body>
-              <div class="header">
-                <h1>${document.title}</h1>
-                <div class="meta">
-                  <p><strong>Type:</strong> ${document.type} | <strong>Created:</strong> ${new Date(document.createdAt).toLocaleDateString()} | <strong>By:</strong> ${document.createdBy}</p>
-                  <p><strong>Description:</strong> ${document.description}</p>
+          try {
+            // Generate PDF from markdown content
+            const htmlPdfNode = await import('html-pdf-node');
+            const markedModule = await import('marked');
+            
+            const htmlContent = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="UTF-8">
+                <title>${document.title}</title>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; color: #333; }
+                  h1, h2, h3 { color: #0066cc; margin-top: 24px; margin-bottom: 16px; }
+                  h1 { border-bottom: 2px solid #0066cc; padding-bottom: 10px; font-size: 24px; }
+                  h2 { border-bottom: 1px solid #ddd; padding-bottom: 5px; font-size: 20px; }
+                  h3 { font-size: 16px; }
+                  .header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+                  .meta { color: #666; font-size: 0.9em; }
+                  pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+                  code { background: #f0f0f0; padding: 2px 4px; border-radius: 3px; font-size: 12px; }
+                  blockquote { border-left: 4px solid #0066cc; margin: 16px 0; padding-left: 20px; color: #666; }
+                  table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 12px; }
+                  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                  th { background-color: #f5f5f5; font-weight: bold; }
+                  ul, ol { margin: 16px 0; padding-left: 24px; }
+                  li { margin: 4px 0; }
+                  p { margin: 12px 0; }
+                  .page-break { page-break-before: always; }
+                </style>
+              </head>
+              <body>
+                <div class="header">
+                  <h1>${document.title}</h1>
+                  <div class="meta">
+                    <p><strong>Type:</strong> ${document.type} | <strong>Created:</strong> ${new Date(document.createdAt).toLocaleDateString()} | <strong>By:</strong> ${document.createdBy}</p>
+                    <p><strong>Description:</strong> ${document.description}</p>
+                  </div>
                 </div>
-              </div>
-              ${markedModule.marked.parse(document.content)}
-            </body>
-            </html>
-          `;
-          
-          const options = { 
-            format: 'A4',
-            printBackground: true,
-            margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
-          };
-          const file = { content: htmlContent };
-          
-          const pdfBuffer = await htmlPdfNode.generatePdf(file, options);
-          
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle}.pdf"`);
-          res.send(pdfBuffer);
+                ${markedModule.marked.parse(document.content)}
+              </body>
+              </html>
+            `;
+            
+            const options = { 
+              format: 'A4',
+              printBackground: true,
+              margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' },
+              timeout: 30000,
+              args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+            };
+            const file = { content: htmlContent };
+            
+            console.log(`Generating PDF for document: ${document.title}`);
+            const pdfBuffer = await htmlPdfNode.generatePdf(file, options);
+            
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle}.pdf"`);
+            res.send(pdfBuffer);
+            console.log(`PDF generated successfully for: ${document.title}`);
+          } catch (pdfError) {
+            console.error('PDF generation error:', pdfError);
+            res.status(500).json({ 
+              message: 'Failed to generate PDF', 
+              error: pdfError.message,
+              details: 'PDF generation requires browser dependencies. Please try downloading as HTML or Markdown instead.'
+            });
+          }
           break;
         }
         
