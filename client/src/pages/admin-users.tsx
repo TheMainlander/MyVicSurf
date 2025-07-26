@@ -180,26 +180,26 @@ export default function AdminUsersPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.totalUsers}</div>
-                <div className="text-sm text-gray-700">Total Users</div>
+                <div className="text-2xl font-bold text-black">{adminInfo.stats.totalUsers}</div>
+                <div className="text-sm text-gray-900">Total Users</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.activeUsers}</div>
-                <div className="text-sm text-gray-700">Active Users</div>
+                <div className="text-2xl font-bold text-black">{adminInfo.stats.activeUsers}</div>
+                <div className="text-sm text-gray-900">Active Users</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.adminUsers}</div>
-                <div className="text-sm text-gray-700">Admins</div>
+                <div className="text-2xl font-bold text-black">{adminInfo.stats.adminUsers}</div>
+                <div className="text-sm text-gray-900">Admins</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.superAdminUsers}</div>
-                <div className="text-sm text-gray-700">Super Admins</div>
+                <div className="text-2xl font-bold text-black">{adminInfo.stats.superAdminUsers}</div>
+                <div className="text-sm text-gray-900">Super Admins</div>
               </CardContent>
             </Card>
           </div>
@@ -219,11 +219,11 @@ export default function AdminUsersPage() {
                 <Badge className={getRoleBadgeColor(adminInfo.currentAdmin.role)}>
                   {adminInfo.currentAdmin.role.replace('_', ' ').toUpperCase()}
                 </Badge>
-                <span className="text-sm text-gray-800">{adminInfo.currentAdmin.email}</span>
+                <span className="text-sm text-black">{adminInfo.currentAdmin.email}</span>
               </div>
               <div className="mt-4 text-sm">
-                <div className="text-gray-900 font-medium">Permissions:</div>
-                <ul className="list-disc list-inside mt-2 space-y-1 text-gray-800">
+                <div className="text-black font-medium">Permissions:</div>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-black">
                   {adminInfo.permissions.canManageCarousel && <li>Manage carousel images</li>}
                   {adminInfo.permissions.canManageUsers && <li>Manage user accounts</li>}
                   {adminInfo.permissions.canManageRoles && <li>Manage user roles</li>}
@@ -244,8 +244,8 @@ export default function AdminUsersPage() {
                     <div className="flex items-center gap-2">
                       {getRoleIcon(user.role || 'user')}
                       <div>
-                        <div className="font-medium text-gray-900">{user.displayName || 'Unknown User'}</div>
-                        <div className="text-sm text-gray-700">{user.email}</div>
+                        <div className="font-medium text-black">{user.displayName || 'Unknown User'}</div>
+                        <div className="text-sm text-gray-900">{user.email}</div>
                       </div>
                     </div>
                     <Badge className={getRoleBadgeColor(user.role || 'user')}>
@@ -302,7 +302,7 @@ export default function AdminUsersPage() {
                   </div>
                 </div>
                 
-                <div className="mt-2 text-sm text-gray-600 flex gap-4">
+                <div className="mt-2 text-sm text-gray-900 flex gap-4">
                   <span>Created: {new Date(user.createdAt || '').toLocaleDateString()}</span>
                   {user.lastLoginAt && (
                     <span>Last login: {new Date(user.lastLoginAt).toLocaleDateString()}</span>

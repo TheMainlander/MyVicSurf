@@ -248,7 +248,7 @@ export default function AdminHelpPage() {
         {adminInfo && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-gray-900">
+              <CardTitle className="flex items-center gap-2 text-black">
                 {getRoleIcon(adminInfo.currentAdmin.role)}
                 Admin Status: {adminInfo.currentAdmin.displayName || adminInfo.currentAdmin.email}
               </CardTitle>
@@ -258,39 +258,39 @@ export default function AdminHelpPage() {
                 <Badge className={getRoleBadgeColor(adminInfo.currentAdmin.role)}>
                   {adminInfo.currentAdmin.role.replace('_', ' ').toUpperCase()}
                 </Badge>
-                <span className="text-sm text-gray-800">{adminInfo.currentAdmin.email}</span>
+                <span className="text-sm text-black">{adminInfo.currentAdmin.email}</span>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.totalUsers}</div>
-                  <div className="text-sm text-gray-700">Total Users</div>
+                  <div className="text-2xl font-bold text-black">{adminInfo.stats.totalUsers}</div>
+                  <div className="text-sm text-gray-900">Total Users</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.activeUsers}</div>
-                  <div className="text-sm text-gray-700">Active Users</div>
+                  <div className="text-2xl font-bold text-black">{adminInfo.stats.activeUsers}</div>
+                  <div className="text-sm text-gray-900">Active Users</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.adminUsers}</div>
-                  <div className="text-sm text-gray-700">Admins</div>
+                  <div className="text-2xl font-bold text-black">{adminInfo.stats.adminUsers}</div>
+                  <div className="text-sm text-gray-900">Admins</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{adminInfo.stats.superAdminUsers}</div>
-                  <div className="text-sm text-gray-700">Super Admins</div>
+                  <div className="text-2xl font-bold text-black">{adminInfo.stats.superAdminUsers}</div>
+                  <div className="text-sm text-gray-900">Super Admins</div>
                 </div>
               </div>
 
               <div className="text-sm">
-                <div className="font-medium mb-2 text-gray-900">Your Permissions:</div>
+                <div className="font-medium mb-2 text-black">Your Permissions:</div>
                 <div className="flex flex-wrap gap-2">
                   {adminInfo.permissions.canManageCarousel && (
-                    <Badge variant="outline" className="text-gray-800 border-gray-300">Manage Carousel</Badge>
+                    <Badge variant="outline" className="text-black border-gray-300">Manage Carousel</Badge>
                   )}
                   {adminInfo.permissions.canManageUsers && (
-                    <Badge variant="outline" className="text-gray-800 border-gray-300">Manage Users</Badge>
+                    <Badge variant="outline" className="text-black border-gray-300">Manage Users</Badge>
                   )}
                   {adminInfo.permissions.canManageRoles && (
-                    <Badge variant="outline" className="text-gray-800 border-gray-300">Manage Roles</Badge>
+                    <Badge variant="outline" className="text-black border-gray-300">Manage Roles</Badge>
                   )}
                 </div>
               </div>
@@ -304,8 +304,8 @@ export default function AdminHelpPage() {
             <CardContent className="p-4 flex items-center gap-3">
               <ImageIcon className="h-6 w-6 text-blue-600" />
               <div>
-                <div className="font-medium text-gray-900">Carousel Management</div>
-                <div className="text-sm text-gray-700">Manage landing page images</div>
+                <div className="font-medium text-black">Carousel Management</div>
+                <div className="text-sm text-gray-900">Manage landing page images</div>
               </div>
               <ChevronRight className="h-4 w-4 ml-auto text-gray-400" />
             </CardContent>
@@ -315,8 +315,8 @@ export default function AdminHelpPage() {
             <CardContent className="p-4 flex items-center gap-3">
               <Users className="h-6 w-6 text-green-600" />
               <div>
-                <div className="font-medium text-gray-900">User Management</div>
-                <div className="text-sm text-gray-700">Manage user accounts</div>
+                <div className="font-medium text-black">User Management</div>
+                <div className="text-sm text-gray-900">Manage user accounts</div>
               </div>
               <ChevronRight className="h-4 w-4 ml-auto text-gray-400" />
             </CardContent>
@@ -326,8 +326,8 @@ export default function AdminHelpPage() {
             <CardContent className="p-4 flex items-center gap-3">
               <Book className="h-6 w-6 text-purple-600" />
               <div>
-                <div className="font-medium text-gray-900">Full Documentation</div>
-                <div className="text-sm text-gray-700">Complete admin guide</div>
+                <div className="font-medium text-black">Full Documentation</div>
+                <div className="text-sm text-gray-900">Complete admin guide</div>
               </div>
               <ExternalLink className="h-4 w-4 ml-auto text-gray-400" />
             </CardContent>
@@ -337,7 +337,7 @@ export default function AdminHelpPage() {
         {/* Help Content Tabs */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-900">
+            <CardTitle className="flex items-center gap-2 text-black">
               <HelpCircle className="h-5 w-5" />
               Admin Guide Sections
             </CardTitle>
@@ -361,17 +361,17 @@ export default function AdminHelpPage() {
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 mb-4">
                       {section.icon}
-                      <h2 className="text-xl font-semibold text-gray-900">{section.title}</h2>
+                      <h2 className="text-xl font-semibold text-black">{section.title}</h2>
                     </div>
                     
                     {section.content.map((subsection, index) => (
                       <div key={index} className="border rounded-lg p-4 bg-white">
-                        <h3 className="font-medium mb-3 text-gray-900">{subsection.title}</h3>
+                        <h3 className="font-medium mb-3 text-black">{subsection.title}</h3>
                         <ul className="space-y-2">
                           {subsection.items.map((item, itemIndex) => (
                             <li key={itemIndex} className="flex items-start gap-2 text-sm">
                               <ChevronRight className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                              <span className="text-gray-800">{item}</span>
+                              <span className="text-black">{item}</span>
                             </li>
                           ))}
                         </ul>
