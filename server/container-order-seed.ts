@@ -76,11 +76,5 @@ export async function seedContainerOrder() {
 
 // Run if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  seedContainerOrder().then(() => {
-    console.log("Seeding completed, exiting...");
-    process.exit(0);
-  }).catch((error) => {
-    console.error("Seeding failed:", error);
-    process.exit(1);
-  });
+  seedContainerOrder().then(() => process.exit(0));
 }
