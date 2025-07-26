@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import AdminNavigationHeader from "@/components/admin/admin-navigation-header";
-import { Download, FileText, Plus, Edit, Trash2, Eye, Calendar, User } from "lucide-react";
+import { Download, FileText, Plus, Edit, Trash2, Eye, Calendar, User, Share2, Copy, Mail, ExternalLink, FileType, Image } from "lucide-react";
 
 interface MarketingDocument {
   id: number;
@@ -28,7 +28,11 @@ export default function AdminSalesMarketing() {
   const [selectedDocument, setSelectedDocument] = useState<MarketingDocument | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareDocument, setShareDocument] = useState<MarketingDocument | null>(null);
   const [filterType, setFilterType] = useState<string>("all");
+  const [exportFormat, setExportFormat] = useState<'md' | 'pdf' | 'html' | 'txt'>('pdf');
+  const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
 
   // Fetch marketing documents
@@ -80,30 +84,94 @@ export default function AdminSalesMarketing() {
     }
   };
 
-  const handleDownloadDocument = async (doc: MarketingDocument) => {
+  const handleDownloadDocument = async (doc: MarketingDocument, format?: string) => {
+    setIsExporting(true);
     try {
-      const response = await apiRequest('GET', `/api/admin/marketing-documents/${doc.id}/download`);
-      const blob = await response.blob();
+      const downloadFormat = format || doc.format;
+      const response = await apiRequest('GET', `/api/admin/marketing-documents/${doc.id}/download?format=${downloadFormat}`);
       
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+      
+      const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${doc.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${doc.format}`;
+      link.download = `${doc.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${downloadFormat}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
       toast({
-        title: "Download Started",
-        description: `${doc.title} is downloading...`,
+        title: "Export Complete",
+        description: `${doc.title} exported as ${downloadFormat.toUpperCase()}`,
       });
     } catch (error) {
       toast({
-        title: "Download Failed",
-        description: "Could not download the document. Please try again.",
+        title: "Export Failed", 
+        description: "Could not export the document. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleQuickExport = async (doc: MarketingDocument, format: 'md' | 'pdf' | 'html' | 'txt') => {
+    await handleDownloadDocument(doc, format);
+  };
+
+  const handleCopyToClipboard = async (doc: MarketingDocument) => {
+    try {
+      await navigator.clipboard.writeText(doc.content);
+      toast({
+        title: "Copied to Clipboard",
+        description: "Document content copied successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Copy Failed",
+        description: "Could not copy to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShareByEmail = (doc: MarketingDocument) => {
+    const subject = `VicSurf Marketing Document: ${doc.title}`;
+    const body = `Hi,\n\nI'm sharing the following marketing document with you:\n\n**${doc.title}**\n${doc.description}\n\nType: ${doc.type}\nCreated: ${new Date(doc.createdAt).toLocaleDateString()}\n\nBest regards`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoUrl);
+  };
+
+  const handleShareDialog = (doc: MarketingDocument) => {
+    setShareDocument(doc);
+    setIsShareDialogOpen(true);
+  };
+
+  const handleBulkExport = async () => {
+    setIsExporting(true);
+    try {
+      for (const doc of filteredDocuments) {
+        await handleDownloadDocument(doc, 'pdf');
+        // Add small delay to prevent overwhelming the browser
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      toast({
+        title: "Bulk Export Complete",
+        description: `Successfully exported ${filteredDocuments.length} documents as PDF`,
+      });
+    } catch (error) {
+      toast({
+        title: "Bulk Export Failed",
+        description: "Some documents may not have been exported. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -169,14 +237,33 @@ export default function AdminSalesMarketing() {
             </Badge>
           </div>
 
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-ocean-blue hover:bg-ocean-blue/90">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Document
+          <div className="flex space-x-2">
+            {filteredDocuments.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => handleBulkExport()}
+                disabled={isExporting}
+                className="flex items-center space-x-2"
+              >
+                <Download className="h-4 w-4" />
+                <span>Export All ({filteredDocuments.length})</span>
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            )}
+            
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-ocean-blue hover:bg-ocean-blue/90">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Document
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          </div>
+        </div>
+
+        {/* Create Document Dialog */}
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Create Marketing Document</DialogTitle>
               </DialogHeader>
@@ -263,7 +350,6 @@ export default function AdminSalesMarketing() {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
 
         {/* Documents Grid */}
         {isLoading ? (
@@ -357,6 +443,7 @@ export default function AdminSalesMarketing() {
                         size="sm"
                         onClick={() => setSelectedDocument(doc)}
                         className="h-8 w-8 p-0"
+                        title="View Document"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -364,10 +451,21 @@ export default function AdminSalesMarketing() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDownloadDocument(doc)}
-                        className="h-8 w-8 p-0 text-ocean-blue hover:text-ocean-blue/80"
+                        onClick={() => handleShareDialog(doc)}
+                        className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                        title="Share & Export"
                       >
-                        <Download className="h-4 w-4" />
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCopyToClipboard(doc)}
+                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700"
+                        title="Copy to Clipboard"
+                      >
+                        <Copy className="h-4 w-4" />
                       </Button>
                       
                       <Button
@@ -385,6 +483,7 @@ export default function AdminSalesMarketing() {
                           setIsEditDialogOpen(true);
                         }}
                         className="h-8 w-8 p-0"
+                        title="Edit Document"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -394,6 +493,7 @@ export default function AdminSalesMarketing() {
                         size="sm"
                         onClick={() => handleDeleteDocument(doc.id)}
                         className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                        title="Delete Document"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -404,6 +504,138 @@ export default function AdminSalesMarketing() {
             ))}
           </div>
         )}
+
+        {/* Share & Export Dialog */}
+        <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-black flex items-center">
+                <Share2 className="h-5 w-5 mr-2 text-green-600" />
+                Share & Export: {shareDocument?.title}
+              </DialogTitle>
+              <p className="text-gray-600">Choose how you'd like to share or export this document</p>
+            </DialogHeader>
+            
+            {shareDocument && (
+              <div className="space-y-6">
+                {/* Quick Actions */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Card className="p-4 hover:bg-gray-50 transition-colors">
+                    <div className="text-center space-y-2">
+                      <Copy className="h-8 w-8 mx-auto text-blue-600" />
+                      <h3 className="font-medium text-black">Copy Content</h3>
+                      <p className="text-sm text-gray-600">Copy document text to clipboard</p>
+                      <Button 
+                        onClick={() => handleCopyToClipboard(shareDocument)}
+                        className="w-full"
+                        variant="outline"
+                      >
+                        Copy to Clipboard
+                      </Button>
+                    </div>
+                  </Card>
+                  
+                  <Card className="p-4 hover:bg-gray-50 transition-colors">
+                    <div className="text-center space-y-2">
+                      <Mail className="h-8 w-8 mx-auto text-green-600" />
+                      <h3 className="font-medium text-black">Email Share</h3>
+                      <p className="text-sm text-gray-600">Share via email client</p>
+                      <Button 
+                        onClick={() => handleShareByEmail(shareDocument)}
+                        className="w-full"
+                        variant="outline"
+                      >
+                        Open Email
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Export Formats */}
+                <div>
+                  <h3 className="font-medium text-black mb-3">Export Formats</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      onClick={() => handleQuickExport(shareDocument, 'pdf')}
+                      disabled={isExporting}
+                      className="flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700"
+                    >
+                      <FileType className="h-4 w-4" />
+                      <span>Export as PDF</span>
+                    </Button>
+                    
+                    <Button
+                      onClick={() => handleQuickExport(shareDocument, 'md')}
+                      disabled={isExporting}
+                      variant="outline"
+                      className="flex items-center justify-center space-x-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>Export as Markdown</span>
+                    </Button>
+                    
+                    <Button
+                      onClick={() => handleQuickExport(shareDocument, 'html')}
+                      disabled={isExporting}
+                      variant="outline"
+                      className="flex items-center justify-center space-x-2"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      <span>Export as HTML</span>
+                    </Button>
+                    
+                    <Button
+                      onClick={() => handleQuickExport(shareDocument, 'txt')}
+                      disabled={isExporting}
+                      variant="outline"
+                      className="flex items-center justify-center space-x-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>Export as Text</span>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Document Preview */}
+                <div>
+                  <h3 className="font-medium text-black mb-2">Document Preview</h3>
+                  <Card className="p-4 bg-gray-50">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <Badge className={getTypeColor(shareDocument.type)}>
+                          {shareDocument.type}
+                        </Badge>
+                        <span className="text-gray-500">
+                          {new Date(shareDocument.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{shareDocument.description}</p>
+                      <div className="text-xs text-gray-500">
+                        {shareDocument.content.length} characters • Created by {shareDocument.createdBy}
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4 border-t">
+                  <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>
+                    Close
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      setSelectedDocument(shareDocument);
+                      setIsShareDialogOpen(false);
+                    }}
+                    className="bg-ocean-blue hover:bg-ocean-blue/90"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Full Document
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Document Preview Dialog */}
         <Dialog open={!!selectedDocument && !isEditDialogOpen} onOpenChange={() => setSelectedDocument(null)}>

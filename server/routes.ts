@@ -841,31 +841,173 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/marketing-documents/:id/download", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const requestedFormat = (req.query.format as string) || 'md';
       const document = await storage.getMarketingDocument(id);
       
       if (!document) {
         return res.status(404).json({ message: "Document not found" });
       }
 
-      if (document.format === 'pdf') {
-        // For PDF format, we'll generate PDF from markdown content
-        const pdf = require('html-pdf-node');
-        const marked = require('marked');
+      const cleanTitle = document.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+      switch (requestedFormat) {
+        case 'pdf': {
+          // Generate PDF from markdown content
+          const pdf = require('html-pdf-node');
+          const marked = require('marked');
+          
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <title>${document.title}</title>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+                h1, h2, h3 { color: #333; }
+                h1 { border-bottom: 2px solid #0066cc; padding-bottom: 10px; }
+                h2 { border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+                .header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+                .meta { color: #666; font-size: 0.9em; }
+                pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
+                code { background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
+                blockquote { border-left: 4px solid #0066cc; margin: 0; padding-left: 20px; color: #666; }
+                table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+                th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                th { background-color: #f5f5f5; font-weight: bold; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <h1>${document.title}</h1>
+                <div class="meta">
+                  <p><strong>Type:</strong> ${document.type} | <strong>Created:</strong> ${new Date(document.createdAt).toLocaleDateString()} | <strong>By:</strong> ${document.createdBy}</p>
+                  <p><strong>Description:</strong> ${document.description}</p>
+                </div>
+              </div>
+              ${marked.parse(document.content)}
+            </body>
+            </html>
+          `;
+          
+          const options = { 
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
+          };
+          const file = { content: htmlContent };
+          
+          const pdfBuffer = await pdf.generatePdf(file, options);
+          
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle}.pdf"`);
+          res.send(pdfBuffer);
+          break;
+        }
         
-        const htmlContent = marked.parse(document.content);
-        const options = { format: 'A4' };
-        const file = { content: htmlContent };
+        case 'html': {
+          // Generate formatted HTML
+          const marked = require('marked');
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>${document.title}</title>
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #333; }
+                h1, h2, h3 { color: #2563eb; }
+                h1 { border-bottom: 3px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
+                h2 { border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; margin-top: 30px; }
+                .document-header { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #2563eb; }
+                .document-meta { color: #6b7280; font-size: 0.9em; margin-bottom: 10px; }
+                .document-type { display: inline-block; background: #2563eb; color: white; padding: 4px 12px; border-radius: 16px; font-size: 0.8em; font-weight: 500; }
+                pre { background: #f1f5f9; padding: 20px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #2563eb; }
+                code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+                blockquote { border-left: 4px solid #2563eb; margin: 20px 0; padding-left: 20px; color: #4b5563; background: #f8fafc; padding: 15px 20px; border-radius: 0 6px 6px 0; }
+                table { border-collapse: collapse; width: 100%; margin: 20px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                th, td { border: 1px solid #e5e7eb; padding: 12px; text-align: left; }
+                th { background: #f8fafc; font-weight: 600; color: #374151; }
+                a { color: #2563eb; text-decoration: none; }
+                a:hover { text-decoration: underline; }
+                .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.9em; text-align: center; }
+              </style>
+            </head>
+            <body>
+              <div class="document-header">
+                <h1 style="margin: 0; border: none; color: #1f2937;">${document.title}</h1>
+                <div class="document-meta">
+                  <span class="document-type">${document.type}</span>
+                  <span style="margin-left: 15px;">Created: ${new Date(document.createdAt).toLocaleDateString()}</span>
+                  <span style="margin-left: 15px;">By: ${document.createdBy}</span>
+                </div>
+                <p style="margin: 15px 0 0 0; color: #4b5563;"><strong>Description:</strong> ${document.description}</p>
+              </div>
+              
+              <div class="document-content">
+                ${marked.parse(document.content)}
+              </div>
+              
+              <div class="footer">
+                <p>Generated from VicSurf Marketing Documents • ${new Date().toLocaleDateString()}</p>
+              </div>
+            </body>
+            </html>
+          `;
+          
+          res.setHeader('Content-Type', 'text/html');
+          res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle}.html"`);
+          res.send(htmlContent);
+          break;
+        }
         
-        const pdfBuffer = await pdf.generatePdf(file, options);
+        case 'txt': {
+          // Generate plain text format
+          const textContent = `${document.title.toUpperCase()}
+${'='.repeat(document.title.length)}
+
+Type: ${document.type}
+Created: ${new Date(document.createdAt).toLocaleDateString()}
+Created by: ${document.createdBy}
+Description: ${document.description}
+
+${'='.repeat(50)}
+
+${document.content}
+
+${'='.repeat(50)}
+Generated from VicSurf Marketing Documents
+${new Date().toLocaleDateString()}`;
+          
+          res.setHeader('Content-Type', 'text/plain');
+          res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle}.txt"`);
+          res.send(textContent);
+          break;
+        }
         
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${document.title}.pdf"`);
-        res.send(pdfBuffer);
-      } else {
-        // For markdown format
-        res.setHeader('Content-Type', 'text/markdown');
-        res.setHeader('Content-Disposition', `attachment; filename="${document.title}.md"`);
-        res.send(document.content);
+        case 'md':
+        default: {
+          // Generate enhanced markdown with metadata
+          const markdownContent = `# ${document.title}
+
+**Type:** ${document.type} | **Created:** ${new Date(document.createdAt).toLocaleDateString()} | **By:** ${document.createdBy}
+
+**Description:** ${document.description}
+
+---
+
+${document.content}
+
+---
+
+*Generated from VicSurf Marketing Documents on ${new Date().toLocaleDateString()}*`;
+          
+          res.setHeader('Content-Type', 'text/markdown');
+          res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle}.md"`);
+          res.send(markdownContent);
+          break;
+        }
       }
     } catch (error) {
       console.error("Error downloading document:", error);
