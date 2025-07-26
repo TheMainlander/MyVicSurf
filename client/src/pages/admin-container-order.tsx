@@ -48,14 +48,10 @@ export default function AdminContainerOrder() {
   const queryClient = useQueryClient();
 
   // Fetch current container order
-  const { data: containerOrders, isLoading, error } = useQuery<ContainerOrder[]>({
+  const { data: containerOrders, isLoading } = useQuery<ContainerOrder[]>({
     queryKey: ['/api/admin/container-order'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/admin/container-order');
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch container order');
-      }
       return await response.json();
     }
   });
@@ -162,31 +158,6 @@ export default function AdminContainerOrder() {
         <Header />
         <main className="max-w-4xl mx-auto px-4 pb-20 pt-6">
           <div className="animate-spin w-8 h-8 border-4 border-gray-600 border-t-transparent rounded-full mx-auto mt-20" />
-        </main>
-        <BottomNavigation />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-300">
-        <Header />
-        <main className="max-w-4xl mx-auto px-4 pb-20 pt-6">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Authentication Required</h2>
-              <p className="text-gray-600 mb-6">
-                You need to be signed in as an admin to access container ordering.
-              </p>
-              <Button 
-                onClick={() => window.location.href = '/api/login'}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Sign In to Continue
-              </Button>
-            </CardContent>
-          </Card>
         </main>
         <BottomNavigation />
       </div>

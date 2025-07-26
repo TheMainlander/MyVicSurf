@@ -65,24 +65,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
-  // Root health check endpoint for deployment health checks
-  app.get('/', async (req, res) => {
-    try {
-      res.json({ 
-        status: 'healthy',
-        message: 'VicSurf API is running',
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
-      });
-    } catch (error) {
-      res.status(503).json({ 
-        status: 'unhealthy',
-        message: 'Service unavailable',
-        timestamp: new Date().toISOString()
-      });
-    }
-  });
-
   // Health check endpoint for production monitoring
   app.get('/api/health', async (req, res) => {
     try {
