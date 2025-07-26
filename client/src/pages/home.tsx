@@ -11,7 +11,7 @@ import FavoriteButton from "@/components/favorites/favorite-button";
 import BeachCameras from "@/components/surf/beach-cameras";
 import LocationPermission from "@/components/location/location-permission";
 import LoadingOverlay from "@/components/common/loading-overlay";
-import SpotComparisonDashboard from "@/components/surf/spot-comparison-dashboard";
+
 import type { SurfSpot } from "@shared/schema";
 
 export default function Home() {
@@ -121,7 +121,6 @@ export default function Home() {
         </div>
       </main>
 
-      <SpotComparisonDashboard />
       <BottomNavigation activeTab="home" />
     </div>
   );

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, MapPin, TrendingUp, Heart, User } from "lucide-react";
+import { Home, MapPin, TrendingUp, User, BarChart3 } from "lucide-react";
 
 interface BottomNavigationProps {
   activeTab?: string;
@@ -18,8 +18,8 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
   const navItems = [
     { path: "home", href: "/", icon: Home, label: "Home" },
     { path: "spots", href: "/spots", icon: MapPin, label: "Spots" },
+    { path: "comparison", href: "/comparison", icon: BarChart3, label: "Compare" },
     { path: "forecast", href: "/forecast", icon: TrendingUp, label: "Forecast" },
-    { path: "favorites", href: "/favorites", icon: Heart, label: "Favorites" },
     { path: "profile", href: "/profile", icon: User, label: "Profile" },
   ];
 

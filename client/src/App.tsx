@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Spots from "@/pages/spots";
+import Spot from "@/pages/spot";
+import Comparison from "@/pages/comparison";
 import Forecast from "@/pages/forecast";
 import Profile from "@/pages/profile";
 import Favorites from "@/pages/favorites";
@@ -37,6 +39,8 @@ function Router() {
       {/* Main app routes */}
       <Route path="/" component={isAuthenticated ? Home : Landing} />
       <Route path="/spots" component={Spots} />
+      <Route path="/spot/:id" component={Spot} />
+      <Route path="/comparison" component={Comparison} />
       <Route path="/forecast" component={Forecast} />
       <Route path="/profile" component={Profile} />
       <Route path="/favorites" component={Favorites} />
