@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { requireAdmin, requireSuperAdmin } from "./middleware/admin-auth";
 
 // Global flag to track auth status
 let authConfigured = false;
@@ -640,7 +641,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin Routes for Carousel Images
-  app.get('/api/admin/carousel-images', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/carousel-images', requireAdmin, async (req, res) => {
     try {
       const images = await storage.getCarouselImages();
       res.json(images);
@@ -650,7 +651,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/carousel-images', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/carousel-images', requireAdmin, async (req, res) => {
     try {
       const imageData = req.body;
       const newImage = await storage.createCarouselImage(imageData);
@@ -661,7 +662,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/carousel-images/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/admin/carousel-images/:id', requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
@@ -673,7 +674,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/carousel-images/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/admin/carousel-images/:id', requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteCarouselImage(id);
@@ -692,6 +693,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching carousel images:', error);
       res.status(500).json({ message: 'Failed to fetch carousel images' });
+    }
+  });
+
+  // Admin User Management Routes
+  app.get('/api/admin/users', requireAdmin, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const users = await storage.getAllUsers(limit);
+      
+      // Remove sensitive information
+      const sanitizedUsers = users.map(user => ({
+        ...user,
+        stripeCustomerId: undefined,
+        stripeSubscriptionId: undefined
+      }));
+      
+      res.json(sanitizedUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ message: 'Failed to fetch users' });
+    }
+  });
+
+  app.put('/api/admin/users/:userId/role', requireSuperAdmin, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const { role } = req.body;
+      
+      if (!['user', 'admin', 'super_admin'].includes(role)) {
+        return res.status(400).json({ message: 'Invalid role' });
+      }
+      
+      const updatedUser = await storage.updateUserRole(userId, role);
+      res.json({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        displayName: updatedUser.displayName,
+        role: updatedUser.role,
+        isActive: updatedUser.isActive
+      });
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      res.status(500).json({ message: 'Failed to update user role' });
+    }
+  });
+
+  app.put('/api/admin/users/:userId/deactivate', requireAdmin, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const updatedUser = await storage.deactivateUser(userId);
+      res.json({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        displayName: updatedUser.displayName,
+        isActive: updatedUser.isActive
+      });
+    } catch (error) {
+      console.error('Error deactivating user:', error);
+      res.status(500).json({ message: 'Failed to deactivate user' });
+    }
+  });
+
+  app.put('/api/admin/users/:userId/activate', requireAdmin, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const updatedUser = await storage.activateUser(userId);
+      res.json({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        displayName: updatedUser.displayName,
+        isActive: updatedUser.isActive
+      });
+    } catch (error) {
+      console.error('Error activating user:', error);
+      res.status(500).json({ message: 'Failed to activate user' });
+    }
+  });
+
+  // Admin info route
+  app.get('/api/admin/info', requireAdmin, async (req, res) => {
+    try {
+      const adminUser = req.adminUser;
+      const totalUsers = await storage.getAllUsers(1000);
+      const adminUsers = await storage.getUsersByRole('admin');
+      const superAdminUsers = await storage.getUsersByRole('super_admin');
+      
+      res.json({
+        currentAdmin: {
+          id: adminUser.id,
+          email: adminUser.email,
+          displayName: adminUser.displayName,
+          role: adminUser.role
+        },
+        stats: {
+          totalUsers: totalUsers.length,
+          adminUsers: adminUsers.length,
+          superAdminUsers: superAdminUsers.length,
+          activeUsers: totalUsers.filter(u => u.isActive).length
+        },
+        permissions: {
+          canManageUsers: adminUser.role === 'admin' || adminUser.role === 'super_admin',
+          canManageRoles: adminUser.role === 'super_admin',
+          canManageCarousel: adminUser.role === 'admin' || adminUser.role === 'super_admin'
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching admin info:', error);
+      res.status(500).json({ message: 'Failed to fetch admin info' });
     }
   });
 

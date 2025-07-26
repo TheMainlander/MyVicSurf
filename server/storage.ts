@@ -122,6 +122,17 @@ export interface IStorage {
   createCarouselImage(image: InsertCarouselImage): Promise<CarouselImage>;
   updateCarouselImage(id: number, updates: Partial<InsertCarouselImage>): Promise<CarouselImage>;
   deleteCarouselImage(id: number): Promise<void>;
+
+  // Admin User Management
+  getUsersByRole(role: string): Promise<User[]>;
+  updateUserRole(userId: string, role: string): Promise<User>;
+  getAllUsers(limit?: number): Promise<User[]>;
+  deactivateUser(userId: string): Promise<User>;
+  activateUser(userId: string): Promise<User>;
+  updateUserRole(userId: string, role: string): Promise<User>;
+  getAllUsers(limit?: number): Promise<User[]>;
+  deactivateUser(userId: string): Promise<User>;
+  activateUser(userId: string): Promise<User>;
 }
 
 // Database-backed storage for production
@@ -709,6 +720,49 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCarouselImage(id: number): Promise<void> {
     await db.delete(carouselImages).where(eq(carouselImages.id, id));
+  }
+
+  // Admin User Management Methods
+  async getUsersByRole(role: string): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .where(eq(users.role, role));
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ role, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
+  }
+
+  async getAllUsers(limit: number = 50): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .orderBy(desc(users.createdAt))
+      .limit(limit);
+  }
+
+  async deactivateUser(userId: string): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
+  }
+
+  async activateUser(userId: string): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ isActive: true, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
   }
 }
 

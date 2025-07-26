@@ -104,12 +104,15 @@ export const users = pgTable("users", {
   surfingExperience: varchar("surfing_experience"), // beginner, intermediate, advanced, expert
   phoneNumber: varchar("phone_number"),
   instagramHandle: varchar("instagram_handle"),
+  role: varchar("role").default("user"), // user, admin, super_admin
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionStatus: varchar("subscription_status").default("free"), // free, active, cancelled, past_due
   subscriptionPlan: varchar("subscription_plan").default("free"), // free, premium, pro
   subscriptionStartDate: timestamp("subscription_start_date"),
   subscriptionEndDate: timestamp("subscription_end_date"),
+  isActive: boolean("is_active").default(true),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

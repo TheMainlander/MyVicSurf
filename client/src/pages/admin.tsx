@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Users } from "lucide-react";
 import type { CarouselImage } from "@shared/schema";
 
 interface CarouselImageForm {
@@ -166,11 +166,11 @@ export default function AdminPage() {
       <main className="max-w-4xl mx-auto px-4 pb-20 pt-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-white mb-2">Admin Panel</h1>
-          <p className="text-white/80">Manage carousel images on the landing page</p>
+          <p className="text-white/80">Manage carousel images and user accounts</p>
         </div>
 
-        {/* Add New Button */}
-        <div className="mb-6">
+        {/* Action Buttons */}
+        <div className="mb-6 flex gap-4">
           <Button
             onClick={() => setIsAdding(true)}
             className="bg-white text-ocean-blue hover:bg-white/90"
@@ -178,6 +178,14 @@ export default function AdminPage() {
           >
             <Plus className="h-4 w-4 mr-2" />
             Add New Image
+          </Button>
+          <Button
+            variant="outline"
+            className="border-white text-white hover:bg-white/10"
+            onClick={() => window.location.href = '/admin/users'}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Manage Users
           </Button>
         </div>
 

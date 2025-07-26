@@ -45,6 +45,10 @@ app.use((req, res, next) => {
   // Seed carousel images on startup
   const { seedCarouselImages } = await import("./carousel-seed");
   await seedCarouselImages();
+  
+  // Seed admin user on startup
+  const { seedAdminUser } = await import("./admin-seed");
+  await seedAdminUser();
 
   const server = await registerRoutes(app);
 

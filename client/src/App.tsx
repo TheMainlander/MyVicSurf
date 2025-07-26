@@ -15,6 +15,7 @@ import Pricing from "@/pages/pricing";
 import Checkout from "@/pages/checkout";
 import PaymentSuccess from "@/pages/payment-success";
 import AdminPage from "@/pages/admin";
+import AdminUsersPage from "@/pages/admin-users";
 import PostRegistrationHandler from "@/components/registration/post-registration-handler";
 
 function Router() {
@@ -32,6 +33,7 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/favorites" component={Favorites} />
           <Route path="/admin" component={AdminPage} />
+          <Route path="/admin/users" component={AdminUsersPage} />
         </>
       )}
       {/* Payment routes - accessible to all users */}
