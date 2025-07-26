@@ -97,7 +97,7 @@ export default function Header() {
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
         <div 
-          className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm" 
+          className="fixed inset-0 z-[99999] bg-black/30 backdrop-blur-sm" 
           onClick={() => setIsMenuOpen(false)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

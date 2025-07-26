@@ -24,31 +24,24 @@ function Router() {
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          {/* Admin routes accessible for authentication redirect */}
-          <Route path="/admin" component={AdminPage} />
-          <Route path="/admin/users" component={AdminUsersPage} />
-          <Route path="/admin/help" component={AdminHelpPage} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/spots" component={Spots} />
-          <Route path="/forecast" component={Forecast} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/favorites" component={Favorites} />
-          <Route path="/admin" component={AdminPage} />
-          <Route path="/admin/users" component={AdminUsersPage} />
-          <Route path="/admin/help" component={AdminHelpPage} />
-          <Route path="/admin/help" component={AdminHelpPage} />
-        </>
-      )}
-      {/* Payment routes - accessible to all users */}
+      {/* Always available routes */}
       <Route path="/pricing" component={Pricing} />
       <Route path="/checkout/:planId" component={Checkout} />
       <Route path="/payment-success" component={PaymentSuccess} />
+      
+      {/* Admin routes - always accessible for auth redirects */}
+      <Route path="/admin" component={AdminPage} />
+      <Route path="/admin/users" component={AdminUsersPage} />
+      <Route path="/admin/help" component={AdminHelpPage} />
+      
+      {/* Main app routes */}
+      <Route path="/" component={isAuthenticated ? Home : Landing} />
+      <Route path="/spots" component={Spots} />
+      <Route path="/forecast" component={Forecast} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/favorites" component={Favorites} />
+      
+      {/* Fallback */}
       <Route component={NotFound} />
     </Switch>
   );
