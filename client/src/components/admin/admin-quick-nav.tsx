@@ -37,14 +37,14 @@ export default function AdminQuickNav({ currentPath, userRole, className = "" }:
   return (
     <Card className={`mb-6 ${className}`}>
       <CardContent className="p-4">
-        <h3 className="text-sm font-medium text-black mb-3">Quick Navigation</h3>
+        <h3 className="text-sm font-medium text-white mb-3">Quick Navigation</h3>
         <div className="flex flex-wrap gap-2">
           {quickNavRoutes.map((route) => (
             <Button
               key={route.id}
               variant="outline"
               size="sm"
-              className="text-black border-gray-300 hover:bg-gray-50"
+              className="text-white border-white/20 hover:bg-white/10 bg-white/5"
               onClick={() => window.location.href = route.path}
             >
               <route.icon className="h-3 w-3 mr-2" />

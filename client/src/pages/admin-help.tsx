@@ -248,7 +248,7 @@ export default function AdminHelpPage() {
         {adminInfo && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-black">
+              <CardTitle className="flex items-center gap-2 text-white">
                 {getRoleIcon(adminInfo.currentAdmin.role)}
                 Admin Status: {adminInfo.currentAdmin.displayName || adminInfo.currentAdmin.email}
               </CardTitle>
@@ -337,7 +337,7 @@ export default function AdminHelpPage() {
         {/* Help Content Tabs */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-black">
+            <CardTitle className="flex items-center gap-2 text-white">
               <HelpCircle className="h-5 w-5" />
               Admin Guide Sections
             </CardTitle>
@@ -361,12 +361,12 @@ export default function AdminHelpPage() {
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 mb-4">
                       {section.icon}
-                      <h2 className="text-xl font-semibold text-black">{section.title}</h2>
+                      <h2 className="text-xl font-semibold text-white">{section.title}</h2>
                     </div>
                     
                     {section.content.map((subsection, index) => (
-                      <div key={index} className="border rounded-lg p-4 bg-white">
-                        <h3 className="font-medium mb-3 text-black">{subsection.title}</h3>
+                      <div key={index} className="border rounded-lg p-4 bg-white/10 backdrop-blur-sm">
+                        <h3 className="font-medium mb-3 text-white">{subsection.title}</h3>
                         <ul className="space-y-2">
                           {subsection.items.map((item, itemIndex) => (
                             <li key={itemIndex} className="flex items-start gap-2 text-sm">

@@ -209,7 +209,7 @@ export default function AdminUsersPage() {
         {adminInfo && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-gray-900">
+              <CardTitle className="flex items-center gap-2 text-white">
                 {getRoleIcon(adminInfo.currentAdmin.role)}
                 Logged in as: {adminInfo.currentAdmin.displayName}
               </CardTitle>
@@ -284,6 +284,7 @@ export default function AdminUsersPage() {
                             variant="outline"
                             onClick={() => deactivateUserMutation.mutate(user.id)}
                             disabled={deactivateUserMutation.isPending}
+                            className="border-gray-300 text-black hover:bg-gray-50"
                           >
                             <UserX className="h-4 w-4" />
                           </Button>
@@ -293,6 +294,7 @@ export default function AdminUsersPage() {
                             variant="outline"
                             onClick={() => activateUserMutation.mutate(user.id)}
                             disabled={activateUserMutation.isPending}
+                            className="border-gray-300 text-black hover:bg-gray-50"
                           >
                             <UserCheck className="h-4 w-4" />
                           </Button>

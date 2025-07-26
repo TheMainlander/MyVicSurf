@@ -210,7 +210,7 @@ export default function AdminPage() {
         {(isAdding || editingId) && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="text-gray-900">{editingId ? 'Edit Image' : 'Add New Image'}</CardTitle>
+              <CardTitle className="text-white">{editingId ? 'Edit Image' : 'Add New Image'}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -268,6 +268,7 @@ export default function AdminPage() {
                 <Button
                   onClick={handleSave}
                   disabled={createMutation.isPending || updateMutation.isPending}
+                  className="bg-white text-black hover:bg-gray-100"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save
@@ -276,6 +277,7 @@ export default function AdminPage() {
                   variant="outline"
                   onClick={handleCancel}
                   disabled={createMutation.isPending || updateMutation.isPending}
+                  className="border-white text-white hover:bg-white/10"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
@@ -307,6 +309,7 @@ export default function AdminPage() {
                       variant="outline"
                       onClick={() => handleEdit(image)}
                       disabled={isAdding || editingId !== null}
+                      className="border-gray-300 text-black hover:bg-gray-50"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -315,6 +318,7 @@ export default function AdminPage() {
                       variant="outline"
                       onClick={() => deleteMutation.mutate(image.id)}
                       disabled={deleteMutation.isPending || isAdding || editingId !== null}
+                      className="border-gray-300 text-black hover:bg-gray-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
