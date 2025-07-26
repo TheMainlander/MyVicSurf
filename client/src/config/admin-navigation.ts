@@ -6,7 +6,8 @@ import {
   Home,
   ArrowLeft,
   Shield,
-  LucideIcon
+  LucideIcon,
+  FileText
 } from "lucide-react";
 
 export interface AdminRoute {
@@ -56,6 +57,18 @@ export const ADMIN_ROUTES: AdminRoute[] = [
     title: 'User Management',
     description: 'Manage user accounts and roles',
     icon: Users,
+    parentId: 'admin-root',
+    requiresRole: 'admin',
+    showInNavigation: true
+  },
+  
+  // Sales & Marketing
+  {
+    id: 'admin-sales-marketing',
+    path: '/admin/sales-marketing',
+    title: 'Sales & Marketing',
+    description: 'Manage marketing documents, strategies, and campaigns',
+    icon: FileText,
     parentId: 'admin-root',
     requiresRole: 'admin',
     showInNavigation: true
@@ -148,11 +161,21 @@ export class AdminNavigation {
   // Get back navigation for current route
   static getBackNavigation(currentPath: string): { path: string; title: string; icon: LucideIcon } | null {
     const currentRoute = this.getRouteByPath(currentPath);
-    if (!currentRoute || !currentRoute.parentId) {
-      // If no parent, go to main app
+    
+    // If no route found or it's the admin root, show "Back to App"
+    if (!currentRoute || currentRoute.id === 'admin-root') {
       return {
         path: '/',
         title: 'Back to App',
+        icon: ArrowLeft
+      };
+    }
+    
+    // If no parent, go to admin root (for admin pages without defined parents)
+    if (!currentRoute.parentId) {
+      return {
+        path: '/admin',
+        title: 'Back to Admin Panel',
         icon: ArrowLeft
       };
     }
