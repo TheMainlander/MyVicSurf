@@ -1421,6 +1421,86 @@ ${document.content}
     }
   });
 
+  // Admin home panel management routes
+  app.get("/api/admin/home-panels", requireAdmin, async (req, res) => {
+    try {
+      const panels = await storage.getHomePanels();
+      res.json(panels);
+    } catch (error) {
+      console.error("Error fetching home panels:", error);
+      res.status(500).json({ message: "Failed to fetch home panels" });
+    }
+  });
+
+  app.post("/api/admin/home-panels", requireAdmin, async (req, res) => {
+    try {
+      const panelData = req.body;
+      const newPanel = await storage.createHomePanel(panelData);
+      res.status(201).json(newPanel);
+    } catch (error) {
+      console.error("Error creating home panel:", error);
+      res.status(500).json({ message: "Failed to create home panel" });
+    }
+  });
+
+  app.put("/api/admin/home-panels/:id", requireAdmin, async (req, res) => {
+    try {
+      const panelId = parseInt(req.params.id);
+      const updates = req.body;
+      const updatedPanel = await storage.updateHomePanel(panelId, updates);
+      res.json(updatedPanel);
+    } catch (error) {
+      console.error("Error updating home panel:", error);
+      res.status(500).json({ message: "Failed to update home panel" });
+    }
+  });
+
+  app.delete("/api/admin/home-panels/:id", requireAdmin, async (req, res) => {
+    try {
+      const panelId = parseInt(req.params.id);
+      await storage.deleteHomePanel(panelId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting home panel:", error);
+      res.status(500).json({ message: "Failed to delete home panel" });
+    }
+  });
+
+  app.patch("/api/admin/home-panels/:id/order", requireAdmin, async (req, res) => {
+    try {
+      const panelId = parseInt(req.params.id);
+      const { sortOrder } = req.body;
+      const updatedPanel = await storage.updatePanelOrder(panelId, sortOrder);
+      res.json(updatedPanel);
+    } catch (error) {
+      console.error("Error updating panel order:", error);
+      res.status(500).json({ message: "Failed to update panel order" });
+    }
+  });
+
+  app.patch("/api/admin/home-panels/:id/toggle", requireAdmin, async (req, res) => {
+    try {
+      const panelId = parseInt(req.params.id);
+      const { isEnabled } = req.body;
+      const updatedPanel = await storage.togglePanelEnabled(panelId, isEnabled);
+      res.json(updatedPanel);
+    } catch (error) {
+      console.error("Error toggling panel:", error);
+      res.status(500).json({ message: "Failed to toggle panel" });
+    }
+  });
+
+  // Public route to get enabled panels
+  app.get("/api/home-panels", async (req, res) => {
+    try {
+      const panels = await storage.getEnabledHomePanels();
+      res.json(panels);
+    } catch (error) {
+      console.error("Error fetching enabled home panels:", error);
+      res.status(500).json({ message: "Failed to fetch home panels" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

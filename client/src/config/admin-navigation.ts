@@ -8,7 +8,8 @@ import {
   Shield,
   LucideIcon,
   FileText,
-  MapPin
+  MapPin,
+  LayoutPanelTop
 } from "lucide-react";
 
 export interface AdminRoute {
@@ -116,6 +117,18 @@ export const ADMIN_ROUTES: AdminRoute[] = [
     title: 'Admin Help & Documentation',
     description: 'Comprehensive guide for VicSurf administration',
     icon: HelpCircle,
+    parentId: 'admin-root',
+    requiresRole: 'admin',
+    showInNavigation: true
+  },
+  
+  // Panel Management
+  {
+    id: 'admin-panels',
+    path: '/admin/panels',
+    title: 'Panel Management',
+    description: 'Manage home page panel layout and ordering',
+    icon: LayoutPanelTop,
     parentId: 'admin-root',
     requiresRole: 'admin',
     showInNavigation: true

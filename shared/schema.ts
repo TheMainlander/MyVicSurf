@@ -329,6 +329,22 @@ export const feedbackVotes = pgTable("feedback_votes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Panel management for home page layout
+export const homePanels = pgTable("home_panels", {
+  id: serial("id").primaryKey(),
+  panelKey: varchar("panel_key").notNull().unique(), // e.g., 'current-conditions', 'premium-features', 'beach-cameras'
+  title: varchar("title").notNull(),
+  description: text("description"),
+  isEnabled: boolean("is_enabled").default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  componentName: varchar("component_name").notNull(), // React component name
+  panelType: varchar("panel_type").default("standard"), // 'standard', 'premium', 'conditional'
+  requiredRole: varchar("required_role"), // null for public, 'user', 'admin', etc.
+  settings: jsonb("settings"), // JSON configuration for panel behavior
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   favorites: many(userFavorites),
@@ -497,6 +513,12 @@ export const insertFeedbackVoteSchema = createInsertSchema(feedbackVotes).omit({
   createdAt: true,
 });
 
+export const insertHomePanelSchema = createInsertSchema(homePanels).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertUserFavorite = z.infer<typeof insertUserFavoriteSchema>;
 export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
@@ -508,6 +530,7 @@ export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema
 export type InsertCarouselImage = z.infer<typeof insertCarouselImageSchema>;
 export type InsertUserFeedback = z.infer<typeof insertUserFeedbackSchema>;
 export type InsertFeedbackVote = z.infer<typeof insertFeedbackVoteSchema>;
+export type InsertHomePanel = z.infer<typeof insertHomePanelSchema>;
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -521,6 +544,7 @@ export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type CarouselImage = typeof carouselImages.$inferSelect;
 export type UserFeedback = typeof userFeedback.$inferSelect;
 export type FeedbackVote = typeof feedbackVotes.$inferSelect;
+export type HomePanel = typeof homePanels.$inferSelect;
 
 export type SurfSpot = typeof surfSpots.$inferSelect;
 export type SurfCondition = typeof surfConditions.$inferSelect;

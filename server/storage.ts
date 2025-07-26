@@ -16,6 +16,7 @@ import {
   marketingDocuments,
   userFeedback,
   feedbackVotes,
+  homePanels,
   type SurfSpot, 
   type SurfCondition, 
   type TideTime, 
@@ -29,6 +30,7 @@ import {
   type Payment,
   type SubscriptionPlan,
   type CarouselImage,
+  type HomePanel,
   type InsertSurfSpot,
   type InsertSurfCondition,
   type InsertTideTime,
@@ -42,6 +44,7 @@ import {
   type InsertPayment,
   type InsertSubscriptionPlan,
   type InsertCarouselImage,
+  type InsertHomePanel,
   type InsertUserFeedback,
   type InsertFeedbackVote,
   type UserFeedback,
@@ -164,6 +167,16 @@ export interface IStorage {
   async voteFeedback(feedbackId: number, userId: string, voteType: 'upvote' | 'downvote'): Promise<void>;
   async removeVoteFeedback(feedbackId: number, userId: string): Promise<void>;
   async getFeedbackVotes(feedbackId: number): Promise<FeedbackVote[]>;
+
+  // Home Panel Management
+  async getHomePanels(): Promise<HomePanel[]>;
+  async getHomePanel(id: number): Promise<HomePanel | undefined>;
+  async createHomePanel(panel: InsertHomePanel): Promise<HomePanel>;
+  async updateHomePanel(id: number, updates: Partial<InsertHomePanel>): Promise<HomePanel>;
+  async deleteHomePanel(id: number): Promise<void>;
+  async updatePanelOrder(panelId: number, newSortOrder: number): Promise<HomePanel>;
+  async togglePanelEnabled(panelId: number, isEnabled: boolean): Promise<HomePanel>;
+  async getEnabledHomePanels(): Promise<HomePanel[]>;
 }
 
 // Database-backed storage for production
@@ -1033,6 +1046,71 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(feedbackVotes)
       .where(eq(feedbackVotes.feedbackId, feedbackId));
+  }
+
+  // Home Panel Management Methods
+  async getHomePanels(): Promise<HomePanel[]> {
+    return await db
+      .select()
+      .from(homePanels)
+      .orderBy(homePanels.sortOrder, homePanels.id);
+  }
+
+  async getHomePanel(id: number): Promise<HomePanel | undefined> {
+    const [panel] = await db
+      .select()
+      .from(homePanels)
+      .where(eq(homePanels.id, id))
+      .limit(1);
+    return panel;
+  }
+
+  async createHomePanel(panel: InsertHomePanel): Promise<HomePanel> {
+    const [newPanel] = await db.insert(homePanels).values({
+      ...panel,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }).returning();
+    return newPanel;
+  }
+
+  async updateHomePanel(id: number, updates: Partial<InsertHomePanel>): Promise<HomePanel> {
+    const [updatedPanel] = await db
+      .update(homePanels)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(homePanels.id, id))
+      .returning();
+    return updatedPanel;
+  }
+
+  async deleteHomePanel(id: number): Promise<void> {
+    await db.delete(homePanels).where(eq(homePanels.id, id));
+  }
+
+  async updatePanelOrder(panelId: number, newSortOrder: number): Promise<HomePanel> {
+    const [updatedPanel] = await db
+      .update(homePanels)
+      .set({ sortOrder: newSortOrder, updatedAt: new Date() })
+      .where(eq(homePanels.id, panelId))
+      .returning();
+    return updatedPanel;
+  }
+
+  async togglePanelEnabled(panelId: number, isEnabled: boolean): Promise<HomePanel> {
+    const [updatedPanel] = await db
+      .update(homePanels)
+      .set({ isEnabled, updatedAt: new Date() })
+      .where(eq(homePanels.id, panelId))
+      .returning();
+    return updatedPanel;
+  }
+
+  async getEnabledHomePanels(): Promise<HomePanel[]> {
+    return await db
+      .select()
+      .from(homePanels)
+      .where(eq(homePanels.isEnabled, true))
+      .orderBy(homePanels.sortOrder, homePanels.id);
   }
 }
 

@@ -57,6 +57,10 @@ app.use((req, res, next) => {
   // Seed system admin documents on startup
   const { seedSystemDocuments } = await import("./system-documents-seed");
   await seedSystemDocuments();
+  
+  // Seed home panels on startup
+  const { seedHomePanels } = await import("./panel-seed");
+  await seedHomePanels();
 
   const server = await registerRoutes(app);
 
