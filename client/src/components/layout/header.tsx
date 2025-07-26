@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
-import { User, LogIn, LogOut, Menu, X, Home, MapPin, TrendingUp, Heart, Settings, BarChart3 } from "lucide-react";
+import { User, LogIn, LogOut, Menu, X, Home, MapPin, TrendingUp, Heart, Settings, BarChart3, MessageCircle } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function Header() {
@@ -176,6 +176,18 @@ export default function Header() {
                 >
                   <BarChart3 className="h-4 w-4 mr-3" />
                   Compare Spots
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-left p-3 hover:bg-blue-50"
+                  onClick={() => {
+                    setLocation('/feedback');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4 mr-3" />
+                  Send Feedback
                 </Button>
                 
                 {isAuthenticated && (
