@@ -30,7 +30,7 @@ export default function Header() {
             </h1>
           </div>
 
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2">
             {!isAuthenticated && !isLoading && (
               <Button
                 onClick={handleSignIn}
@@ -51,6 +51,16 @@ export default function Header() {
                 >
                   ⚡ Upgrade
                 </Button>
+                <APIStatus className="text-xs px-2 py-1 rounded-full bg-green-50 border border-green-200 text-green-600" />
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-ocean-blue hover:text-blue-600 hover:bg-blue-50 p-1.5 rounded-md"
+                  onClick={() => setLocation('/profile')}
+                  title="Manage profile and favorites"
+                >
+                  <User className="h-3.5 w-3.5" />
+                </Button>
                 <Button
                   onClick={handleSignOut}
                   size="sm"
@@ -62,25 +72,12 @@ export default function Header() {
                 </Button>
               </>
             )}
-
-            {isAuthenticated && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="text-ocean-blue hover:text-blue-600 hover:bg-blue-50 p-1.5 rounded-md"
-                onClick={() => setLocation('/profile')}
-                title="Manage profile and favorites"
-              >
-                <User className="h-3.5 w-3.5" />
-              </Button>
-            )}
           </div>
         </div>
 
-        {/* Bottom Row - Subtitle and Status */}
-        <div className="flex items-center justify-between">
+        {/* Bottom Row - Subtitle */}
+        <div className="flex items-center justify-start">
           <p className="text-xs text-coastal-grey">Victoria Surf Conditions</p>
-          <APIStatus className="text-xs px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-600" />
         </div>
       </div>
     </header>
