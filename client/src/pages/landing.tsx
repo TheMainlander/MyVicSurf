@@ -121,11 +121,8 @@ export default function Landing() {
             <div className="slide-up space-y-6 max-w-md mx-auto" style={{ animationDelay: '0.6s' }}>
               <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
                 <h3 className="text-2xl font-bold text-white mb-2 text-center">Start Your Surf Journey</h3>
-                <p className="text-cyan-300 text-sm font-medium mb-4 text-center">
+                <p className="text-cyan-300 text-sm font-medium mb-6 text-center">
                   Join 1,000+ surfers tracking perfect waves
-                </p>
-                <p className="text-white/80 text-sm mb-6 text-center">
-                  Get instant alerts when your favorite spots hit optimal conditions, track forecasts 7 days ahead, and never miss epic surf again
                 </p>
                 
                 <Button
