@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import AdminNavigationHeader from '@/components/admin/admin-navigation-header';
-import { FileText, Download, Eye, Edit, Trash, Plus, Filter, Search, Database, FileCode, Clipboard, BookOpen } from 'lucide-react';
+import { FileText, Download, Eye, Edit, Trash, Plus, Filter, Search, Database, FileCode, Clipboard, BookOpen, Copy, Share, Trash2 } from 'lucide-react';
 
 interface Document {
   id: number;
@@ -169,6 +169,53 @@ export default function AdminSystemDocuments() {
     await handleDownloadDocument(doc, format);
   };
 
+  const handleCopyToClipboard = async (doc: Document) => {
+    try {
+      await navigator.clipboard.writeText(doc.content);
+      toast({
+        title: "Copied to Clipboard",
+        description: "Document content copied successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Copy Failed",
+        description: "Could not copy to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShareByEmail = (doc: Document) => {
+    const subject = `VicSurf System Document: ${doc.title}`;
+    const body = `Hi,\n\nI'm sharing the following system document with you:\n\n**${doc.title}**\n${doc.description}\n\nType: ${doc.type}\nCreated: ${new Date(doc.createdAt).toLocaleDateString()}\n\nBest regards`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoUrl);
+  };
+
+  const handleBulkExport = async () => {
+    setIsExporting(true);
+    try {
+      for (const doc of filteredDocuments) {
+        await handleDownloadDocument(doc, 'pdf');
+        // Add small delay to prevent overwhelming the browser
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      toast({
+        title: "Bulk Export Complete",
+        description: `Successfully exported ${filteredDocuments.length} documents as PDF`,
+      });
+    } catch (error) {
+      toast({
+        title: "Bulk Export Failed",
+        description: "Some documents may not have been exported. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'prd': return <Database className="w-4 h-4" />;
@@ -223,35 +270,55 @@ export default function AdminSystemDocuments() {
       />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search documents..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        {/* Header Actions */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search documents..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-64"
+              />
+            </div>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="prd">PRD</SelectItem>
+                <SelectItem value="solution_design">Solution Design</SelectItem>
+                <SelectItem value="technical_spec">Technical Spec</SelectItem>
+              </SelectContent>
+            </Select>
+            <Badge variant="secondary">
+              {filteredDocuments.length} document{filteredDocuments.length !== 1 ? 's' : ''}
+            </Badge>
           </div>
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="prd">PRD</SelectItem>
-              <SelectItem value="solution_design">Solution Design</SelectItem>
-              <SelectItem value="technical_spec">Technical Spec</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            onClick={() => setIsCreateDialogOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Document
-          </Button>
+
+          <div className="flex space-x-2">
+            {filteredDocuments.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => handleBulkExport()}
+                disabled={isExporting}
+                className="flex items-center space-x-2"
+              >
+                <Download className="h-4 w-4" />
+                <span>Export All ({filteredDocuments.length})</span>
+              </Button>
+            )}
+            
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Document
+            </Button>
+          </div>
         </div>
 
         {/* Documents Grid */}
@@ -284,6 +351,7 @@ export default function AdminSystemDocuments() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setSelectedDocument(doc)}
+                        title="View Document"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -291,8 +359,25 @@ export default function AdminSystemDocuments() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDownloadDocument(doc, 'pdf')}
+                        title="Download PDF"
                       >
                         <Download className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCopyToClipboard(doc)}
+                        title="Copy to Clipboard"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleShareByEmail(doc)}
+                        title="Share by Email"
+                      >
+                        <Share className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
@@ -377,16 +462,52 @@ export default function AdminSystemDocuments() {
               </div>
             </div>
             <DialogFooter>
-              <Button 
-                variant="outline" 
-                onClick={() => selectedDocument && handleDownloadDocument(selectedDocument, 'pdf')}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download PDF
-              </Button>
-              <Button onClick={() => setSelectedDocument(null)}>
-                Close
-              </Button>
+              <div className="flex gap-2 w-full">
+                <Button
+                  onClick={() => selectedDocument && handleDownloadDocument(selectedDocument, 'md')}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Markdown
+                </Button>
+                <Button
+                  onClick={() => selectedDocument && handleDownloadDocument(selectedDocument, 'html')}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  HTML
+                </Button>
+                <Button
+                  onClick={() => selectedDocument && handleDownloadDocument(selectedDocument, 'pdf')}
+                  disabled={isExporting}
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  PDF
+                </Button>
+                <Button
+                  onClick={() => selectedDocument && handleCopyToClipboard(selectedDocument)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy
+                </Button>
+                <Button
+                  onClick={() => selectedDocument && handleShareByEmail(selectedDocument)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Share className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+                <Button onClick={() => setSelectedDocument(null)} variant="outline" className="ml-auto">
+                  Close
+                </Button>
+              </div>
             </DialogFooter>
           </DialogContent>
         </Dialog>

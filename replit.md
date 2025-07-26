@@ -90,6 +90,8 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Added wave-themed favicon (SVG and ICO formats) to improve app branding and visual identity
 ✓ Enhanced PDF export error handling with detailed user feedback and fallback suggestions
 ✓ Improved document export functionality with better error messaging and retry options
+✓ Enhanced system documents admin panel with same capabilities as marketing screen (bulk export, copy, share)
+✓ Added comprehensive document management tools including clipboard copy and email sharing functionality
 ✓ Added user roles (user, admin, super_admin) to database schema with proper authentication middleware
 ✓ Created admin authentication middleware with role verification and permission checking
 ✓ Added admin user management interface at /admin/users for managing user roles and permissions
