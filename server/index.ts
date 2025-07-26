@@ -4,6 +4,32 @@ import { setupVite, serveStatic, log } from "./vite";
 import { pushNotificationService } from "./push-notifications";
 
 const app = express();
+
+// Enable trust proxy for HTTPS handling behind Replit's proxy
+app.set('trust proxy', true);
+
+// HTTPS redirect middleware for production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+      return;
+    }
+    next();
+  });
+}
+
+// Security headers for HTTPS
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+  }
+  next();
+});
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
@@ -45,7 +71,9 @@ app.use((req, res, next) => {
     res.status(200).json({ 
       status: "healthy", 
       database: "connected",
-      timestamp: new Date().toISOString() 
+      timestamp: new Date().toISOString(),
+      https: req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'enabled' : 'disabled',
+      protocol: req.protocol
     });
   });
 
