@@ -4,7 +4,7 @@ import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink, FileText, MapPin } from "lucide-react";
+import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink, FileText, MapPin, Settings } from "lucide-react";
 import AdminNavigationHeader from "@/components/admin/admin-navigation-header";
 
 interface AdminInfo {
@@ -121,6 +121,15 @@ export default function AdminPage() {
       icon: <FileText className="h-8 w-8 text-orange-600" />,
       path: '/admin/system-documents',
       badge: 'PRDs & Specs',
+      requiresRole: 'admin'
+    },
+    {
+      id: 'container-order',
+      title: 'Container Order',
+      description: 'Customize admin panel layout',
+      icon: <Settings className="h-8 w-8 text-gray-600" />,
+      path: '/admin/container-order',
+      badge: 'Layout Control',
       requiresRole: 'admin'
     },
     {
