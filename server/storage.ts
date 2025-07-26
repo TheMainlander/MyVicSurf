@@ -12,6 +12,7 @@ import {
   payments,
   subscriptionPlans,
   carouselImages,
+  marketingDocuments,
   type SurfSpot, 
   type SurfCondition, 
   type TideTime, 
@@ -129,10 +130,12 @@ export interface IStorage {
   getAllUsers(limit?: number): Promise<User[]>;
   deactivateUser(userId: string): Promise<User>;
   activateUser(userId: string): Promise<User>;
-  updateUserRole(userId: string, role: string): Promise<User>;
-  getAllUsers(limit?: number): Promise<User[]>;
-  deactivateUser(userId: string): Promise<User>;
-  activateUser(userId: string): Promise<User>;
+
+  // Marketing Documents
+  getMarketingDocuments(): Promise<any[]>;
+  getMarketingDocument(id: number): Promise<any | undefined>;
+  createMarketingDocument(document: any): Promise<any>;
+  deleteMarketingDocument(id: number): Promise<void>;
 }
 
 // Database-backed storage for production
@@ -764,7 +767,45 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedUser;
   }
+
+  // Marketing Documents
+  async getMarketingDocuments(): Promise<any[]> {
+    try {
+      return await db.select().from(marketingDocuments).orderBy(desc(marketingDocuments.createdAt));
+    } catch (error) {
+      console.log("Marketing documents table not yet created, returning empty array");
+      return [];
+    }
+  }
+
+  async getMarketingDocument(id: number): Promise<any | undefined> {
+    try {
+      const [document] = await db.select().from(marketingDocuments).where(eq(marketingDocuments.id, id));
+      return document;
+    } catch (error) {
+      console.log("Marketing documents table not yet created");
+      return undefined;
+    }
+  }
+
+  async createMarketingDocument(document: any): Promise<any> {
+    try {
+      const [newDocument] = await db.insert(marketingDocuments).values(document).returning();
+      return newDocument;
+    } catch (error) {
+      console.error("Error creating marketing document:", error);
+      throw error;
+    }
+  }
+
+  async deleteMarketingDocument(id: number): Promise<void> {
+    try {
+      await db.delete(marketingDocuments).where(eq(marketingDocuments.id, id));
+    } catch (error) {
+      console.error("Error deleting marketing document:", error);
+      throw error;
+    }
+  }
 }
 
-// Use database storage for production
 export const storage = new DatabaseStorage();

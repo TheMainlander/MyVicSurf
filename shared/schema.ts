@@ -75,6 +75,28 @@ export const insertForecastSchema = createInsertSchema(forecasts).omit({
   id: true,
 });
 
+// Marketing Documents table
+export const marketingDocuments = pgTable("marketing_documents", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  content: text("content").notNull(),
+  type: text("type").notNull(), // strategy, campaign, analysis, report, proposal
+  format: text("format").notNull().default("md"), // md, pdf
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdBy: text("created_by").notNull(),
+});
+
+export const insertMarketingDocumentSchema = createInsertSchema(marketingDocuments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type MarketingDocument = typeof marketingDocuments.$inferSelect;
+export type InsertMarketingDocument = typeof insertMarketingDocumentSchema._type;
+
 export type InsertSurfSpot = z.infer<typeof insertSurfSpotSchema>;
 export type InsertSurfCondition = z.infer<typeof insertSurfConditionSchema>;
 export type InsertTideTime = z.infer<typeof insertTideTimeSchema>;

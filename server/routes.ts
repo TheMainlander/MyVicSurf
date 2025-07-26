@@ -813,6 +813,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Marketing documents endpoints
+  app.get("/api/admin/marketing-documents", requireAdmin, async (req, res) => {
+    try {
+      const documents = await storage.getMarketingDocuments();
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching marketing documents:", error);
+      res.status(500).json({ message: "Failed to fetch marketing documents" });
+    }
+  });
+
+  app.post("/api/admin/marketing-documents", requireAdmin, async (req, res) => {
+    try {
+      const documentData = {
+        ...req.body,
+        createdBy: req.user?.username || 'Admin'
+      };
+      const document = await storage.createMarketingDocument(documentData);
+      res.json(document);
+    } catch (error) {
+      console.error("Error creating marketing document:", error);
+      res.status(500).json({ message: "Failed to create marketing document" });
+    }
+  });
+
+  app.get("/api/admin/marketing-documents/:id/download", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const document = await storage.getMarketingDocument(id);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      if (document.format === 'pdf') {
+        // For PDF format, we'll generate PDF from markdown content
+        const pdf = require('html-pdf-node');
+        const marked = require('marked');
+        
+        const htmlContent = marked.parse(document.content);
+        const options = { format: 'A4' };
+        const file = { content: htmlContent };
+        
+        const pdfBuffer = await pdf.generatePdf(file, options);
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${document.title}.pdf"`);
+        res.send(pdfBuffer);
+      } else {
+        // For markdown format
+        res.setHeader('Content-Type', 'text/markdown');
+        res.setHeader('Content-Disposition', `attachment; filename="${document.title}.md"`);
+        res.send(document.content);
+      }
+    } catch (error) {
+      console.error("Error downloading document:", error);
+      res.status(500).json({ message: "Failed to download document" });
+    }
+  });
+
+  app.delete("/api/admin/marketing-documents/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteMarketingDocument(id);
+      res.json({ message: "Document deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting marketing document:", error);
+      res.status(500).json({ message: "Failed to delete marketing document" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
