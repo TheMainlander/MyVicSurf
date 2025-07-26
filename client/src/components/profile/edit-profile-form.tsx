@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { User as UserType } from "@shared/schema";
 
 const profileSchema = z.object({
+  email: z.string().email("Please enter a valid email address").optional(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   displayName: z.string().optional(),
@@ -45,6 +46,7 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
+      email: user.email || "",
       firstName: user.firstName || "",
       lastName: user.lastName || "",
       displayName: user.displayName || "",
@@ -171,6 +173,23 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
               </p>
             )}
           </div>
+
+          {/* Email Field */}
+          <div>
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              {...form.register("email")}
+              placeholder="your.email@example.com"
+            />
+            {form.formState.errors.email && (
+              <p className="text-sm text-red-500 mt-1">
+                {form.formState.errors.email.message}
+              </p>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="firstName">First Name</Label>
