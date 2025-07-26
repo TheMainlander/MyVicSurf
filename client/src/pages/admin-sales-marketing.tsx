@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -263,9 +263,12 @@ export default function AdminSalesMarketing() {
 
         {/* Create Document Dialog */}
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl" aria-describedby="create-dialog-description">
               <DialogHeader>
                 <DialogTitle>Create Marketing Document</DialogTitle>
+                <DialogDescription id="create-dialog-description">
+                  Create a new marketing document with title, description, type, and content
+                </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
@@ -507,13 +510,15 @@ export default function AdminSalesMarketing() {
 
         {/* Share & Export Dialog */}
         <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl" aria-describedby="share-dialog-description">
             <DialogHeader>
               <DialogTitle className="text-black flex items-center">
                 <Share2 className="h-5 w-5 mr-2 text-green-600" />
                 Share & Export: {shareDocument?.title}
               </DialogTitle>
-              <p className="text-gray-600">Choose how you'd like to share or export this document</p>
+              <DialogDescription id="share-dialog-description" className="text-gray-600">
+                Choose how you'd like to share or export this document
+              </DialogDescription>
             </DialogHeader>
             
             {shareDocument && (
@@ -639,9 +644,12 @@ export default function AdminSalesMarketing() {
 
         {/* Document Preview Dialog */}
         <Dialog open={!!selectedDocument && !isEditDialogOpen} onOpenChange={() => setSelectedDocument(null)}>
-          <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogContent className="max-w-4xl max-h-[80vh]" aria-describedby="preview-dialog-description">
             <DialogHeader>
               <DialogTitle className="text-black">{selectedDocument?.title}</DialogTitle>
+              <DialogDescription id="preview-dialog-description">
+                View the full content and details of this marketing document
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 overflow-y-auto">
               <div className="flex items-center space-x-4 text-sm text-gray-600">

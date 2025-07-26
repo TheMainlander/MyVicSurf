@@ -853,8 +853,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       switch (requestedFormat) {
         case 'pdf': {
           // Generate PDF from markdown content
-          const pdf = require('html-pdf-node');
-          const marked = require('marked');
+          const htmlPdfNode = await import('html-pdf-node');
+          const markedModule = await import('marked');
           
           const htmlContent = `
             <!DOCTYPE html>
@@ -885,7 +885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   <p><strong>Description:</strong> ${document.description}</p>
                 </div>
               </div>
-              ${marked.parse(document.content)}
+              ${markedModule.marked.parse(document.content)}
             </body>
             </html>
           `;
@@ -897,7 +897,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
           const file = { content: htmlContent };
           
-          const pdfBuffer = await pdf.generatePdf(file, options);
+          const pdfBuffer = await htmlPdfNode.generatePdf(file, options);
           
           res.setHeader('Content-Type', 'application/pdf');
           res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle}.pdf"`);
@@ -907,7 +907,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         case 'html': {
           // Generate formatted HTML
-          const marked = require('marked');
+          const markedModule = await import('marked');
           const htmlContent = `
             <!DOCTYPE html>
             <html lang="en">
@@ -946,7 +946,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               </div>
               
               <div class="document-content">
-                ${marked.parse(document.content)}
+                ${markedModule.marked.parse(document.content)}
               </div>
               
               <div class="footer">
