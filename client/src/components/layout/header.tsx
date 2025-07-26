@@ -1,12 +1,14 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import APIStatus from "@/components/ui/api-status";
 import { useAuth } from "@/hooks/useAuth";
-import { User, LogIn, LogOut } from "lucide-react";
+import { User, LogIn, LogOut, Menu, X, Home, MapPin, TrendingUp, Heart, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function Header() {
   const { isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 
 
@@ -24,6 +26,15 @@ export default function Header() {
         {/* Top Row - Brand and Actions */}
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-ocean-blue hover:bg-blue-50 p-1.5 rounded-md mr-1"
+              title="Menu"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
             <div className="text-xl wave-animation">🏄‍♀️</div>
             <h1 className="text-lg font-bold text-ocean-blue">
               VicSurf
@@ -82,6 +93,129 @@ export default function Header() {
           <p className="text-xs text-coastal-grey">Victoria Surf Conditions</p>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setIsMenuOpen(false)}>
+          <div 
+            className="fixed left-0 top-0 h-full w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div className="flex items-center space-x-2">
+                <div className="text-xl">🏄‍♀️</div>
+                <h2 className="text-lg font-bold text-ocean-blue">VicSurf</h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-gray-500 hover:bg-gray-100 p-1.5"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <nav className="p-4">
+              <div className="space-y-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-left p-3 hover:bg-blue-50"
+                  onClick={() => {
+                    setLocation('/');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <Home className="h-4 w-4 mr-3" />
+                  Home
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-left p-3 hover:bg-blue-50"
+                  onClick={() => {
+                    setLocation('/spots');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <MapPin className="h-4 w-4 mr-3" />
+                  Surf Spots
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-left p-3 hover:bg-blue-50"
+                  onClick={() => {
+                    setLocation('/forecast');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <TrendingUp className="h-4 w-4 mr-3" />
+                  Forecast
+                </Button>
+                
+                {isAuthenticated && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-left p-3 hover:bg-blue-50"
+                      onClick={() => {
+                        setLocation('/profile');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <User className="h-4 w-4 mr-3" />
+                      Profile & Favorites
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-left p-3 hover:bg-yellow-50"
+                      onClick={() => {
+                        window.location.href = '/pricing';
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <span className="mr-3">⚡</span>
+                      Upgrade Plan
+                    </Button>
+                  </>
+                )}
+                
+                {!isAuthenticated && (
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left p-3 hover:bg-blue-50"
+                    onClick={() => {
+                      handleSignIn();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogIn className="h-4 w-4 mr-3" />
+                    Sign In
+                  </Button>
+                )}
+              </div>
+              
+              {isAuthenticated && (
+                <div className="border-t border-gray-200 mt-4 pt-4">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left p-3 hover:bg-red-50 text-red-600"
+                    onClick={() => {
+                      handleSignOut();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-3" />
+                    Sign Out
+                  </Button>
+                </div>
+              )}
+            </nav>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
