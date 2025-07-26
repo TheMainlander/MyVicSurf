@@ -5,6 +5,9 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import RegistrationFlow from "@/components/registration/registration-flow";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import type { CarouselImage } from "@shared/schema";
 
 export default function Landing() {
   const [showRegistration, setShowRegistration] = useState(false);
@@ -38,32 +41,14 @@ export default function Landing() {
     emblaApi.on('select', onSelect);
   }, [emblaApi, onSelect]);
 
-  const surfSpots = [
-    { 
-      name: "Bells Beach", 
-      description: "World-famous surf break home to the Rip Curl Pro",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Bells_Beach_2009.jpg/1280px-Bells_Beach_2009.jpg",
-      location: "Torquay, Victoria"
-    },
-    { 
-      name: "Torquay Point", 
-      description: "Perfect for beginners with gentle, consistent waves",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Torquay_Front_Beach.jpg/1280px-Torquay_Front_Beach.jpg",
-      location: "Torquay, Victoria"
-    },
-    { 
-      name: "Jan Juc", 
-      description: "Consistent waves year-round with beautiful beach setting",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Jan_Juc_surf_beach.JPG/1280px-Jan_Juc_surf_beach.JPG",
-      location: "Surf Coast, Victoria"
-    },
-    { 
-      name: "Winkipop", 
-      description: "Advanced surfers paradise with powerful reef break",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Winki_Pop%2C_Victoria%2C_Australia_%2835728698534%29.jpg/1280px-Winki_Pop%2C_Victoria%2C_Australia_%2835728698534%29.jpg",
-      location: "Torquay, Victoria"
+  // Fetch carousel images from database
+  const { data: carouselImages = [], isLoading: isLoadingImages } = useQuery({
+    queryKey: ['/api/carousel-images'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/carousel-images');
+      return await response.json() as CarouselImage[];
     }
-  ];
+  });
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -191,8 +176,8 @@ export default function Landing() {
               {/* Carousel Container */}
               <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
                 <div className="flex">
-                  {surfSpots.map((spot, index) => (
-                    <div key={spot.name} className="flex-[0_0_100%] min-w-0 relative">
+                  {carouselImages.map((spot, index) => (
+                    <div key={spot.id} className="flex-[0_0_100%] min-w-0 relative">
                       <div className="relative h-[500px] mx-4">
                         {/* Background Image */}
                         <div className="absolute inset-0 rounded-2xl overflow-hidden">
@@ -240,7 +225,7 @@ export default function Landing() {
 
               {/* Dots Indicator */}
               <div className="flex justify-center space-x-2 mt-6">
-                {surfSpots.map((_, index) => (
+                {carouselImages.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => emblaApi?.scrollTo(index)}

@@ -14,6 +14,7 @@ import Landing from "@/pages/landing";
 import Pricing from "@/pages/pricing";
 import Checkout from "@/pages/checkout";
 import PaymentSuccess from "@/pages/payment-success";
+import AdminPage from "@/pages/admin";
 import PostRegistrationHandler from "@/components/registration/post-registration-handler";
 
 function Router() {
@@ -30,6 +31,7 @@ function Router() {
           <Route path="/forecast" component={Forecast} />
           <Route path="/profile" component={Profile} />
           <Route path="/favorites" component={Favorites} />
+          <Route path="/admin" component={AdminPage} />
         </>
       )}
       {/* Payment routes - accessible to all users */}

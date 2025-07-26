@@ -203,6 +203,18 @@ export const subscriptionPlans = pgTable("subscription_plans", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const carouselImages = pgTable("carousel_images", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  imageUrl: text("image_url").notNull(),
+  location: varchar("location"),
+  sortOrder: integer("sort_order").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   favorites: many(userFavorites),
@@ -325,6 +337,12 @@ export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans
   updatedAt: true,
 });
 
+export const insertCarouselImageSchema = createInsertSchema(carouselImages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertUserFavorite = z.infer<typeof insertUserFavoriteSchema>;
 export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
@@ -333,6 +351,7 @@ export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema
 export type InsertNotificationLog = z.infer<typeof insertNotificationLogSchema>;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;
+export type InsertCarouselImage = z.infer<typeof insertCarouselImageSchema>;
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -343,6 +362,7 @@ export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type NotificationLog = typeof notificationLog.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
+export type CarouselImage = typeof carouselImages.$inferSelect;
 
 export type SurfSpot = typeof surfSpots.$inferSelect;
 export type SurfCondition = typeof surfConditions.$inferSelect;

@@ -639,6 +639,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Routes for Carousel Images
+  app.get('/api/admin/carousel-images', isAuthenticated, async (req, res) => {
+    try {
+      const images = await storage.getCarouselImages();
+      res.json(images);
+    } catch (error) {
+      console.error('Error fetching carousel images:', error);
+      res.status(500).json({ message: 'Failed to fetch carousel images' });
+    }
+  });
+
+  app.post('/api/admin/carousel-images', isAuthenticated, async (req, res) => {
+    try {
+      const imageData = req.body;
+      const newImage = await storage.createCarouselImage(imageData);
+      res.json(newImage);
+    } catch (error) {
+      console.error('Error creating carousel image:', error);
+      res.status(500).json({ message: 'Failed to create carousel image' });
+    }
+  });
+
+  app.put('/api/admin/carousel-images/:id', isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      const updatedImage = await storage.updateCarouselImage(id, updates);
+      res.json(updatedImage);
+    } catch (error) {
+      console.error('Error updating carousel image:', error);
+      res.status(500).json({ message: 'Failed to update carousel image' });
+    }
+  });
+
+  app.delete('/api/admin/carousel-images/:id', isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteCarouselImage(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting carousel image:', error);
+      res.status(500).json({ message: 'Failed to delete carousel image' });
+    }
+  });
+
+  // Public route for getting carousel images (for landing page)
+  app.get('/api/carousel-images', async (req, res) => {
+    try {
+      const images = await storage.getCarouselImages();
+      res.json(images);
+    } catch (error) {
+      console.error('Error fetching carousel images:', error);
+      res.status(500).json({ message: 'Failed to fetch carousel images' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

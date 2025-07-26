@@ -41,6 +41,10 @@ app.use((req, res, next) => {
   // Seed subscription plans on startup
   const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
   await seedSubscriptionPlans();
+  
+  // Seed carousel images on startup
+  const { seedCarouselImages } = await import("./carousel-seed");
+  await seedCarouselImages();
 
   const server = await registerRoutes(app);
 

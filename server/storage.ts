@@ -11,6 +11,7 @@ import {
   notificationLog,
   payments,
   subscriptionPlans,
+  carouselImages,
   type SurfSpot, 
   type SurfCondition, 
   type TideTime, 
@@ -23,6 +24,7 @@ import {
   type NotificationLog,
   type Payment,
   type SubscriptionPlan,
+  type CarouselImage,
   type InsertSurfSpot,
   type InsertSurfCondition,
   type InsertTideTime,
@@ -35,6 +37,7 @@ import {
   type InsertNotificationLog,
   type InsertPayment,
   type InsertSubscriptionPlan,
+  type InsertCarouselImage,
   type UpsertUser
 } from "@shared/schema";
 import { getCurrentConditionsFromAPI, getForecastFromAPI, getTideDataFromBOM, getHourlyTideReport } from "./api-integrations";
@@ -112,6 +115,13 @@ export interface IStorage {
   // User Subscription Management
   updateUserSubscription(userId: string, updates: Partial<InsertUser>): Promise<User>;
   getUserSubscriptionStatus(userId: string): Promise<User | undefined>;
+
+  // Carousel Images
+  getCarouselImages(): Promise<CarouselImage[]>;
+  getCarouselImage(id: number): Promise<CarouselImage | undefined>;
+  createCarouselImage(image: InsertCarouselImage): Promise<CarouselImage>;
+  updateCarouselImage(id: number, updates: Partial<InsertCarouselImage>): Promise<CarouselImage>;
+  deleteCarouselImage(id: number): Promise<void>;
 }
 
 // Database-backed storage for production
@@ -663,6 +673,42 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .limit(1);
     return user;
+  }
+
+  // Carousel Images Methods
+  async getCarouselImages(): Promise<CarouselImage[]> {
+    return await db
+      .select()
+      .from(carouselImages)
+      .where(eq(carouselImages.isActive, true))
+      .orderBy(carouselImages.sortOrder);
+  }
+
+  async getCarouselImage(id: number): Promise<CarouselImage | undefined> {
+    const [image] = await db
+      .select()
+      .from(carouselImages)
+      .where(eq(carouselImages.id, id))
+      .limit(1);
+    return image;
+  }
+
+  async createCarouselImage(image: InsertCarouselImage): Promise<CarouselImage> {
+    const [newImage] = await db.insert(carouselImages).values(image).returning();
+    return newImage;
+  }
+
+  async updateCarouselImage(id: number, updates: Partial<InsertCarouselImage>): Promise<CarouselImage> {
+    const [updatedImage] = await db
+      .update(carouselImages)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(carouselImages.id, id))
+      .returning();
+    return updatedImage;
+  }
+
+  async deleteCarouselImage(id: number): Promise<void> {
+    await db.delete(carouselImages).where(eq(carouselImages.id, id));
   }
 }
 
