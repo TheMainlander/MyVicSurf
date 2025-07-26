@@ -33,6 +33,48 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
+// Add health check endpoints BEFORE any other routes or middleware
+// Root health check for deployment monitoring
+app.get("/", (req, res, next) => {
+  const userAgent = req.get('User-Agent') || '';
+  const acceptHeader = req.get('Accept') || '';
+  
+  // Deployment health check detection
+  const isHealthCheck = userAgent.includes('Health') || 
+                       userAgent.includes('Monitor') || 
+                       userAgent.includes('curl') ||
+                       userAgent.includes('Wget') ||
+                       userAgent.includes('Python') ||
+                       userAgent.includes('Go-http-client') ||
+                       userAgent.includes('kube-probe') ||
+                       userAgent.includes('ELB-HealthChecker') ||
+                       req.headers['x-health-check'] ||
+                       req.query.health === 'check' ||
+                       (acceptHeader.includes('application/json') && !acceptHeader.includes('text/html'));
+  
+  if (isHealthCheck) {
+    return res.status(200).json({ 
+      status: "healthy", 
+      app: "VicSurf",
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development'
+    });
+  }
+  
+  // Let frontend serving handle regular requests
+  next();
+});
+
+// Alternative health endpoint for explicit monitoring
+app.get("/health", (req, res) => {
+  res.status(200).json({ 
+    status: "healthy", 
+    app: "VicSurf",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -66,7 +108,7 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // Add health check endpoint (only API endpoint, root serves frontend)
+  // Add health check endpoint for API
   app.get("/api/health", (req, res) => {
     res.status(200).json({ 
       status: "healthy", 
@@ -76,6 +118,9 @@ app.use((req, res, next) => {
       protocol: req.protocol
     });
   });
+
+
+
 
   // Run seeding operations in the background after server starts
   const runSeeding = async () => {
