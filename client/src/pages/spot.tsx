@@ -5,6 +5,7 @@ import BottomNavigation from "@/components/layout/bottom-navigation";
 import CurrentConditions from "@/components/surf/current-conditions";
 import TideInformation from "@/components/surf/tide-information";
 import ForecastTimeline from "@/components/surf/forecast-timeline";
+import ProfessionalForecastingPanel from "@/components/surf/professional-forecasting-panel";
 import BeachCameras from "@/components/surf/beach-cameras";
 import FavoriteButton from "@/components/favorites/favorite-button";
 import LoadingOverlay from "@/components/common/loading-overlay";
@@ -150,6 +151,11 @@ export default function Spot() {
         {/* Forecast Timeline */}
         <div className="fade-in" style={{ animationDelay: '0.5s' }}>
           <ForecastTimeline spotId={spotId} />
+        </div>
+        
+        {/* Professional Forecasting Panel */}
+        <div className="fade-in" style={{ animationDelay: '0.6s' }}>
+          <ProfessionalForecastingPanel />
         </div>
       </main>
 
