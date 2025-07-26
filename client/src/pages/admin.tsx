@@ -4,7 +4,7 @@ import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink, FileText } from "lucide-react";
+import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink, FileText, MapPin } from "lucide-react";
 import AdminNavigationHeader from "@/components/admin/admin-navigation-header";
 
 interface AdminInfo {
@@ -67,7 +67,26 @@ export default function AdminPage() {
     }
   });
 
+  // Fetch beach/surf spot stats
+  const { data: beachStats } = useQuery({
+    queryKey: ['/api/surf-spots'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/surf-spots');
+      const spots = await response.json();
+      return { count: spots.length };
+    }
+  });
+
   const adminPanels: AdminPanelData[] = [
+    {
+      id: 'beach-management',
+      title: 'Beach Management',
+      description: 'Manage Victoria beaches & surf spots',
+      icon: <MapPin className="h-8 w-8 text-teal-600" />,
+      path: '/admin/beaches',
+      badge: beachStats ? `${beachStats.count} beaches` : undefined,
+      requiresRole: 'admin'
+    },
     {
       id: 'carousel-management',
       title: 'Carousel Management',
