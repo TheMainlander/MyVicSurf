@@ -33,16 +33,17 @@ export default function Spot() {
   });
 
   // SEO optimization with dynamic spot data
-  if (spot) {
-    const spotSEO = generateSpotSEO(spot.name, spot);
-    
-    // Add weather structured data if conditions are available
-    if (conditions) {
-      spotSEO.structuredData = generateWeatherSchema(spot.name, conditions);
-    }
-    
-    useSEO(spotSEO);
+  const spotSEO = spot ? generateSpotSEO(spot.name, spot) : {
+    title: "Surf Spot - VicSurf",
+    description: "Victoria surf conditions and forecasts"
+  };
+  
+  // Add weather structured data if conditions are available
+  if (spot && conditions) {
+    spotSEO.structuredData = generateWeatherSchema(spot.name, conditions);
   }
+  
+  useSEO(spotSEO);
 
   if (spotLoading || !spot) {
     return <LoadingOverlay message="Loading surf spot details..." />;
