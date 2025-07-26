@@ -7,6 +7,17 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
+// Prevent unexpected process exits that could terminate the server
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit the process, just log the error
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit the process, just log the error
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -38,31 +49,43 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Seed subscription plans on startup
-  const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
-  await seedSubscriptionPlans();
-  
-  // Seed carousel images on startup
-  const { seedCarouselImages } = await import("./carousel-seed");
-  await seedCarouselImages();
-  
-  // Seed admin user on startup
-  const { seedAdminUser } = await import("./admin-seed");
-  await seedAdminUser();
-  
-  // Seed marketing documents on startup
-  const { seedMarketingDocuments } = await import("./marketing-documents-seed");
-  await seedMarketingDocuments();
-  
-  // Seed system admin documents on startup
-  const { seedSystemDocuments } = await import("./system-documents-seed");
-  await seedSystemDocuments();
-  
-  // Seed container order on startup
-  const { seedContainerOrder } = await import("./container-order-seed");
-  await seedContainerOrder();
-
+  // Initialize server first
   const server = await registerRoutes(app);
+
+  // Run database seeding asynchronously in the background
+  // This ensures the server starts immediately without waiting for seeding
+  (async () => {
+    try {
+      // Seed subscription plans on startup
+      const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
+      await seedSubscriptionPlans();
+      
+      // Seed carousel images on startup
+      const { seedCarouselImages } = await import("./carousel-seed");
+      await seedCarouselImages();
+      
+      // Seed admin user on startup
+      const { seedAdminUser } = await import("./admin-seed");
+      await seedAdminUser();
+      
+      // Seed marketing documents on startup
+      const { seedMarketingDocuments } = await import("./marketing-documents-seed");
+      await seedMarketingDocuments();
+      
+      // Seed system admin documents on startup
+      const { seedSystemDocuments } = await import("./system-documents-seed");
+      await seedSystemDocuments();
+      
+      // Seed container order on startup
+      const { seedContainerOrder } = await import("./container-order-seed");
+      await seedContainerOrder();
+      
+      log("Database seeding completed");
+    } catch (error) {
+      console.error("Database seeding failed:", error);
+      // Don't exit the process, just log the error
+    }
+  })();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
