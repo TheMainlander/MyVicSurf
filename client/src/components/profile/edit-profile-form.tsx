@@ -24,6 +24,8 @@ const profileSchema = z.object({
   surfingExperience: z.enum(["beginner", "intermediate", "advanced", "expert"]).optional(),
   phoneNumber: z.string().optional(),
   instagramHandle: z.string().optional(),
+  twitterHandle: z.string().optional(),
+  facebookHandle: z.string().optional(),
   profileImageUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
@@ -51,6 +53,8 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
       surfingExperience: (user.surfingExperience as "beginner" | "intermediate" | "advanced" | "expert") || "intermediate",
       phoneNumber: user.phoneNumber || "",
       instagramHandle: user.instagramHandle || "",
+      twitterHandle: user.twitterHandle || "",
+      facebookHandle: user.facebookHandle || "",
       profileImageUrl: user.profileImageUrl || "",
     },
   });
@@ -280,18 +284,53 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
             )}
           </div>
 
-          <div>
-            <Label htmlFor="instagramHandle">Instagram Handle</Label>
-            <Input
-              id="instagramHandle"
-              {...form.register("instagramHandle")}
-              placeholder="@yourusername"
-            />
-            {form.formState.errors.instagramHandle && (
-              <p className="text-sm text-red-500 mt-1">
-                {form.formState.errors.instagramHandle.message}
-              </p>
-            )}
+          {/* Social Media Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+              Social Media
+            </h3>
+            
+            <div>
+              <Label htmlFor="instagramHandle">Instagram Handle</Label>
+              <Input
+                id="instagramHandle"
+                {...form.register("instagramHandle")}
+                placeholder="@yourusername"
+              />
+              {form.formState.errors.instagramHandle && (
+                <p className="text-sm text-red-500 mt-1">
+                  {form.formState.errors.instagramHandle.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="twitterHandle">Twitter/X Handle</Label>
+              <Input
+                id="twitterHandle"
+                {...form.register("twitterHandle")}
+                placeholder="@yourusername"
+              />
+              {form.formState.errors.twitterHandle && (
+                <p className="text-sm text-red-500 mt-1">
+                  {form.formState.errors.twitterHandle.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="facebookHandle">Facebook Profile</Label>
+              <Input
+                id="facebookHandle"
+                {...form.register("facebookHandle")}
+                placeholder="facebook.com/yourusername or @yourusername"
+              />
+              {form.formState.errors.facebookHandle && (
+                <p className="text-sm text-red-500 mt-1">
+                  {form.formState.errors.facebookHandle.message}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4">

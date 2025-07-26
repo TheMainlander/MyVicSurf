@@ -126,6 +126,8 @@ export const users = pgTable("users", {
   surfingExperience: varchar("surfing_experience"), // beginner, intermediate, advanced, expert
   phoneNumber: varchar("phone_number"),
   instagramHandle: varchar("instagram_handle"),
+  twitterHandle: varchar("twitter_handle"),
+  facebookHandle: varchar("facebook_handle"),
   role: varchar("role").default("user"), // user, admin, super_admin
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Edit, MapPin, Calendar, Phone, Instagram, Globe, Mail } from "lucide-react";
+import { User, Edit, MapPin, Calendar, Phone, Instagram, Globe, Mail, Twitter, Facebook } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
 interface ProfileDisplayProps {
@@ -110,15 +110,40 @@ export default function ProfileDisplay({ user, onEdit }: ProfileDisplayProps) {
             </div>
           )}
 
-          {user.instagramHandle && (
-            <div>
-              <Label>Instagram</Label>
-              <div className="flex items-center">
-                <Instagram className="h-4 w-4 text-coastal-grey mr-2" />
-                <Value>
-                  {user.instagramHandle.startsWith('@') ? user.instagramHandle : `@${user.instagramHandle}`}
-                </Value>
-              </div>
+          {/* Social Media Section */}
+          {(user.instagramHandle || user.twitterHandle || user.facebookHandle) && (
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-gray-700 border-b border-gray-200 pb-1 block">
+                Social Media
+              </Label>
+              
+              {user.instagramHandle && (
+                <div className="flex items-center">
+                  <Instagram className="h-4 w-4 text-pink-500 mr-2" />
+                  <Value>
+                    {user.instagramHandle.startsWith('@') ? user.instagramHandle : `@${user.instagramHandle}`}
+                  </Value>
+                </div>
+              )}
+
+              {user.twitterHandle && (
+                <div className="flex items-center">
+                  <Twitter className="h-4 w-4 text-blue-500 mr-2" />
+                  <Value>
+                    {user.twitterHandle.startsWith('@') ? user.twitterHandle : `@${user.twitterHandle}`}
+                  </Value>
+                </div>
+              )}
+
+              {user.facebookHandle && (
+                <div className="flex items-center">
+                  <Facebook className="h-4 w-4 text-blue-600 mr-2" />
+                  <Value>
+                    {user.facebookHandle.includes('facebook.com') ? user.facebookHandle : 
+                     user.facebookHandle.startsWith('@') ? user.facebookHandle : `@${user.facebookHandle}`}
+                  </Value>
+                </div>
+              )}
             </div>
           )}
 

@@ -38,6 +38,8 @@ export default function Profile() {
     surfingExperience: "intermediate",
     phoneNumber: "+61 4XX XXX XXX",
     instagramHandle: "@alexsurfer",
+    twitterHandle: "@alexsurfer_vic",
+    facebookHandle: "alexsurfer.vic",
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     subscriptionStatus: "free",
