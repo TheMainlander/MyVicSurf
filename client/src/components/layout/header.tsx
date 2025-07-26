@@ -21,7 +21,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-40 shadow-sm">
+    <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
       <div className="max-w-2xl mx-auto px-4 py-3">
         {/* Top Row - Brand and Actions */}
         <div className="flex items-center justify-between mb-1">
@@ -30,8 +30,10 @@ export default function Header() {
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-ocean-blue hover:bg-blue-50 p-1.5 rounded-md mr-1"
-              title="Menu"
+              className="text-ocean-blue hover:bg-blue-50 p-1.5 rounded-md mr-1 relative z-10"
+              title={isMenuOpen ? "Close Menu" : "Open Menu"}
+              aria-expanded={isMenuOpen}
+              aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
             >
               {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
@@ -96,10 +98,21 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/30" onClick={() => setIsMenuOpen(false)}>
+        <div 
+          className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm" 
+          onClick={() => setIsMenuOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setIsMenuOpen(false);
+            }
+          }}
+        >
           <div 
-            className="fixed left-0 top-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out border-r border-gray-200"
+            className="fixed left-0 top-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out border-r border-gray-200 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation Menu"
           >
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <div className="flex items-center space-x-2">
@@ -111,6 +124,7 @@ export default function Header() {
                 size="sm"
                 onClick={() => setIsMenuOpen(false)}
                 className="text-gray-500 hover:bg-gray-100 p-1.5"
+                aria-label="Close Menu"
               >
                 <X className="h-4 w-4" />
               </Button>
