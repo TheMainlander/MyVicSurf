@@ -125,64 +125,130 @@ export default function Spots() {
           
           <div className="space-y-4">
             {filteredSpots?.map((spot) => (
-              <Card key={spot.id} className="overflow-hidden">
+              <Card key={spot.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
-                  <div className="flex">
+                  {/* Hero Image Section */}
+                  <div className="relative">
                     <img 
-                      src={spot.imageUrl || "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=120"} 
+                      src={spot.imageUrl || "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200"} 
                       alt={spot.name}
-                      className="w-24 h-24 object-cover"
+                      className="w-full h-32 object-cover"
                     />
-                    <div className="flex-1 p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-sm">{spot.name}</h3>
-                          <p className="text-xs text-secondary font-medium">{spot.region}</p>
+                    <div className="absolute top-2 right-2 flex gap-2">
+                      {spot.conditions && (
+                        <Badge className={`${getRatingColor(spot.conditions.rating)} text-white text-xs`}>
+                          {getRatingText(spot.conditions.rating)}
+                        </Badge>
+                      )}
+                      <FavoriteButton 
+                        spotId={spot.id} 
+                        userId={currentUserId}
+                        variant="icon"
+                      />
+                    </div>
+                    
+                    {/* Beach Type & Category Badges */}
+                    <div className="absolute bottom-2 left-2 flex gap-1">
+                      <Badge className={getBeachTypeColor(spot.beachType)}>
+                        {spot.beachType}
+                      </Badge>
+                      {spot.beachCategory && (
+                        <Badge variant="outline" className="bg-white/90 text-xs">
+                          {spot.beachCategory.replace('_', ' ')}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Content Section */}
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg text-gray-900">{spot.name}</h3>
+                        <p className="text-sm text-ocean-blue font-medium">{spot.region}</p>
+                        <Badge className={`${getDifficultyColor(spot.difficulty)} text-white text-xs mt-1`}>
+                          {spot.difficulty}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    {/* Current Conditions */}
+                    {spot.conditions && (
+                      <div className="bg-slate-50 rounded-lg p-3 mb-3">
+                        <h4 className="text-xs font-semibold text-gray-700 mb-2">CURRENT CONDITIONS</h4>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <div className="text-center">
+                            <i className="fas fa-water text-ocean-blue block mb-1"></i>
+                            <div className="font-medium">{spot.conditions.waveHeight}m</div>
+                            <div className="text-gray-500">{spot.conditions.waveDirection}</div>
+                          </div>
+                          <div className="text-center">
+                            <i className="fas fa-wind text-gray-600 block mb-1"></i>
+                            <div className="font-medium">{Math.round(spot.conditions.windSpeed)} km/h</div>
+                            <div className="text-gray-500">{spot.conditions.windDirection}</div>
+                          </div>
+                          <div className="text-center">
+                            <i className="fas fa-thermometer-half text-orange-400 block mb-1"></i>
+                            <div className="font-medium">{Math.round(spot.conditions.airTemperature)}°C</div>
+                            <div className="text-gray-500">Air</div>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          {spot.conditions && (
-                            <Badge className={`${getRatingColor(spot.conditions.rating)} text-white text-xs`}>
-                              {getRatingText(spot.conditions.rating)}
+                      </div>
+                    )}
+                    
+                    {/* Beach Description */}
+                    {spot.description && (
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {spot.description}
+                      </p>
+                    )}
+                    
+                    {/* Beach Facilities */}
+                    {spot.facilities && spot.facilities.length > 0 && (
+                      <div className="mb-3">
+                        <h4 className="text-xs font-semibold text-gray-700 mb-2">FACILITIES</h4>
+                        <div className="flex flex-wrap gap-1">
+                          {spot.facilities.slice(0, 4).map((facility, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {facility}
+                            </Badge>
+                          ))}
+                          {spot.facilities.length > 4 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{spot.facilities.length - 4} more
                             </Badge>
                           )}
-                          <FavoriteButton 
-                            spotId={spot.id} 
-                            userId={currentUserId}
-                            variant="icon"
-                          />
                         </div>
                       </div>
-                      
-                      {spot.conditions && (
-                        <div className="flex items-center justify-between text-xs text-secondary">
-                          <div className="flex items-center space-x-3">
-                            <span className="flex items-center">
-                              <i className="fas fa-water text-ocean-blue mr-1"></i>
-                              {spot.conditions.waveHeight}m
-                            </span>
-                            <span className="flex items-center">
-                              <i className="fas fa-wind mr-1"></i>
-                              {spot.conditions.windSpeed} km/h {spot.conditions.windDirection}
-                            </span>
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            {spot.difficulty}
-                          </Badge>
-                        </div>
-                      )}
-                      
-                      {spot.description && (
-                        <p className="text-xs text-secondary mt-2 line-clamp-2 font-medium">
-                          {spot.description}
-                        </p>
-                      )}
-                      
-                      <div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
-                        <QuickShare spot={spot} conditions={spot.conditions} compact={true} />
-                        <span className="text-xs text-muted">
-                          Share this surf report
-                        </span>
+                    )}
+                    
+                    {/* Access Information */}
+                    {spot.accessInfo && (
+                      <div className="mb-3">
+                        <h4 className="text-xs font-semibold text-gray-700 mb-1">ACCESS</h4>
+                        <p className="text-xs text-gray-600 line-clamp-2">{spot.accessInfo}</p>
                       </div>
+                    )}
+                    
+                    {/* Best Conditions */}
+                    {spot.bestConditions && (
+                      <div className="mb-3">
+                        <h4 className="text-xs font-semibold text-gray-700 mb-1">BEST CONDITIONS</h4>
+                        <p className="text-xs text-gray-600 line-clamp-2">{spot.bestConditions}</p>
+                      </div>
+                    )}
+                    
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 mt-4 pt-3 border-t border-gray-100">
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-ocean-blue hover:bg-ocean-blue/90"
+                        onClick={() => window.location.href = `/beach/${spot.id}`}
+                      >
+                        <i className="fas fa-chart-line mr-2 text-xs"></i>
+                        View Details
+                      </Button>
+                      <QuickShare spot={spot} conditions={spot.conditions} variant="button" />
                     </div>
                   </div>
                 </CardContent>

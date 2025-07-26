@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Spots from "@/pages/spots";
 import Spot from "@/pages/spot";
+import BeachDetail from "@/pages/beach-detail";
 import Comparison from "@/pages/comparison";
 import Forecast from "@/pages/forecast";
 import Profile from "@/pages/profile";
@@ -47,6 +48,7 @@ function Router() {
       <Route path="/" component={isAuthenticated ? Home : Landing} />
       <Route path="/spots" component={Spots} />
       <Route path="/spot/:id" component={Spot} />
+      <Route path="/beach/:id" component={BeachDetail} />
       <Route path="/comparison" component={Comparison} />
       <Route path="/forecast" component={Forecast} />
       <Route path="/profile" component={Profile} />
