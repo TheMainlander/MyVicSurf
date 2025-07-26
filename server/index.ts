@@ -38,26 +38,6 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Seed subscription plans on startup
-  const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
-  await seedSubscriptionPlans();
-  
-  // Seed carousel images on startup
-  const { seedCarouselImages } = await import("./carousel-seed");
-  await seedCarouselImages();
-  
-  // Seed admin user on startup
-  const { seedAdminUser } = await import("./admin-seed");
-  await seedAdminUser();
-  
-  // Seed marketing documents on startup
-  const { seedMarketingDocuments } = await import("./marketing-documents-seed");
-  await seedMarketingDocuments();
-  
-  // Seed system admin documents on startup
-  const { seedSystemDocuments } = await import("./system-documents-seed");
-  await seedSystemDocuments();
-
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -97,13 +77,41 @@ app.use((req, res, next) => {
     port,
     host: "0.0.0.0",
     reusePort: true,
-  }, () => {
+  }, async () => {
     log(`serving on port ${port}`);
     
     // Start push notification monitoring
     if (process.env.DATABASE_URL) {
       pushNotificationService.startOptimalConditionsChecker();
       log("Push notification service started");
+    }
+
+    // Run seeding operations after server is started
+    try {
+      // Seed subscription plans
+      const { seedSubscriptionPlans } = await import("./seed-subscription-plans");
+      await seedSubscriptionPlans();
+      
+      // Seed carousel images
+      const { seedCarouselImages } = await import("./carousel-seed");
+      await seedCarouselImages();
+      
+      // Seed admin user
+      const { seedAdminUser } = await import("./admin-seed");
+      await seedAdminUser();
+      
+      // Seed marketing documents
+      const { seedMarketingDocuments } = await import("./marketing-documents-seed");
+      await seedMarketingDocuments();
+      
+      // Seed system admin documents
+      const { seedSystemDocuments } = await import("./system-documents-seed");
+      await seedSystemDocuments();
+
+      log("Database seeding completed successfully");
+    } catch (error) {
+      console.error("Database seeding failed:", error);
+      // Don't exit the process, just log the error
     }
   });
 })();
