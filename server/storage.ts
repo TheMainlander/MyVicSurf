@@ -204,23 +204,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSurfSpot(id: number): Promise<boolean> {
     const result = await db.delete(surfSpots).where(eq(surfSpots.id, id));
-    return result.rowCount > 0;
-  }
-
-  async updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined> {
-    const [updatedSpot] = await db
-      .update(surfSpots)
-      .set(spotData)
-      .where(eq(surfSpots.id, id))
-      .returning();
-    return updatedSpot;
-  }
-
-  async deleteSurfSpot(id: number): Promise<boolean> {
-    const result = await db
-      .delete(surfSpots)
-      .where(eq(surfSpots.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async getNearbySpots(spotId: number, maxDistance: number = 100): Promise<SurfSpot[]> {
@@ -970,16 +954,16 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
-    query = query.orderBy(desc(userFeedback.createdAt));
+    query = query.orderBy(desc(userFeedback.createdAt)) as any;
 
     if (filters?.limit) {
-      query = query.limit(filters.limit);
+      query = query.limit(filters.limit) as any;
     }
     if (filters?.offset) {
-      query = query.offset(filters.offset);
+      query = query.offset(filters.offset) as any;
     }
 
     return await query;
