@@ -21,7 +21,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
+    <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-40 shadow-sm">
       <div className="max-w-2xl mx-auto px-4 py-3">
         {/* Top Row - Brand and Actions */}
         <div className="flex items-center justify-between mb-1">
@@ -33,7 +33,7 @@ export default function Header() {
               className="text-ocean-blue hover:bg-blue-50 p-1.5 rounded-md mr-1"
               title="Menu"
             >
-              <Menu className="h-4 w-4" />
+              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
             <div className="text-xl wave-animation">🏄‍♀️</div>
             <h1 className="text-lg font-bold text-ocean-blue">
@@ -96,9 +96,9 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setIsMenuOpen(false)}>
+        <div className="fixed inset-0 z-[9999] bg-black/30" onClick={() => setIsMenuOpen(false)}>
           <div 
-            className="fixed left-0 top-0 h-full w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out"
+            className="fixed left-0 top-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out border-r border-gray-200"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
