@@ -114,7 +114,7 @@ export default function ProfileDisplay({ user, onEdit }: ProfileDisplayProps) {
           {(user.instagramHandle || user.twitterHandle || user.facebookHandle) && (
             <div className="space-y-3">
               <Label className="text-sm font-medium text-gray-700 border-b border-gray-200 pb-1 block">
-                Social Media
+                My Socials
               </Label>
               
               {user.instagramHandle && (

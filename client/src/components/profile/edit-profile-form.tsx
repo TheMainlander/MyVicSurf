@@ -287,7 +287,7 @@ export default function EditProfileForm({ user, onCancel }: EditProfileFormProps
           {/* Social Media Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
-              Social Media
+              My Socials
             </h3>
             
             <div>
