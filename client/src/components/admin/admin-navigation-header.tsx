@@ -28,7 +28,7 @@ export default function AdminNavigationHeader({
           {backNav && (
             <Button
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="border-gray-600 text-gray-800 hover:bg-gray-200"
               onClick={() => window.location.href = backNav.path}
             >
               <backNav.icon className="h-4 w-4 mr-2" />
@@ -46,8 +46,8 @@ export default function AdminNavigationHeader({
       
       {/* Page Title */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">{title}</h1>
-        <p className="text-white/80">{description}</p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">{title}</h1>
+        <p className="text-gray-700">{description}</p>
       </div>
     </div>
   );

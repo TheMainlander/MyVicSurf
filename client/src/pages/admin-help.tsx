@@ -222,7 +222,7 @@ export default function AdminHelpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-deep-blue via-ocean-blue to-teal-dark">
+    <div className="min-h-screen bg-gray-300">
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 pb-20 pt-6">
@@ -233,7 +233,7 @@ export default function AdminHelpPage() {
           additionalActions={
             <Button
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="border-gray-600 text-gray-800 hover:bg-gray-200"
               onClick={() => window.location.href = '/admin/users'}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -248,7 +248,7 @@ export default function AdminHelpPage() {
         {adminInfo && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-gray-900">
                 {getRoleIcon(adminInfo.currentAdmin.role)}
                 Admin Status: {adminInfo.currentAdmin.displayName || adminInfo.currentAdmin.email}
               </CardTitle>

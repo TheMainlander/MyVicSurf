@@ -151,10 +151,10 @@ export default function AdminPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-deep-blue via-ocean-blue to-teal-dark">
+      <div className="min-h-screen bg-gray-300">
         <Header />
         <main className="max-w-4xl mx-auto px-4 pb-20 pt-6">
-          <div className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full mx-auto mt-20" />
+          <div className="animate-spin w-8 h-8 border-4 border-gray-600 border-t-transparent rounded-full mx-auto mt-20" />
         </main>
         <BottomNavigation />
       </div>
@@ -162,7 +162,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-deep-blue via-ocean-blue to-teal-dark">
+    <div className="min-h-screen bg-gray-300">
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 pb-20 pt-6">
@@ -174,7 +174,7 @@ export default function AdminPage() {
             <>
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white/10"
+                className="border-gray-600 text-gray-800 hover:bg-gray-200"
                 onClick={() => window.location.href = '/admin/users'}
               >
                 <Users className="h-4 w-4 mr-2" />
@@ -182,7 +182,7 @@ export default function AdminPage() {
               </Button>
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white/10"
+                className="border-gray-600 text-gray-800 hover:bg-gray-200"
                 onClick={() => window.location.href = '/admin/help'}
               >
                 <HelpCircle className="h-4 w-4 mr-2" />
@@ -198,7 +198,7 @@ export default function AdminPage() {
         <div className="mb-6 flex gap-4">
           <Button
             onClick={() => setIsAdding(true)}
-            className="bg-white text-ocean-blue hover:bg-white/90"
+            className="bg-gray-800 text-white hover:bg-gray-700"
             disabled={isAdding || editingId !== null}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -210,7 +210,7 @@ export default function AdminPage() {
         {(isAdding || editingId) && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="text-white">{editingId ? 'Edit Image' : 'Add New Image'}</CardTitle>
+              <CardTitle className="text-gray-900">{editingId ? 'Edit Image' : 'Add New Image'}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -268,7 +268,7 @@ export default function AdminPage() {
                 <Button
                   onClick={handleSave}
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="bg-white text-black hover:bg-gray-100"
+                  className="bg-gray-800 text-white hover:bg-gray-700"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save
@@ -277,7 +277,7 @@ export default function AdminPage() {
                   variant="outline"
                   onClick={handleCancel}
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="border-white text-white hover:bg-white/10"
+                  className="border-gray-600 text-gray-800 hover:bg-gray-200"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel

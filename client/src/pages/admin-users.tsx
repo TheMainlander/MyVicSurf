@@ -142,10 +142,10 @@ export default function AdminUsersPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-deep-blue via-ocean-blue to-teal-dark">
+      <div className="min-h-screen bg-gray-300">
         <Header />
         <main className="max-w-6xl mx-auto px-4 pb-20 pt-6">
-          <div className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full mx-auto mt-20" />
+          <div className="animate-spin w-8 h-8 border-4 border-gray-600 border-t-transparent rounded-full mx-auto mt-20" />
         </main>
         <BottomNavigation />
       </div>
@@ -153,7 +153,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-deep-blue via-ocean-blue to-teal-dark">
+    <div className="min-h-screen bg-gray-300">
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 pb-20 pt-6">
@@ -164,7 +164,7 @@ export default function AdminUsersPage() {
           additionalActions={
             <Button
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="border-gray-600 text-gray-800 hover:bg-gray-200"
               onClick={() => window.location.href = '/admin/help'}
             >
               <HelpCircle className="h-4 w-4 mr-2" />
