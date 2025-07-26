@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import path from "path";
+import { fileURLToPath } from "url";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { requireAdmin, requireSuperAdmin } from "./middleware/admin-auth";
@@ -699,6 +700,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Serve admin guide documentation
   app.get('/ADMIN_GUIDE.md', (req, res) => {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     res.sendFile(path.join(__dirname, '../ADMIN_GUIDE.md'));
   });
 
