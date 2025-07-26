@@ -17,9 +17,10 @@ import {
   ExternalLink,
   ChevronRight,
   HelpCircle,
-  Image as ImageIcon,
-  ArrowLeft
+  Image as ImageIcon
 } from "lucide-react";
+import AdminNavigationHeader from "@/components/admin/admin-navigation-header";
+import AdminQuickNav from "@/components/admin/admin-quick-nav";
 
 interface AdminInfo {
   currentAdmin: {
@@ -225,16 +226,11 @@ export default function AdminHelpPage() {
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 pb-20 pt-6">
-        <div className="mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Button
-              variant="outline"
-              className="border-white text-white hover:bg-white/10"
-              onClick={() => window.location.href = '/admin'}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Admin Panel
-            </Button>
+        <AdminNavigationHeader
+          currentPath="/admin/help"
+          title="Admin Help & Documentation"
+          description="Comprehensive guide for VicSurf administration"
+          additionalActions={
             <Button
               variant="outline"
               className="border-white text-white hover:bg-white/10"
@@ -243,10 +239,10 @@ export default function AdminHelpPage() {
               <Users className="h-4 w-4 mr-2" />
               User Management
             </Button>
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Admin Help & Documentation</h1>
-          <p className="text-white/80">Comprehensive guide for VicSurf administration</p>
-        </div>
+          }
+        />
+        
+        <AdminQuickNav currentPath="/admin/help" userRole="super_admin" />
 
         {/* Admin Status Card */}
         {adminInfo && (
