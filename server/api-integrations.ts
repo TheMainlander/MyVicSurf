@@ -1,5 +1,13 @@
 // Real surf forecast API integrations
 import type { SurfCondition, Forecast, TideTime } from "@shared/schema";
+import {
+  calculateWaveEnergy,
+  classifySwellQuality,
+  calculateSurfScore,
+  convertWaveHeight,
+  analyzeSwellInteraction,
+  calculateSwellDominance
+} from "@shared/surf-metrics";
 
 // Open-Meteo Marine API - Free and reliable for Victoria coastline
 const OPEN_METEO_BASE = "https://marine-api.open-meteo.com/v1/marine";
@@ -141,6 +149,37 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
     // Calculate approximate water temperature based on air temperature (water is typically cooler)
     const waterTemperature = Math.max(14, Math.min(22, airTemperature - 2));
     
+    // Enhanced metrics calculation
+    const waveMetrics = convertWaveHeight(waveHeight);
+    const waveEnergy = calculateWaveEnergy(waveHeight, wavePeriod);
+    const swellClassification = classifySwellQuality(wavePeriod);
+    const surfScore = calculateSurfScore(waveHeight, wavePeriod, windSpeed, degreesToCompass(windDirection));
+    
+    // Multi-swell analysis from available data
+    const primarySwellHeight = data.hourly.swell_wave_height?.[currentIndex] || waveHeight;
+    const primarySwellPeriod = wavePeriod;
+    const primarySwellDirection = degreesToCompass(waveDirection);
+    
+    const windWaveHeight = data.hourly.wind_wave_height?.[currentIndex];
+    const windWavePeriod = Math.max(4, wavePeriod * 0.7); // Wind waves have shorter periods
+    const windWaveDirection = degreesToCompass(windDirection);
+    
+    const swellDominance = calculateSwellDominance(
+      primarySwellHeight,
+      primarySwellPeriod,
+      windWaveHeight,
+      windWavePeriod
+    );
+    
+    const swellInteraction = analyzeSwellInteraction(
+      primarySwellHeight,
+      primarySwellPeriod,
+      primarySwellDirection,
+      windWaveHeight,
+      windWavePeriod,
+      windWaveDirection
+    );
+
     return {
       spotId,
       waveHeight,
@@ -151,7 +190,43 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
       airTemperature: Math.round(airTemperature),
       waterTemperature: Math.round(waterTemperature),
       rating,
-      timestamp: new Date()
+      timestamp: new Date(),
+      
+      // Enhanced surf metrics
+      swellHeight: waveMetrics.swellHeight,
+      breakingHeight: waveMetrics.breakingHeight,
+      heightConfidence: waveMetrics.confidence,
+      swellType: swellClassification.type,
+      swellQuality: swellClassification.quality,
+      waveEnergy,
+      
+      // Multi-swell analysis
+      primarySwellHeight,
+      primarySwellPeriod,
+      primarySwellDirection,
+      primarySwellDominance: swellDominance.primary,
+      
+      secondarySwellHeight: windWaveHeight,
+      secondarySwellPeriod: windWavePeriod,
+      secondarySwellDirection: windWaveDirection,
+      secondarySwellDominance: swellDominance.secondary,
+      
+      swellInteraction,
+      
+      // Professional scoring
+      surfScore: surfScore.overallScore,
+      waveQuality: surfScore.waveQuality,
+      windQuality: surfScore.windQuality,
+      tideOptimal: surfScore.tideOptimal,
+      consistencyScore: surfScore.consistencyScore,
+      
+      // Environmental context (using available data or defaults)
+      uvIndex: 5, // Default moderate UV - would need weather API for real data
+      visibility: 15, // Default 15km visibility
+      cloudCover: 50, // Default moderate clouds
+      precipitationProbability: 20, // Default low rain chance
+      precipitationAmount: 0, // Default no rain
+      windGust: Math.round(windSpeedKmh * 1.3) // Estimate gust as 30% higher than sustained wind
     };
   } catch (error) {
     console.error(`Failed to fetch conditions for spot ${spotId}:`, error);

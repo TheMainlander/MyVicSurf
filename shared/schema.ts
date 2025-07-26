@@ -34,6 +34,42 @@ export const surfConditions = pgTable("surf_conditions", {
   waterTemperature: real("water_temperature").notNull(), // celsius
   rating: text("rating").notNull(), // poor, fair, good, very-good, excellent
   timestamp: timestamp("timestamp").notNull().defaultNow(),
+  
+  // Enhanced surf metrics for professional forecasting
+  swellHeight: real("swell_height"), // Unbroken swell height in open ocean
+  breakingHeight: real("breaking_height"), // Expected breaking wave height at shore
+  heightConfidence: real("height_confidence"), // Forecast confidence percentage
+  swellType: text("swell_type"), // 'ground_swell', 'wind_swell', 'mixed'
+  swellQuality: text("swell_quality"), // 'excellent', 'good', 'fair', 'poor'
+  waveEnergy: real("wave_energy"), // Calculated: height² × period
+  
+  // Multi-swell analysis
+  primarySwellHeight: real("primary_swell_height"),
+  primarySwellPeriod: real("primary_swell_period"),
+  primarySwellDirection: text("primary_swell_direction"),
+  primarySwellDominance: real("primary_swell_dominance"), // Percentage contribution
+  
+  secondarySwellHeight: real("secondary_swell_height"),
+  secondarySwellPeriod: real("secondary_swell_period"),
+  secondarySwellDirection: text("secondary_swell_direction"),
+  secondarySwellDominance: real("secondary_swell_dominance"),
+  
+  swellInteraction: text("swell_interaction"), // 'constructive', 'destructive', 'neutral'
+  
+  // Professional scoring system (1.0-10.0)
+  surfScore: real("surf_score"), // Overall quality score
+  waveQuality: real("wave_quality"), // Wave component score
+  windQuality: real("wind_quality"), // Wind component score
+  tideOptimal: real("tide_optimal"), // Tide optimization score
+  consistencyScore: real("consistency_score"), // Wave consistency rating
+  
+  // Environmental context
+  uvIndex: real("uv_index"), // UV index for sun protection
+  visibility: real("visibility"), // Visibility in kilometers
+  cloudCover: integer("cloud_cover"), // Percentage cloud coverage
+  precipitationProbability: real("precipitation_probability"), // Rain chance percentage
+  precipitationAmount: real("precipitation_amount"), // Expected rainfall in mm
+  windGust: real("wind_gust"), // Maximum wind gust speed
 });
 
 export const tideTimes = pgTable("tide_times", {
@@ -56,6 +92,18 @@ export const forecasts = pgTable("forecasts", {
   rating: text("rating").notNull(),
   airTemperature: real("air_temperature").notNull(),
   waterTemperature: real("water_temperature").notNull(),
+  
+  // Enhanced forecast metrics matching surf_conditions
+  wavePeriod: real("wave_period"), // in seconds
+  swellHeight: real("swell_height"),
+  swellType: text("swell_type"),
+  swellQuality: text("swell_quality"),
+  waveEnergy: real("wave_energy"),
+  surfScore: real("surf_score"),
+  uvIndex: real("uv_index"),
+  visibility: real("visibility"),
+  precipitationProbability: real("precipitation_probability"),
+  windGust: real("wind_gust"),
 });
 
 export const insertSurfSpotSchema = createInsertSchema(surfSpots).omit({

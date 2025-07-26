@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import ShareButton from "@/components/social/share-button";
-import { Wind, Thermometer, Droplets } from "lucide-react";
+import EnhancedConditionsDisplay from "./enhanced-conditions-display";
+import { Wind, Thermometer, Droplets, TrendingUp } from "lucide-react";
+import { useState } from "react";
 import type { SurfCondition, SurfSpot } from "@shared/schema";
 
 interface CurrentConditionsProps {
@@ -10,6 +13,8 @@ interface CurrentConditionsProps {
 }
 
 export default function CurrentConditions({ spotId, spot }: CurrentConditionsProps) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  
   const { data: conditions, isLoading } = useQuery<SurfCondition>({
     queryKey: ["/api/surf-spots", spotId, "conditions"],
     enabled: !!spotId,
@@ -71,8 +76,28 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
   };
 
   return (
-    <section>
-      <div className="surf-card overflow-hidden group">
+    <section className="space-y-3">
+      {/* Professional Conditions Display */}
+      <EnhancedConditionsDisplay 
+        conditions={conditions} 
+        showAdvanced={showAdvanced} 
+      />
+      
+      {/* Toggle Advanced Metrics */}
+      <div className="flex justify-center">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="text-xs gap-1.5"
+        >
+          <TrendingUp className="h-3.5 w-3.5" />
+          {showAdvanced ? 'Hide' : 'Show'} Professional Metrics
+        </Button>
+      </div>
+      
+      {/* Legacy Display (kept for fallback) */}
+      <div className="surf-card overflow-hidden group" style={{ display: showAdvanced ? 'none' : 'block' }}>
         <div 
           className="relative h-48 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 transition-all duration-300 group-hover:scale-105"
           style={{
