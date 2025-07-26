@@ -134,7 +134,7 @@ export default function RegistrationFlow({ onClose }: RegistrationFlowProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-gray-500/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-ocean-blue to-blue-700 border-none">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
