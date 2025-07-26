@@ -642,6 +642,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Beach Management Routes
+  app.put('/api/admin/surf-spots/:id', requireAdmin, async (req, res) => {
+    try {
+      const spotId = parseInt(req.params.id);
+      const spotData = req.body;
+      
+      // Validate required fields
+      if (!spotData.name || !spotData.region) {
+        return res.status(400).json({ message: "Name and region are required" });
+      }
+      
+      const updatedSpot = await storage.updateSurfSpot(spotId, spotData);
+      if (!updatedSpot) {
+        return res.status(404).json({ message: "Surf spot not found" });
+      }
+      
+      res.json(updatedSpot);
+    } catch (error) {
+      console.error("Error updating surf spot:", error);
+      res.status(500).json({ message: "Failed to update surf spot" });
+    }
+  });
+
+  app.post('/api/admin/surf-spots', requireAdmin, async (req, res) => {
+    try {
+      const spotData = req.body;
+      
+      // Validate required fields
+      if (!spotData.name || !spotData.region) {
+        return res.status(400).json({ message: "Name and region are required" });
+      }
+      
+      // Set defaults for optional fields
+      const newSpotData = {
+        ...spotData,
+        latitude: spotData.latitude || 0,
+        longitude: spotData.longitude || 0,
+        difficulty: spotData.difficulty || 'beginner',
+        beachType: spotData.beachType || 'surf',
+        beachCategory: spotData.beachCategory || 'surf_beach',
+        facilities: spotData.facilities || [],
+        hazards: spotData.hazards || []
+      };
+      
+      const newSpot = await storage.createSurfSpot(newSpotData);
+      res.status(201).json(newSpot);
+    } catch (error) {
+      console.error("Error creating surf spot:", error);
+      res.status(500).json({ message: "Failed to create surf spot" });
+    }
+  });
+
+  app.delete('/api/admin/surf-spots/:id', requireAdmin, async (req, res) => {
+    try {
+      const spotId = parseInt(req.params.id);
+      const deleted = await storage.deleteSurfSpot(spotId);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Surf spot not found" });
+      }
+      
+      res.json({ message: "Surf spot deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting surf spot:", error);
+      res.status(500).json({ message: "Failed to delete surf spot" });
+    }
+  });
+
   // Admin Routes for Carousel Images
   app.get('/api/admin/carousel-images', requireAdmin, async (req, res) => {
     try {

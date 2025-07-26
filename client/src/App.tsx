@@ -23,6 +23,7 @@ import AdminHelpPage from "@/pages/admin-help";
 import AdminSalesMarketingPage from "@/pages/admin-sales-marketing";
 import AdminSystemDocumentsPage from "@/pages/admin-system-documents";
 import AdminCarouselPage from "@/pages/admin-carousel";
+import AdminBeachesPage from "@/pages/admin-beaches";
 import PostRegistrationHandler from "@/components/registration/post-registration-handler";
 import Feedback from "@/pages/feedback";
 
@@ -39,6 +40,7 @@ function Router() {
       {/* Admin routes - always accessible for auth redirects */}
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/carousel" component={AdminCarouselPage} />
+      <Route path="/admin/beaches" component={AdminBeachesPage} />
       <Route path="/admin/users" component={AdminUsersPage} />
       <Route path="/admin/sales-marketing" component={AdminSalesMarketingPage} />
       <Route path="/admin/system-documents" component={AdminSystemDocumentsPage} />

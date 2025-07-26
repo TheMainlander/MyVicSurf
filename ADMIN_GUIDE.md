@@ -11,6 +11,7 @@ VicSurf uses a comprehensive Role-Based Access Control (RBAC) system to manage a
 - [Admin Authentication](#admin-authentication)
 - [Navigation System](#navigation-system)
 - [Carousel Management](#carousel-management)
+- [Beach Management](#beach-management)
 - [User Management](#user-management)
 - [Adding New Admin Pages](#adding-new-admin-pages)
 - [Security Best Practices](#security-best-practices)
@@ -46,6 +47,7 @@ Super Admin > Admin > User
 
 ### Admin
 - **Carousel Management**: Add, edit, delete landing page images
+- **Beach Management**: Edit beach information, images, facilities, and descriptions
 - **User Viewing**: View all user accounts and statistics
 - **Account Management**: Activate/deactivate user accounts
 - **Cannot**: Change user roles (super admin only)
@@ -266,6 +268,61 @@ Manage the featured surf spots displayed on the landing page carousel.
 - Maintain consistent image quality across carousel
 - Update seasonally to keep content fresh
 - Test images on mobile devices for responsiveness
+
+## Beach Management
+
+### Overview
+Manage the Victoria Beaches & Surf Spots content including beach information, images, facilities, and descriptions displayed throughout the VicSurf application.
+
+### Accessing Beach Management
+- Navigate to `/admin/beaches` while signed in as admin or super admin
+- Click "Add New Beach" to create new surf spots
+- Use edit buttons on existing beaches to modify content
+- Use delete buttons to remove beaches (with confirmation)
+
+### Adding New Beaches
+1. **Basic Information**:
+   - **Beach Name**: Official name (e.g., "Bells Beach")
+   - **Region**: Geographic area (e.g., "Torquay")
+   - **Latitude/Longitude**: GPS coordinates for accurate location
+   - **Difficulty Level**: beginner, intermediate, advanced, expert
+   - **Beach Type**: surf, swimming, both
+   - **Beach Category**: surf_beach, family_beach, protected_bay, ocean_beach
+
+2. **Content & Media**:
+   - **Hero Image URL**: High-quality beach photo for spot cards and detail pages
+   - **Description**: Comprehensive beach description highlighting unique features
+   - **Facilities**: Comma-separated list (Parking, Toilets, Showers, Café, Surf Shop)
+   - **Access Information**: Detailed directions and parking instructions
+   - **Best Conditions**: Optimal wind, swell, and tide conditions for surfing
+   - **Hazards**: Safety warnings (Rocks, Strong currents, Sharks, Rips)
+
+### Editing Existing Beaches
+1. **Click Edit Button**: Opens inline editing form for the selected beach
+2. **Modify Content**: Update any field including images, text, facilities, or safety information
+3. **Save Changes**: Automatically updates all beach references throughout the app
+4. **Cancel**: Discard changes and return to view mode
+
+### Image Requirements for Beaches
+- **Format**: JPG, PNG, or WebP recommended
+- **Resolution**: Minimum 800x400px for spot cards, 1200x600px for detail pages
+- **Aspect Ratio**: 2:1 (landscape) optimal for consistent display
+- **Content**: Authentic photos of Victorian beaches and surf breaks
+- **Quality**: High-resolution images showcasing beach character and conditions
+
+### Beach Content Guidelines
+- **Descriptions**: Write informative, engaging content highlighting what makes each beach unique
+- **Facilities**: List all available amenities accurately for visitor planning
+- **Access Info**: Provide clear, detailed directions and parking information
+- **Best Conditions**: Include specific wind direction, swell size, and tide preferences
+- **Hazards**: Always include relevant safety warnings for user protection
+
+### Data Management Best Practices
+- **Verify Information**: Ensure all beach details are accurate and up-to-date
+- **Consistent Format**: Use standardized formatting for facilities and hazards lists
+- **Regular Updates**: Review and update beach information seasonally
+- **Image Quality**: Maintain high standards for visual content across all beaches
+- **Safety First**: Always include comprehensive hazard information for user safety
 
 ## User Management
 

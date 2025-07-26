@@ -7,7 +7,8 @@ import {
   ArrowLeft,
   Shield,
   LucideIcon,
-  FileText
+  FileText,
+  MapPin
 } from "lucide-react";
 
 export interface AdminRoute {
@@ -69,6 +70,16 @@ export const ADMIN_ROUTES: AdminRoute[] = [
     title: 'Carousel Management',
     description: 'Manage landing page images',
     icon: ImageIcon,
+    parentId: 'admin-root',
+    requiresRole: 'admin',
+    showInNavigation: true
+  },
+  {
+    id: 'admin-beaches',
+    path: '/admin/beaches',
+    title: 'Beach Management',
+    description: 'Edit beach information, images, and content',
+    icon: MapPin,
     parentId: 'admin-root',
     requiresRole: 'admin',
     showInNavigation: true

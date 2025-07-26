@@ -182,6 +182,28 @@ export class DatabaseStorage implements IStorage {
     return newSpot;
   }
 
+  async updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined> {
+    const [updatedSpot] = await db
+      .update(surfSpots)
+      .set(spotData)
+      .where(eq(surfSpots.id, id))
+      .returning();
+    return updatedSpot;
+  }
+
+  async deleteSurfSpot(id: number): Promise<boolean> {
+    const result = await db
+      .delete(surfSpots)
+      .where(eq(surfSpots.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getNearbySpots(spotId: number, maxDistance: number = 100): Promise<SurfSpot[]> {
+    // For now, return all other spots
+    const allSpots = await this.getSurfSpots();
+    return allSpots.filter(spot => spot.id !== spotId);
+  }
+
   async getCurrentConditions(spotId: number): Promise<SurfCondition | undefined> {
     const [condition] = await db
       .select()
