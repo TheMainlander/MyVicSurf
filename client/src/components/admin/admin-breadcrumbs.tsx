@@ -14,23 +14,24 @@ export default function AdminBreadcrumbs({ currentPath, className = "" }: AdminB
   
   const breadcrumbs = AdminNavigation.getBreadcrumbs(currentRoute.id);
   
-  if (breadcrumbs.length <= 1) return null;
+  // Always show breadcrumbs to help with navigation
+  // if (breadcrumbs.length <= 1) return null;
   
   return (
-    <nav className={`flex items-center space-x-2 text-sm ${className}`}>
+    <nav className={`flex items-center space-x-2 text-sm bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 ${className}`}>
       {breadcrumbs.map((route, index) => (
         <div key={route.id} className="flex items-center">
-          {index > 0 && <ChevronRight className="h-4 w-4 text-white/60 mx-2" />}
+          {index > 0 && <ChevronRight className="h-4 w-4 text-gray-600 mx-2" />}
           
           {index === breadcrumbs.length - 1 ? (
             // Current page - not clickable
-            <span className="text-white/80 font-medium">{route.title}</span>
+            <span className="text-gray-900 font-medium">{route.title}</span>
           ) : (
             // Clickable breadcrumb
             <Button
               variant="ghost"
               size="sm"
-              className="text-white/70 hover:text-white hover:bg-white/10 p-1 h-auto"
+              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100 p-1 h-auto"
               onClick={() => window.location.href = route.path}
             >
               <route.icon className="h-3 w-3 mr-1" />

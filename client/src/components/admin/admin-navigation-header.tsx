@@ -21,6 +21,11 @@ export default function AdminNavigationHeader({
   
   return (
     <div className={`mb-6 ${className}`}>
+      {/* Breadcrumbs - Prominent Position */}
+      <div className="mb-4">
+        <AdminBreadcrumbs currentPath={currentPath} />
+      </div>
+      
       {/* Navigation Controls */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
@@ -39,9 +44,6 @@ export default function AdminNavigationHeader({
           {/* Additional Action Buttons */}
           {additionalActions}
         </div>
-        
-        {/* Breadcrumbs */}
-        <AdminBreadcrumbs currentPath={currentPath} />
       </div>
       
       {/* Page Title */}
