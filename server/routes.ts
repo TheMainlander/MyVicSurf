@@ -931,7 +931,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const documentData = {
         ...req.body,
-        createdBy: req.user?.firstName || req.user?.email || 'Admin'
+        createdBy: (req.user as any)?.firstName || (req.user as any)?.email || 'Admin'
       };
       const document = await storage.createDocument(documentData);
       res.json(document);
@@ -979,7 +979,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const documentData = {
         ...req.body,
         category: 'marketing',
-        createdBy: req.user?.firstName || req.user?.email || 'Admin'
+        createdBy: (req.user as any)?.firstName || (req.user as any)?.email || 'Admin'
       };
       const document = await storage.createDocument(documentData);
       res.json(document);
@@ -1068,7 +1068,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error('PDF generation error:', pdfError);
             res.status(500).json({ 
               message: 'Failed to generate PDF', 
-              error: pdfError.message,
+              error: (pdfError as Error).message,
               details: 'PDF generation requires browser dependencies. Please try downloading as HTML or Markdown instead.'
             });
           }
@@ -1205,7 +1205,7 @@ ${document.content}
       
       // Add user ID if authenticated
       if (req.isAuthenticated?.()) {
-        feedbackData.userId = req.user.id;
+        feedbackData.userId = (req.user as any).id;
       }
       
       const feedback = await storage.createFeedback(feedbackData);
@@ -1240,7 +1240,7 @@ ${document.content}
       // If user is authenticated, they can see their own private feedback
       if (req.isAuthenticated?.()) {
         // Admin can see all feedback
-        if (req.user.role === 'admin' || req.user.role === 'super_admin') {
+        if ((req.user as any).role === 'admin' || (req.user as any).role === 'super_admin') {
           delete filters.isPublic;
         }
       }
@@ -1282,7 +1282,7 @@ ${document.content}
     try {
       const feedbackId = parseInt(req.params.id);
       const { voteType } = req.body;
-      const userId = req.user.id;
+      const userId = (req.user as any).id;
 
       if (!['upvote', 'downvote'].includes(voteType)) {
         return res.status(400).json({ message: 'Invalid vote type' });
@@ -1304,7 +1304,7 @@ ${document.content}
 
     try {
       const feedbackId = parseInt(req.params.id);
-      const userId = req.user.id;
+      const userId = (req.user as any).id;
 
       await storage.removeVoteFeedback(feedbackId, userId);
       res.json({ success: true });
