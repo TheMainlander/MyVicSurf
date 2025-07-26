@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Waves, Zap, Crown } from "lucide-react";
-import { Link } from "wouter";
+import { Check, Waves, Zap, Crown, ArrowLeft, X } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 
 interface SubscriptionPlan {
@@ -22,6 +22,7 @@ interface SubscriptionPlan {
 export default function Pricing() {
   const { isAuthenticated } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+  const [, setLocation] = useLocation();
 
   const { data: plans, isLoading } = useQuery<SubscriptionPlan[]>({
     queryKey: ["/api/subscription-plans"],
@@ -69,6 +70,40 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-ocean-blue/5 to-cyan-50">
+      {/* Header with Navigation */}
+      <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation('/')}
+                className="text-ocean-blue hover:bg-blue-50"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to VicSurf
+              </Button>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <div className="text-xl">🏄‍♀️</div>
+              <h1 className="text-lg font-bold text-ocean-blue">VicSurf</h1>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation('/')}
+              className="text-gray-500 hover:bg-gray-100 p-2"
+              title="Close"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-ocean-blue to-cyan-600 bg-clip-text text-transparent mb-4">
