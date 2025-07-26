@@ -186,6 +186,12 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Integrated beach management into admin navigation system with proper role-based access control
 ✓ Updated admin documentation with comprehensive beach management guide and best practices
 ✓ Maintained all existing functionality while adding powerful content management capabilities
+✓ ENHANCED LOCATION SERVICE DURATION CONTROLS: Added configurable duration settings for location sharing
+✓ Created duration selector with options from 5 minutes to 8 hours for extended location caching
+✓ Enhanced geolocation hook to support custom cache durations with configurable maximumAge parameter
+✓ Added duration controls to both full and compact location permission components
+✓ Improved user experience with clear duration explanations and privacy-focused messaging
+✓ Maintained backward compatibility while adding flexible location sharing options
 
 ## User Preferences
 

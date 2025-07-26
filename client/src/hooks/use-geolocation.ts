@@ -13,6 +13,7 @@ interface GeolocationOptions {
   enableHighAccuracy?: boolean;
   timeout?: number;
   maximumAge?: number;
+  cacheDuration?: number; // Custom cache duration in milliseconds
 }
 
 export function useGeolocation(options: GeolocationOptions = {}) {
@@ -39,7 +40,7 @@ export function useGeolocation(options: GeolocationOptions = {}) {
     const defaultOptions: PositionOptions = {
       enableHighAccuracy: true,
       timeout: 10000,
-      maximumAge: 300000, // 5 minutes
+      maximumAge: options.cacheDuration || 300000, // Use custom duration or default 5 minutes
       ...options,
     };
 
