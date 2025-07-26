@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useEmblaCarousel from 'embla-carousel-react';
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import RegistrationFlow from "@/components/registration/registration-flow";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -280,6 +282,48 @@ export default function Landing() {
               </Button>
             </div>
           </div>
+
+          {/* Footer with Social Share Icons */}
+          <footer className="mt-16 pt-8 border-t border-white/20">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-white mb-4">Share VicSurf</h3>
+              <div className="flex justify-center space-x-6">
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out VicSurf - Your Ultimate Guide to Victoria\'s Surf Conditions!')}&url=${encodeURIComponent(window.location.origin)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/30 hover:scale-110 transition-all duration-200 shadow-lg"
+                  aria-label="Share on X (Twitter)"
+                >
+                  <FaXTwitter className="w-5 h-5" />
+                </a>
+                
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/30 hover:scale-110 transition-all duration-200 shadow-lg"
+                  aria-label="Share on Facebook"
+                >
+                  <FaFacebook className="w-5 h-5" />
+                </a>
+                
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent('Check out VicSurf - Your Ultimate Guide to Victoria\'s Surf Conditions! ' + window.location.origin)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/30 hover:scale-110 transition-all duration-200 shadow-lg"
+                  aria-label="Share on WhatsApp"
+                >
+                  <FaWhatsapp className="w-5 h-5" />
+                </a>
+              </div>
+              
+              <p className="text-white/60 text-sm mt-4">
+                Share the stoke with fellow surfers
+              </p>
+            </div>
+          </footer>
           </div>
         </main>
       </div>
