@@ -117,6 +117,7 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Admin guide accessible at /admin/help with tabbed sections and quick navigation
 ✓ Complete admin documentation (ADMIN_GUIDE.md) covering all system functions
 ✓ Help buttons integrated into all admin interfaces for easy access to documentation
+✓ Updated text contrast across all admin interfaces for better readability with black text on white backgrounds
 
 ## User Preferences
 

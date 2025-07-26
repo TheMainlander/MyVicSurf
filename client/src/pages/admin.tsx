@@ -288,9 +288,9 @@ export default function AdminPage() {
                     className="w-24 h-16 object-cover rounded"
                   />
                   <div className="flex-1">
-                    <h3 className="font-semibold">{image.name}</h3>
-                    <p className="text-sm text-gray-600 mb-1">{image.description}</p>
-                    <p className="text-xs text-gray-500">{image.location} • Order: {image.sortOrder}</p>
+                    <h3 className="font-semibold text-gray-900">{image.name}</h3>
+                    <p className="text-sm text-gray-700 mb-1">{image.description}</p>
+                    <p className="text-xs text-gray-600">{image.location} • Order: {image.sortOrder}</p>
                   </div>
                   <div className="flex gap-2">
                     <Button
