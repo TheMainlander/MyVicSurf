@@ -201,7 +201,7 @@ export default function AdminPage() {
         {(isAdding || editingId) && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>{editingId ? 'Edit Image' : 'Add New Image'}</CardTitle>
+              <CardTitle className="text-gray-900">{editingId ? 'Edit Image' : 'Add New Image'}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>

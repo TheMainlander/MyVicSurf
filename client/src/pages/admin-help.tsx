@@ -233,7 +233,7 @@ export default function AdminHelpPage() {
         {adminInfo && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-gray-900">
                 {getRoleIcon(adminInfo.currentAdmin.role)}
                 Admin Status: {adminInfo.currentAdmin.displayName || adminInfo.currentAdmin.email}
               </CardTitle>
@@ -322,7 +322,7 @@ export default function AdminHelpPage() {
         {/* Help Content Tabs */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-900">
               <HelpCircle className="h-5 w-5" />
               Admin Guide Sections
             </CardTitle>

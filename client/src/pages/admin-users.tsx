@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
         {adminInfo && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-gray-900">
                 {getRoleIcon(adminInfo.currentAdmin.role)}
                 Logged in as: {adminInfo.currentAdmin.displayName}
               </CardTitle>
