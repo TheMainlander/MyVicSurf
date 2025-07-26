@@ -65,7 +65,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
-  // Note: Health check endpoint is defined in index.ts to avoid duplicates
+  // Health check endpoint for production monitoring
+  app.get('/api/health', async (req, res) => {
+    try {
+      // Check database connection
+      const spots = await storage.getSurfSpots();
+      res.json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        database: 'connected',
+        spotsCount: spots.length,
+        environment: process.env.NODE_ENV || 'development',
+        authentication: authConfigured ? 'enabled' : 'disabled',
+        missingEnvVars: authConfigured ? [] : [
+          !process.env.DATABASE_URL && 'DATABASE_URL',
+          !process.env.REPLIT_DOMAINS && 'REPLIT_DOMAINS',
+          !process.env.REPL_ID && 'REPL_ID', 
+          !process.env.SESSION_SECRET && 'SESSION_SECRET'
+        ].filter(Boolean)
+      });
+    } catch (error) {
+      res.status(503).json({ 
+        status: 'unhealthy', 
+        timestamp: new Date().toISOString(),
+        error: (error as Error).message,
+        authentication: authConfigured ? 'enabled' : 'disabled'
+      });
+    }
+  });
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

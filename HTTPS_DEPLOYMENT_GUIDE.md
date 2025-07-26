@@ -77,42 +77,16 @@ No additional environment variables needed. The application automatically detect
 
 ## Troubleshooting
 
-### Production Debug Tool
-Use the included debug script to diagnose issues:
-```bash
-node production-debug.js
-```
-
-This will check:
-- Health endpoint status
-- Frontend loading
-- API endpoints functionality  
-- SSL certificate validity
-- HTTPS redirects
-
-### Common Issues
-
-**Internal Server Error (500)**
-1. Check deployment logs in Replit console
-2. Run debug script: `node production-debug.js`
-3. Verify all environment variables are set
-4. Check database connectivity
-
-**Mixed Content Issues**
+### Mixed Content Issues
 If you see mixed content warnings:
 1. Check all external resources use HTTPS URLs
 2. Verify API calls use relative URLs or HTTPS
 
-**Certificate Issues**
+### Certificate Issues
 Replit handles SSL certificates automatically. If issues persist:
 1. Check deployment logs
 2. Verify your domain configuration
 3. Contact Replit support
-
-**Database Connection Issues**
-1. Verify DATABASE_URL environment variable
-2. Check PostgreSQL service status
-3. Test database connectivity in health endpoint
 
 ## Custom Domain Setup (Optional)
 

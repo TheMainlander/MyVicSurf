@@ -66,49 +66,15 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // Global error handler - must be after all routes
-  app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error('Server Error:', {
-      message: error.message,
-      stack: error.stack,
-      url: req.url,
-      method: req.method,
-      timestamp: new Date().toISOString()
-    });
-    
-    if (res.headersSent) {
-      return next(error);
-    }
-    
-    res.status(500).json({
-      error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : error.message,
-      timestamp: new Date().toISOString()
-    });
-  });
-
   // Add health check endpoint (only API endpoint, root serves frontend)
-  app.get("/api/health", async (req, res) => {
-    try {
-      // Check database connection
-      const spots = await storage.getSurfSpots();
-      res.status(200).json({ 
-        status: "healthy", 
-        database: "connected",
-        timestamp: new Date().toISOString(),
-        https: req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'enabled' : 'disabled',
-        protocol: req.protocol,
-        environment: process.env.NODE_ENV || 'development',
-        nodeVersion: process.version,
-        spotsCount: spots.length
-      });
-    } catch (error) {
-      console.error('Health check error:', error);
-      res.status(500).json({
-        status: "error",
-        message: "Health check failed",
-        timestamp: new Date().toISOString()
-      });
-    }
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ 
+      status: "healthy", 
+      database: "connected",
+      timestamp: new Date().toISOString(),
+      https: req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'enabled' : 'disabled',
+      protocol: req.protocol
+    });
   });
 
   // Run seeding operations in the background after server starts
@@ -147,6 +113,25 @@ app.use((req, res, next) => {
     }
   };
 
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    // Log error details for debugging
+    console.error("Server error:", {
+      status,
+      message,
+      stack: err.stack,
+      url: _req.url,
+      method: _req.method
+    });
+
+    res.status(status).json({ message });
+    
+    // Log in all environments, don't throw to prevent crashes
+    console.error("Request failed with status:", status);
+  });
+
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
@@ -155,15 +140,6 @@ app.use((req, res, next) => {
   } else {
     serveStatic(app);
   }
-
-  // Catch-all 404 handler for API routes (after vite setup)
-  app.use('/api/*', (req, res) => {
-    res.status(404).json({
-      error: 'API endpoint not found',
-      path: req.path,
-      timestamp: new Date().toISOString()
-    });
-  });
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.
