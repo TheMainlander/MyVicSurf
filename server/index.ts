@@ -53,6 +53,10 @@ app.use((req, res, next) => {
   // Seed marketing documents on startup
   const { seedMarketingDocuments } = await import("./marketing-documents-seed");
   await seedMarketingDocuments();
+  
+  // Seed system admin documents on startup
+  const { seedSystemDocuments } = await import("./system-documents-seed");
+  await seedSystemDocuments();
 
   const server = await registerRoutes(app);
 

@@ -813,7 +813,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Marketing documents endpoints
+  // Document management endpoints (Marketing + System Admin)
+  app.get("/api/admin/documents", requireAdmin, async (req, res) => {
+    try {
+      const category = req.query.category as string;
+      const documents = category 
+        ? await storage.getDocumentsByCategory(category)
+        : await storage.getAllDocuments();
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  app.get("/api/admin/documents/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const document = await storage.getDocument(id);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      res.json(document);
+    } catch (error) {
+      console.error("Error fetching document:", error);
+      res.status(500).json({ message: "Failed to fetch document" });
+    }
+  });
+
+  app.post("/api/admin/documents", requireAdmin, async (req, res) => {
+    try {
+      const documentData = {
+        ...req.body,
+        createdBy: req.user?.firstName || req.user?.email || 'Admin'
+      };
+      const document = await storage.createDocument(documentData);
+      res.json(document);
+    } catch (error) {
+      console.error("Error creating document:", error);
+      res.status(500).json({ message: "Failed to create document" });
+    }
+  });
+
+  app.put("/api/admin/documents/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const document = await storage.updateDocument(id, req.body);
+      res.json(document);
+    } catch (error) {
+      console.error("Error updating document:", error);
+      res.status(500).json({ message: "Failed to update document" });
+    }
+  });
+
+  app.delete("/api/admin/documents/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteDocument(id);
+      res.json({ message: "Document deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      res.status(500).json({ message: "Failed to delete document" });
+    }
+  });
+
+  // Legacy marketing documents endpoints for backward compatibility
   app.get("/api/admin/marketing-documents", requireAdmin, async (req, res) => {
     try {
       const documents = await storage.getMarketingDocuments();
@@ -828,9 +892,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const documentData = {
         ...req.body,
-        createdBy: req.user?.username || 'Admin'
+        category: 'marketing',
+        createdBy: req.user?.firstName || req.user?.email || 'Admin'
       };
-      const document = await storage.createMarketingDocument(documentData);
+      const document = await storage.createDocument(documentData);
       res.json(document);
     } catch (error) {
       console.error("Error creating marketing document:", error);
@@ -838,11 +903,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/marketing-documents/:id/download", requireAdmin, async (req, res) => {
+  // Document download endpoint with format conversion
+  app.get("/api/admin/documents/:id/download", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const requestedFormat = (req.query.format as string) || 'md';
-      const document = await storage.getMarketingDocument(id);
+      const document = await storage.getDocument(id);
       
       if (!document) {
         return res.status(404).json({ message: "Document not found" });

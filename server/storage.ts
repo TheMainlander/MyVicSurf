@@ -12,6 +12,7 @@ import {
   payments,
   subscriptionPlans,
   carouselImages,
+  documents,
   marketingDocuments,
   userFeedback,
   feedbackVotes,
@@ -792,34 +793,81 @@ export class DatabaseStorage implements IStorage {
     return updatedUser;
   }
 
-  // Marketing Documents
-  async getMarketingDocuments(): Promise<any[]> {
+  // Documents (Marketing + System Admin)
+  async getAllDocuments(): Promise<any[]> {
     try {
-      return await db.select().from(marketingDocuments).orderBy(desc(marketingDocuments.createdAt));
+      return await db.select().from(documents).orderBy(desc(documents.createdAt));
     } catch (error) {
-      console.log("Marketing documents table not yet created, returning empty array");
+      console.log("Documents table not yet created, returning empty array");
       return [];
     }
   }
 
-  async getMarketingDocument(id: number): Promise<any | undefined> {
+  async getDocumentsByCategory(category: string): Promise<any[]> {
     try {
-      const [document] = await db.select().from(marketingDocuments).where(eq(marketingDocuments.id, id));
+      return await db.select().from(documents)
+        .where(eq(documents.category, category))
+        .orderBy(desc(documents.createdAt));
+    } catch (error) {
+      console.log("Documents table not yet created, returning empty array");
+      return [];
+    }
+  }
+
+  async getDocument(id: number): Promise<any | undefined> {
+    try {
+      const [document] = await db.select().from(documents).where(eq(documents.id, id));
       return document;
     } catch (error) {
-      console.log("Marketing documents table not yet created");
+      console.log("Documents table not yet created");
       return undefined;
     }
   }
 
-  async createMarketingDocument(document: any): Promise<any> {
+  async createDocument(document: any): Promise<any> {
     try {
-      const [newDocument] = await db.insert(marketingDocuments).values(document).returning();
+      const [newDocument] = await db.insert(documents).values(document).returning();
       return newDocument;
     } catch (error) {
-      console.error("Error creating marketing document:", error);
+      console.error("Error creating document:", error);
       throw error;
     }
+  }
+
+  async updateDocument(id: number, updates: any): Promise<any> {
+    try {
+      const [updatedDocument] = await db
+        .update(documents)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(documents.id, id))
+        .returning();
+      return updatedDocument;
+    } catch (error) {
+      console.error("Error updating document:", error);
+      throw error;
+    }
+  }
+
+  async deleteDocument(id: number): Promise<void> {
+    try {
+      await db.delete(documents).where(eq(documents.id, id));
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      throw error;
+    }
+  }
+
+  // Legacy methods for backward compatibility
+  async getMarketingDocuments(): Promise<any[]> {
+    return this.getDocumentsByCategory('marketing');
+  }
+
+  async getMarketingDocument(id: number): Promise<any | undefined> {
+    return this.getDocument(id);
+  }
+
+  async createMarketingDocument(document: any): Promise<any> {
+    return this.createDocument({ ...document, category: 'marketing' });
   }
 
   async deleteMarketingDocument(id: number): Promise<void> {

@@ -86,6 +86,18 @@ export const ADMIN_ROUTES: AdminRoute[] = [
     showInNavigation: true
   },
   
+  // System Documents
+  {
+    id: 'admin-system-documents',
+    path: '/admin/system-documents',
+    title: 'System Documents',
+    description: 'Manage PRDs, specifications, and technical documentation',
+    icon: FileText,
+    parentId: 'admin-root',
+    requiresRole: 'admin',
+    showInNavigation: true
+  },
+  
   // Admin help
   {
     id: 'admin-help',

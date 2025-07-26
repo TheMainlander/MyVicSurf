@@ -4,7 +4,7 @@ import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink } from "lucide-react";
+import { Users, HelpCircle, TrendingUp, Image as ImageIcon, ChevronRight, ExternalLink, FileText } from "lucide-react";
 import AdminNavigationHeader from "@/components/admin/admin-navigation-header";
 
 interface AdminInfo {
@@ -93,6 +93,15 @@ export default function AdminPage() {
       icon: <TrendingUp className="h-8 w-8 text-purple-600" />,
       path: '/admin/sales-marketing',
       badge: marketingStats ? `${marketingStats.count} documents` : undefined,
+      requiresRole: 'admin'
+    },
+    {
+      id: 'system-documents',
+      title: 'System Documents',
+      description: 'PRDs, specifications, and technical docs',
+      icon: <FileText className="h-8 w-8 text-orange-600" />,
+      path: '/admin/system-documents',
+      badge: 'PRDs & Specs',
       requiresRole: 'admin'
     },
     {
