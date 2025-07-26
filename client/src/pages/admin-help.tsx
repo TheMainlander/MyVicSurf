@@ -17,7 +17,8 @@ import {
   ExternalLink,
   ChevronRight,
   HelpCircle,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ArrowLeft
 } from "lucide-react";
 
 interface AdminInfo {
@@ -225,6 +226,24 @@ export default function AdminHelpPage() {
       
       <main className="max-w-6xl mx-auto px-4 pb-20 pt-6">
         <div className="mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <Button
+              variant="outline"
+              className="border-white text-white hover:bg-white/10"
+              onClick={() => window.location.href = '/admin'}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Admin Panel
+            </Button>
+            <Button
+              variant="outline"
+              className="border-white text-white hover:bg-white/10"
+              onClick={() => window.location.href = '/admin/users'}
+            >
+              <Users className="h-4 w-4 mr-2" />
+              User Management
+            </Button>
+          </div>
           <h1 className="text-3xl font-bold text-white mb-2">Admin Help & Documentation</h1>
           <p className="text-white/80">Comprehensive guide for VicSurf administration</p>
         </div>

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { User, Shield, ShieldCheck, UserX, UserCheck, HelpCircle } from "lucide-react";
+import { User, Shield, ShieldCheck, UserX, UserCheck, HelpCircle, ArrowLeft } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 
 interface AdminInfo {
@@ -165,6 +165,7 @@ export default function AdminUsersPage() {
               className="border-white text-white hover:bg-white/10"
               onClick={() => window.location.href = '/admin'}
             >
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Admin Panel
             </Button>
             <Button
