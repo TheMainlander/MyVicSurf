@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Save, X, Users } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Users, HelpCircle } from "lucide-react";
 import type { CarouselImage } from "@shared/schema";
 
 interface CarouselImageForm {
@@ -186,6 +186,14 @@ export default function AdminPage() {
           >
             <Users className="h-4 w-4 mr-2" />
             Manage Users
+          </Button>
+          <Button
+            variant="outline"
+            className="border-white text-white hover:bg-white/10"
+            onClick={() => window.location.href = '/admin/help'}
+          >
+            <HelpCircle className="h-4 w-4 mr-2" />
+            Admin Help
           </Button>
         </div>
 

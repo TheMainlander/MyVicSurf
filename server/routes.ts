@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { requireAdmin, requireSuperAdmin } from "./middleware/admin-auth";
@@ -694,6 +695,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error fetching carousel images:', error);
       res.status(500).json({ message: 'Failed to fetch carousel images' });
     }
+  });
+
+  // Serve admin guide documentation
+  app.get('/ADMIN_GUIDE.md', (req, res) => {
+    res.sendFile(path.join(__dirname, '../ADMIN_GUIDE.md'));
   });
 
   // Admin User Management Routes

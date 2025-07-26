@@ -16,6 +16,7 @@ import Checkout from "@/pages/checkout";
 import PaymentSuccess from "@/pages/payment-success";
 import AdminPage from "@/pages/admin";
 import AdminUsersPage from "@/pages/admin-users";
+import AdminHelpPage from "@/pages/admin-help";
 import PostRegistrationHandler from "@/components/registration/post-registration-handler";
 
 function Router() {
@@ -29,6 +30,7 @@ function Router() {
           {/* Admin routes accessible for authentication redirect */}
           <Route path="/admin" component={AdminPage} />
           <Route path="/admin/users" component={AdminUsersPage} />
+          <Route path="/admin/help" component={AdminHelpPage} />
         </>
       ) : (
         <>
@@ -39,6 +41,8 @@ function Router() {
           <Route path="/favorites" component={Favorites} />
           <Route path="/admin" component={AdminPage} />
           <Route path="/admin/users" component={AdminUsersPage} />
+          <Route path="/admin/help" component={AdminHelpPage} />
+          <Route path="/admin/help" component={AdminHelpPage} />
         </>
       )}
       {/* Payment routes - accessible to all users */}
