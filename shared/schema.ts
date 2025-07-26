@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, real, timestamp, uuid, varchar, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, real, timestamp, uuid, varchar, jsonb, index, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -290,6 +290,34 @@ export const carouselImages = pgTable("carousel_images", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const userFeedback = pgTable("user_feedback", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }), // Optional for anonymous feedback
+  email: varchar("email"), // For anonymous users to follow up
+  name: varchar("name"), // Optional name for feedback
+  feedbackType: varchar("feedback_type").notNull(), // feature_request, beach_suggestion, bug_report, general
+  category: varchar("category"), // ui_ux, forecasting, locations, performance, other
+  title: varchar("title").notNull(),
+  description: text("description").notNull(),
+  priority: varchar("priority").default("medium"), // low, medium, high, critical
+  status: varchar("status").default("submitted"), // submitted, reviewing, in_progress, completed, rejected
+  spotId: integer("spot_id").references(() => surfSpots.id, { onDelete: "set null" }), // For beach-specific feedback
+  upvotes: integer("upvotes").default(0),
+  adminNotes: text("admin_notes"),
+  adminResponse: text("admin_response"),
+  isPublic: boolean("is_public").default(true), // Whether feedback is visible to other users
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const feedbackVotes = pgTable("feedback_votes", {
+  id: serial("id").primaryKey(),
+  feedbackId: integer("feedback_id").references(() => userFeedback.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  voteType: varchar("vote_type").notNull(), // upvote, downvote
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   favorites: many(userFavorites),
@@ -298,6 +326,8 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   pushSubscriptions: many(pushSubscriptions),
   notifications: many(notificationLog),
   payments: many(payments),
+  feedbackSubmissions: many(userFeedback),
+  feedbackVotes: many(feedbackVotes),
 }));
 
 export const userFavoritesRelations = relations(userFavorites, ({ one }) => ({
@@ -364,6 +394,30 @@ export const surfSpotsRelations = relations(surfSpots, ({ many }) => ({
   conditions: many(surfConditions),
   tides: many(tideTimes),
   forecasts: many(forecasts),
+  feedback: many(userFeedback),
+}));
+
+export const userFeedbackRelations = relations(userFeedback, ({ one, many }) => ({
+  user: one(users, {
+    fields: [userFeedback.userId],
+    references: [users.id],
+  }),
+  spot: one(surfSpots, {
+    fields: [userFeedback.spotId],
+    references: [surfSpots.id],
+  }),
+  votes: many(feedbackVotes),
+}));
+
+export const feedbackVotesRelations = relations(feedbackVotes, ({ one }) => ({
+  feedback: one(userFeedback, {
+    fields: [feedbackVotes.feedbackId],
+    references: [userFeedback.id],
+  }),
+  user: one(users, {
+    fields: [feedbackVotes.userId],
+    references: [users.id],
+  }),
 }));
 
 // User schema exports
@@ -418,6 +472,20 @@ export const insertCarouselImageSchema = createInsertSchema(carouselImages).omit
   updatedAt: true,
 });
 
+export const insertUserFeedbackSchema = createInsertSchema(userFeedback).omit({
+  id: true,
+  upvotes: true,
+  adminNotes: true,
+  adminResponse: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertFeedbackVoteSchema = createInsertSchema(feedbackVotes).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertUserFavorite = z.infer<typeof insertUserFavoriteSchema>;
 export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
@@ -427,6 +495,8 @@ export type InsertNotificationLog = z.infer<typeof insertNotificationLogSchema>;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;
 export type InsertCarouselImage = z.infer<typeof insertCarouselImageSchema>;
+export type InsertUserFeedback = z.infer<typeof insertUserFeedbackSchema>;
+export type InsertFeedbackVote = z.infer<typeof insertFeedbackVoteSchema>;
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -438,6 +508,8 @@ export type NotificationLog = typeof notificationLog.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type CarouselImage = typeof carouselImages.$inferSelect;
+export type UserFeedback = typeof userFeedback.$inferSelect;
+export type FeedbackVote = typeof feedbackVotes.$inferSelect;
 
 export type SurfSpot = typeof surfSpots.$inferSelect;
 export type SurfCondition = typeof surfConditions.$inferSelect;

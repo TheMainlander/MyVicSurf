@@ -884,6 +884,150 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Feedback Routes
+  
+  // Submit feedback (public route - allows anonymous feedback)
+  app.post('/api/feedback', async (req, res) => {
+    try {
+      const feedbackData = req.body;
+      
+      // Add user ID if authenticated
+      if (req.isAuthenticated?.()) {
+        feedbackData.userId = req.user.id;
+      }
+      
+      const feedback = await storage.createFeedback(feedbackData);
+      res.status(201).json(feedback);
+    } catch (error) {
+      console.error('Error creating feedback:', error);
+      res.status(500).json({ message: 'Failed to submit feedback' });
+    }
+  });
+
+  // Get all feedback (filtered by visibility and user permissions)
+  app.get('/api/feedback', async (req, res) => {
+    try {
+      const { 
+        feedbackType, 
+        status, 
+        spotId, 
+        isPublic = 'true',
+        limit = '20',
+        offset = '0' 
+      } = req.query;
+
+      const filters: any = {
+        feedbackType: feedbackType as string,
+        status: status as string,
+        spotId: spotId ? parseInt(spotId as string) : undefined,
+        isPublic: isPublic === 'true',
+        limit: parseInt(limit as string),
+        offset: parseInt(offset as string)
+      };
+
+      // If user is authenticated, they can see their own private feedback
+      if (req.isAuthenticated?.()) {
+        // Admin can see all feedback
+        if (req.user.role === 'admin' || req.user.role === 'super_admin') {
+          delete filters.isPublic;
+        }
+      }
+
+      const feedback = await storage.getAllFeedback(filters);
+      res.json(feedback);
+    } catch (error) {
+      console.error('Error fetching feedback:', error);
+      res.status(500).json({ message: 'Failed to fetch feedback' });
+    }
+  });
+
+  // Get feedback for a specific spot
+  app.get('/api/surf-spots/:spotId/feedback', async (req, res) => {
+    try {
+      const spotId = parseInt(req.params.spotId);
+      const { limit = '10', offset = '0' } = req.query;
+
+      const feedback = await storage.getAllFeedback({
+        spotId,
+        isPublic: true,
+        limit: parseInt(limit as string),
+        offset: parseInt(offset as string)
+      });
+
+      res.json(feedback);
+    } catch (error) {
+      console.error('Error fetching spot feedback:', error);
+      res.status(500).json({ message: 'Failed to fetch spot feedback' });
+    }
+  });
+
+  // Vote on feedback (requires authentication)
+  app.post('/api/feedback/:id/vote', async (req, res) => {
+    if (!req.isAuthenticated?.()) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    try {
+      const feedbackId = parseInt(req.params.id);
+      const { voteType } = req.body;
+      const userId = req.user.id;
+
+      if (!['upvote', 'downvote'].includes(voteType)) {
+        return res.status(400).json({ message: 'Invalid vote type' });
+      }
+
+      await storage.voteFeedback(feedbackId, userId, voteType);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error voting on feedback:', error);
+      res.status(500).json({ message: 'Failed to vote on feedback' });
+    }
+  });
+
+  // Remove vote (requires authentication)
+  app.delete('/api/feedback/:id/vote', async (req, res) => {
+    if (!req.isAuthenticated?.()) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    try {
+      const feedbackId = parseInt(req.params.id);
+      const userId = req.user.id;
+
+      await storage.removeVoteFeedback(feedbackId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error removing vote:', error);
+      res.status(500).json({ message: 'Failed to remove vote' });
+    }
+  });
+
+  // Admin: Update feedback status
+  app.put('/api/admin/feedback/:id', requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedFeedback = await storage.updateFeedback(id, updates);
+      res.json(updatedFeedback);
+    } catch (error) {
+      console.error('Error updating feedback:', error);
+      res.status(500).json({ message: 'Failed to update feedback' });
+    }
+  });
+
+  // Admin: Delete feedback
+  app.delete('/api/admin/feedback/:id', requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteFeedback(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+      res.status(500).json({ message: 'Failed to delete feedback' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

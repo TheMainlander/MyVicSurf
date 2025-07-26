@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/header";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import LocationSelector from "@/components/common/location-selector";
@@ -12,6 +14,7 @@ import BeachCameras from "@/components/surf/beach-cameras";
 import LocationPermission from "@/components/location/location-permission";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import PremiumFeaturesPanel from "@/components/premium/premium-features-panel";
+import SimpleFeedbackForm from "@/components/feedback/simple-feedback-form";
 
 import type { SurfSpot } from "@shared/schema";
 
@@ -126,6 +129,17 @@ export default function Home() {
         </div>
       </main>
 
+      <div className="fixed bottom-24 right-4 z-40">
+        <SimpleFeedbackForm 
+          spotId={selectedSpotId} 
+          spotName={selectedSpot?.name}
+          trigger={
+            <Button size="sm" className="bg-ocean-blue hover:bg-ocean-blue/90 text-white shadow-lg">
+              <MessageCircle className="h-4 w-4" />
+            </Button>
+          }
+        />
+      </div>
       <BottomNavigation activeTab="home" />
     </div>
   );

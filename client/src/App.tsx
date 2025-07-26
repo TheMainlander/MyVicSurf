@@ -21,6 +21,7 @@ import AdminUsersPage from "@/pages/admin-users";
 import AdminHelpPage from "@/pages/admin-help";
 import AdminSalesMarketingPage from "@/pages/admin-sales-marketing";
 import PostRegistrationHandler from "@/components/registration/post-registration-handler";
+import Feedback from "@/pages/feedback";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/forecast" component={Forecast} />
       <Route path="/profile" component={Profile} />
       <Route path="/favorites" component={Favorites} />
+      <Route path="/feedback" component={Feedback} />
       
       {/* Fallback */}
       <Route component={NotFound} />

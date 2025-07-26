@@ -10,6 +10,8 @@ import RegistrationFlow from "@/components/registration/registration-flow";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { CarouselImage } from "@shared/schema";
+import SimpleFeedbackForm from "@/components/feedback/simple-feedback-form";
+import { MessageCircle } from "lucide-react";
 
 export default function Landing() {
   const [showRegistration, setShowRegistration] = useState(false);
@@ -332,6 +334,18 @@ export default function Landing() {
           </footer>
           </div>
         </main>
+      </div>
+
+      {/* Feedback FAB for Public Users */}
+      <div className="fixed bottom-4 right-4 z-40">
+        <SimpleFeedbackForm 
+          trigger={
+            <Button size="sm" className="bg-ocean-blue hover:bg-ocean-blue/90 text-white shadow-lg">
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Feedback
+            </Button>
+          }
+        />
       </div>
 
       {/* Registration Flow Modal */}
