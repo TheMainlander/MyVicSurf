@@ -32,12 +32,19 @@ export default function AdminSalesMarketing() {
   const { toast } = useToast();
 
   // Fetch marketing documents
-  const { data: documents = [], isLoading, refetch } = useQuery({
+  const { data: documents = [], isLoading, refetch, error } = useQuery({
     queryKey: ['/api/admin/marketing-documents'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/admin/marketing-documents');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Admin authentication required');
+        }
+        throw new Error('Failed to fetch documents');
+      }
       return await response.json() as MarketingDocument[];
-    }
+    },
+    retry: false // Don't retry auth errors
   });
 
   const [newDocument, setNewDocument] = useState({
@@ -276,6 +283,22 @@ export default function AdminSalesMarketing() {
               </Card>
             ))}
           </div>
+        ) : error ? (
+          <Card className="text-center py-12 border-red-200 bg-red-50">
+            <CardContent>
+              <div className="text-red-600 mb-4">
+                <FileText className="h-16 w-16 mx-auto mb-2" />
+              </div>
+              <h3 className="text-lg font-medium text-red-900 mb-2">Access Denied</h3>
+              <p className="text-red-700 mb-4">
+                Admin authentication required to view marketing documents. 
+                Please ensure you're logged in as an administrator.
+              </p>
+              <p className="text-sm text-red-600">
+                Error: {error?.message}
+              </p>
+            </CardContent>
+          </Card>
         ) : filteredDocuments.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent>
