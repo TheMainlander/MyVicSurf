@@ -1,8 +1,11 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Waves, Wind, Thermometer, Eye, Cloud, Droplets } from "lucide-react";
-import type { SurfCondition } from "@shared/schema";
+import { Button } from "@/components/ui/button";
+import { Waves, Wind, Thermometer, Eye, Cloud, Droplets, Lock, Crown } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
+import type { SurfCondition, User } from "@shared/schema";
 
 interface EnhancedConditionsDisplayProps {
   conditions: SurfCondition;
@@ -13,6 +16,23 @@ export default function EnhancedConditionsDisplay({
   conditions, 
   showAdvanced = false 
 }: EnhancedConditionsDisplayProps) {
+  
+  // Check user subscription status
+  const { data: user } = useQuery<User>({
+    queryKey: ["/api/auth/user"],
+  });
+
+  const isPremiumUser = user?.subscriptionPlan && ['wave_rider', 'surf_master'].includes(user.subscriptionPlan);
+  
+  // Premium features that require subscription
+  const premiumFeatures = [
+    'Professional 10-point scoring system',
+    'Wave energy calculations',
+    'Multi-swell analysis',
+    'Swell quality classification',
+    'Environmental metrics (UV, visibility, precipitation)',
+    'Quality breakdown charts'
+  ];
   
   const formatHeight = (heightMeters: number): string => {
     return `${heightMeters.toFixed(1)}m (${(heightMeters * 3.28).toFixed(1)}ft)`;
@@ -87,8 +107,8 @@ export default function EnhancedConditionsDisplay({
           </div>
         </div>
 
-        {/* Wave Energy & Type */}
-        {showAdvanced && conditions.waveEnergy && (
+        {/* Wave Energy & Type - Premium Feature */}
+        {showAdvanced && conditions.waveEnergy && isPremiumUser && (
           <div className="bg-blue-50 rounded-lg p-3">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Wave Energy</span>
@@ -106,8 +126,8 @@ export default function EnhancedConditionsDisplay({
           </div>
         )}
 
-        {/* Multi-Swell Analysis */}
-        {showAdvanced && conditions.secondarySwellHeight && (
+        {/* Multi-Swell Analysis - Premium Feature */}
+        {showAdvanced && conditions.secondarySwellHeight && isPremiumUser && (
           <div className="border rounded-lg p-3">
             <div className="text-sm font-medium mb-2">Swell Components</div>
             <div className="space-y-2 text-sm">
@@ -150,14 +170,14 @@ export default function EnhancedConditionsDisplay({
             <span>{conditions.airTemperature}°C</span>
           </div>
           
-          {conditions.uvIndex && showAdvanced && (
+          {conditions.uvIndex && showAdvanced && isPremiumUser && (
             <div className="flex items-center gap-1">
               <Eye className="h-4 w-4 text-yellow-500" />
               <span>UV {conditions.uvIndex}</span>
             </div>
           )}
           
-          {conditions.precipitationProbability && showAdvanced && (
+          {conditions.precipitationProbability && showAdvanced && isPremiumUser && (
             <div className="flex items-center gap-1">
               <Droplets className="h-4 w-4 text-blue-500" />
               <span>{conditions.precipitationProbability}%</span>
@@ -165,8 +185,8 @@ export default function EnhancedConditionsDisplay({
           )}
         </div>
 
-        {/* Professional Scoring Breakdown */}
-        {showAdvanced && conditions.waveQuality && (
+        {/* Professional Scoring Breakdown - Premium Feature */}
+        {showAdvanced && conditions.waveQuality && isPremiumUser && (
           <div className="space-y-2">
             <div className="text-sm font-medium">Quality Breakdown</div>
             <div className="space-y-1">
@@ -192,6 +212,32 @@ export default function EnhancedConditionsDisplay({
                 </>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Premium Upgrade Prompt */}
+        {showAdvanced && !isPremiumUser && (
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Crown className="h-5 w-5 text-blue-600" />
+              <span className="font-semibold text-blue-900">Professional Surf Metrics</span>
+            </div>
+            <p className="text-sm text-blue-700 mb-3">
+              Unlock advanced forecasting with Wave Rider or Surf Master plans
+            </p>
+            <div className="space-y-1 text-xs text-blue-600 mb-3">
+              {premiumFeatures.slice(0, 3).map((feature, index) => (
+                <div key={index} className="flex items-center gap-1.5">
+                  <Lock className="h-3 w-3" />
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+            <Link href="/pricing">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                Upgrade Now
+              </Button>
+            </Link>
           </div>
         )}
 

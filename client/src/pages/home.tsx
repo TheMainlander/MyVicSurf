@@ -11,6 +11,7 @@ import FavoriteButton from "@/components/favorites/favorite-button";
 import BeachCameras from "@/components/surf/beach-cameras";
 import LocationPermission from "@/components/location/location-permission";
 import LoadingOverlay from "@/components/common/loading-overlay";
+import PremiumFeaturesPanel from "@/components/premium/premium-features-panel";
 
 import type { SurfSpot } from "@shared/schema";
 
@@ -101,6 +102,10 @@ export default function Home() {
         <div className="space-y-3">
           <div className="fade-in" style={{ animationDelay: '0.1s' }}>
             <CurrentConditions spotId={selectedSpotId} spot={selectedSpot} />
+          </div>
+          
+          <div className="fade-in" style={{ animationDelay: '0.15s' }}>
+            <PremiumFeaturesPanel />
           </div>
           
           <div className="fade-in" style={{ animationDelay: '0.2s' }}>

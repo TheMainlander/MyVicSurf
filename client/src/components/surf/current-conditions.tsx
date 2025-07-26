@@ -20,6 +20,12 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
     enabled: !!spotId,
   });
 
+  const { data: user } = useQuery<any>({
+    queryKey: ["/api/auth/user"],
+  });
+
+  const isPremiumUser = user?.subscriptionPlan && ['wave_rider', 'surf_master'].includes(user.subscriptionPlan);
+
   if (isLoading) {
     return (
       <section>
@@ -93,6 +99,7 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
         >
           <TrendingUp className="h-3.5 w-3.5" />
           {showAdvanced ? 'Hide' : 'Show'} Professional Metrics
+          {!isPremiumUser && <span className="ml-1 text-blue-600">💎</span>}
         </Button>
       </div>
       

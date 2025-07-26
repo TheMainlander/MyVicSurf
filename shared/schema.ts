@@ -180,7 +180,7 @@ export const users = pgTable("users", {
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionStatus: varchar("subscription_status").default("free"), // free, active, cancelled, past_due
-  subscriptionPlan: varchar("subscription_plan").default("free"), // free, premium, pro
+  subscriptionPlan: varchar("subscription_plan").default("free"), // free, wave_rider, surf_master
   subscriptionStartDate: timestamp("subscription_start_date"),
   subscriptionEndDate: timestamp("subscription_end_date"),
   isActive: boolean("is_active").default(true),
