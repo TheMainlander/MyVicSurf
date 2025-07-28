@@ -134,6 +134,13 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Automatic nearest surf spot detection when location is shared
 ✓ Distance calculation using Haversine formula for accurate measurements
 ✓ Location utilities for distance formatting and permission management
+✓ WAVE HEIGHT SYSTEM OVERHAUL: Implemented proper surf vs swell height distinction
+✓ Updated API integration to use swell_wave_height from Open-Meteo Marine API as true swell
+✓ Calculate breaking height (surf height) as 85% of swell height for accurate surf conditions
+✓ Primary wave height display now shows surf height (what breaks at shore) instead of swell height
+✓ Added swell height as additional information in surf conditions display
+✓ Updated all frontend components to use "Surf Height" terminology consistently
+✓ Enhanced conditions display shows both surf height and swell height for complete information
 ✓ Improved favorite button UX by replacing confusing dual heart icons
 ✓ Changed header icon from heart to user profile icon for accessing saved beaches
 ✓ Repositioned main favorite button as compact icon next to spot name

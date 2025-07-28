@@ -104,7 +104,7 @@ export default function SurfSpotsList({ spotId }: SurfSpotsListProps) {
                   <div className="flex items-center justify-between text-sm text-gray-700 mb-3">
                     <span className="font-medium">{getMockDistance(spot.name).toFixed(1)} km away</span>
                     {spot.conditions && (
-                      <span className="font-medium text-ocean-blue">{spot.conditions.waveHeight.toFixed(1)}m waves</span>
+                      <span className="font-medium text-ocean-blue">{spot.conditions.waveHeight.toFixed(1)}m surf</span>
                     )}
                   </div>
                   <div className="text-xs text-gray-500 mb-2">

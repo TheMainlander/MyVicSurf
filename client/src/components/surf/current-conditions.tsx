@@ -133,7 +133,12 @@ export default function CurrentConditions({ spotId, spot }: CurrentConditionsPro
               <div className="text-3xl font-bold text-gray-900">
                 {conditions.waveHeight.toFixed(1)}m
               </div>
-              <div className="text-sm text-gray-600 font-medium">Wave Height</div>
+              <div className="text-sm text-gray-600 font-medium">Surf Height</div>
+              {conditions.swellHeight && (
+                <div className="text-xs text-gray-500 mt-1">
+                  Swell: {conditions.swellHeight.toFixed(1)}m
+                </div>
+              )}
             </div>
             <div className="text-center">
               <div className={`text-3xl font-bold ${getRatingColor(conditions.rating)}`}>

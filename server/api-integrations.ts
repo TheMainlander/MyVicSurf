@@ -147,19 +147,25 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
     // Wind speed is already in km/h from the weather API
     const windSpeedKmh = windSpeed;
     
-    const rating = calculateSurfRating(waveHeight, windSpeedKmh, waveDirection, windDirection);
+    // Use swell_wave_height as the true swell, fallback to wave_height if not available
+    const trueSwellHeight = data.hourly.swell_wave_height?.[currentIndex] || waveHeight;
+    
+    // Calculate breaking height (surf height) - what surfers actually see
+    const breakingHeight = trueSwellHeight * 0.85; // Breaking waves are typically 15% smaller than swell
+    
+    const rating = calculateSurfRating(breakingHeight, windSpeedKmh, waveDirection, windDirection);
     
     // Calculate approximate water temperature based on air temperature (water is typically cooler)
     const waterTemperature = Math.max(14, Math.min(22, airTemperature - 2));
     
-    // Enhanced metrics calculation
-    const waveMetrics = convertWaveHeight(waveHeight);
-    const waveEnergy = calculateWaveEnergy(waveHeight, wavePeriod);
+    // Enhanced metrics calculation - use true swell height
+    const waveMetrics = convertWaveHeight(trueSwellHeight);
+    const waveEnergy = calculateWaveEnergy(waveMetrics.breakingHeight, wavePeriod);
     const swellClassification = classifySwellQuality(wavePeriod);
-    const surfScore = calculateSurfScore(waveHeight, wavePeriod, windSpeed, degreesToCompass(windDirection));
+    const surfScore = calculateSurfScore(waveMetrics.breakingHeight, wavePeriod, windSpeed, degreesToCompass(windDirection));
     
     // Multi-swell analysis from available data
-    const primarySwellHeight = data.hourly.swell_wave_height?.[currentIndex] || waveHeight;
+    const primarySwellHeight = trueSwellHeight;
     const primarySwellPeriod = wavePeriod;
     const primarySwellDirection = degreesToCompass(waveDirection);
     
@@ -185,7 +191,7 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
 
     return {
       spotId,
-      waveHeight,
+      waveHeight: breakingHeight, // Primary metric is now surf height (breaking height)
       waveDirection: degreesToCompass(waveDirection),
       wavePeriod,
       windSpeed: windSpeedKmh,
@@ -195,9 +201,9 @@ export async function getCurrentConditionsFromAPI(spotId: number, latitude: numb
       rating,
       timestamp: new Date(),
       
-      // Enhanced surf metrics
-      swellHeight: waveMetrics.swellHeight,
-      breakingHeight: waveMetrics.breakingHeight,
+      // Enhanced surf metrics - distinguish between swell and surf
+      swellHeight: trueSwellHeight, // Swell height in open water
+      breakingHeight: breakingHeight, // Breaking wave height at shore (surf height)
       heightConfidence: waveMetrics.confidence,
       swellType: swellClassification.type,
       swellQuality: swellClassification.quality,
@@ -263,10 +269,14 @@ export async function getForecastFromAPI(spotId: number, latitude: number, longi
         const windDirection = data.hourly.wind_direction_10m[middayIndex];
         const airTemperature = data.hourly.temperature_2m[middayIndex];
         
+        // Use swell_wave_height as the true swell for forecast consistency
+        const trueSwellHeight = data.hourly.swell_wave_height?.[middayIndex] || waveHeight;
+        const breakingHeight = trueSwellHeight * 0.85; // Breaking waves are typically 15% smaller than swell
+        
         // Wind speed is already in km/h from the weather API
         const windSpeedKmh = windSpeed;
         
-        const rating = calculateSurfRating(waveHeight, windSpeedKmh, waveDirection, windDirection);
+        const rating = calculateSurfRating(breakingHeight, windSpeedKmh, waveDirection, windDirection);
         
         // Calculate approximate water temperature based on air temperature (water is typically cooler)
         const waterTemperature = Math.max(14, Math.min(22, airTemperature - 2));
@@ -274,7 +284,7 @@ export async function getForecastFromAPI(spotId: number, latitude: number, longi
         forecasts.push({
           spotId,
           date: dateStr,
-          waveHeight,
+          waveHeight: breakingHeight, // Use surf height (breaking height) as primary metric
           waveDirection: degreesToCompass(waveDirection),
           windSpeed: windSpeedKmh,
           windDirection: degreesToCompass(windDirection),
