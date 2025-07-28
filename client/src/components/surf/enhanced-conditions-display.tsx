@@ -83,7 +83,7 @@ export default function EnhancedConditionsDisplay({
         {/* Primary Wave Information */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <div className="text-sm text-gray-600">Surf Height</div>
+            <div className="text-sm text-gray-600">Wave Height</div>
             <div className="text-2xl font-bold text-ocean-blue">
               {formatHeight(conditions.waveHeight)}
             </div>

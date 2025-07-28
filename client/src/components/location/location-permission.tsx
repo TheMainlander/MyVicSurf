@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MapPin, Navigation, AlertCircle, CheckCircle, X, Clock } from 'lucide-react';
 import { useGeolocation } from '@/hooks/use-geolocation';
 
 interface LocationPermissionProps {
@@ -11,12 +12,24 @@ interface LocationPermissionProps {
   showCompact?: boolean;
 }
 
+// Duration options in milliseconds
+const DURATION_OPTIONS = [
+  { label: '5 minutes', value: 300000 },
+  { label: '15 minutes', value: 900000 },
+  { label: '30 minutes', value: 1800000 },
+  { label: '1 hour', value: 3600000 },
+  { label: '2 hours', value: 7200000 },
+  { label: '4 hours', value: 14400000 },
+  { label: '8 hours', value: 28800000 },
+];
+
 export default function LocationPermission({ 
   onLocationShared, 
   onDismiss,
   showCompact = false 
 }: LocationPermissionProps) {
   const [hasRequested, setHasRequested] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(300000); // Default 5 minutes
   const { 
     latitude, 
     longitude, 
@@ -25,7 +38,7 @@ export default function LocationPermission({
     error, 
     supported, 
     getCurrentPosition 
-  } = useGeolocation();
+  } = useGeolocation({ cacheDuration: selectedDuration });
 
   const handleRequestLocation = () => {
     setHasRequested(true);
@@ -43,9 +56,26 @@ export default function LocationPermission({
     return (
       <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
         <MapPin className="h-4 w-4 text-blue-600" />
-        <span className="text-sm text-blue-800 flex-1">
-          Share your location for nearby surf spots
-        </span>
+        <div className="flex-1">
+          <span className="text-sm text-blue-800 block">
+            Share your location for nearby surf spots
+          </span>
+          <div className="flex items-center gap-2 mt-1">
+            <Clock className="h-3 w-3 text-blue-600" />
+            <Select value={selectedDuration.toString()} onValueChange={(value) => setSelectedDuration(Number(value))}>
+              <SelectTrigger className="h-6 text-xs border-blue-300">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DURATION_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value.toString()}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         <Button 
           size="sm" 
           onClick={handleRequestLocation}
@@ -119,7 +149,7 @@ export default function LocationPermission({
           </div>
         )}
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <p className="text-sm text-gray-600">
             Share your location to discover surf spots near you and get personalized conditions.
           </p>
@@ -130,6 +160,31 @@ export default function LocationPermission({
             <li>• Personalized surf alerts</li>
             <li>• Your location is never stored permanently</li>
           </ul>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-gray-700">
+              <Clock className="h-4 w-4" />
+              <span>Location sharing duration:</span>
+            </div>
+            
+            <Select value={selectedDuration.toString()} onValueChange={(value) => setSelectedDuration(Number(value))}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select duration" />
+              </SelectTrigger>
+              <SelectContent>
+                {DURATION_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value.toString()}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <p className="text-xs text-gray-500">
+              Your location will be cached for {DURATION_OPTIONS.find(opt => opt.value === selectedDuration)?.label.toLowerCase()} 
+              to help you find nearby surf spots without repeated permissions.
+            </p>
+          </div>
 
           <Button 
             onClick={handleRequestLocation}

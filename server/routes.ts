@@ -65,16 +65,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
-  // Deployment health check endpoint (not interfering with frontend)
-  app.get('/_health', (req, res) => {
-    res.status(200).json({ 
-      status: 'healthy',
-      app: 'VicSurf',
-      version: '1.0.0',
-      timestamp: new Date().toISOString()
-    });
-  });
-
   // Health check endpoint for production monitoring
   app.get('/api/health', async (req, res) => {
     try {
@@ -776,6 +766,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Container Order Admin Routes
+  app.get('/api/admin/container-order', requireAdmin, async (req, res) => {
+    try {
+      const containers = await storage.getContainerOrder();
+      res.json(containers);
+    } catch (error) {
+      console.error('Error fetching container order:', error);
+      res.status(500).json({ message: 'Failed to fetch container order' });
+    }
+  });
+
+  app.post('/api/admin/container-order', requireAdmin, async (req, res) => {
+    try {
+      const { containers } = req.body;
+      
+      if (!containers || !Array.isArray(containers)) {
+        return res.status(400).json({ message: 'Invalid container order data' });
+      }
+      
+      const updatedOrder = await storage.updateContainerOrder(containers);
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error('Error updating container order:', error);
+      res.status(500).json({ message: 'Failed to update container order' });
+    }
+  });
+
+  app.post('/api/admin/container-order/reset', requireAdmin, async (req, res) => {
+    try {
+      const resetOrder = await storage.resetContainerOrder();
+      res.json(resetOrder);
+    } catch (error) {
+      console.error('Error resetting container order:', error);
+      res.status(500).json({ message: 'Failed to reset container order' });
+    }
+  });
+
   // Serve admin guide documentation
   app.get('/ADMIN_GUIDE.md', (req, res) => {
     const __filename = fileURLToPath(import.meta.url);
@@ -923,7 +950,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const documentData = {
         ...req.body,
-        createdBy: (req as any).user?.firstName || (req as any).user?.email || 'Admin'
+        createdBy: req.user?.firstName || req.user?.email || 'Admin'
       };
       const document = await storage.createDocument(documentData);
       res.json(document);
@@ -971,7 +998,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const documentData = {
         ...req.body,
         category: 'marketing',
-        createdBy: (req as any).user?.firstName || (req as any).user?.email || 'Admin'
+        createdBy: req.user?.firstName || req.user?.email || 'Admin'
       };
       const document = await storage.createDocument(documentData);
       res.json(document);
@@ -1060,7 +1087,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error('PDF generation error:', pdfError);
             res.status(500).json({ 
               message: 'Failed to generate PDF', 
-              error: (pdfError as Error).message,
+              error: pdfError.message,
               details: 'PDF generation requires browser dependencies. Please try downloading as HTML or Markdown instead.'
             });
           }
@@ -1197,7 +1224,7 @@ ${document.content}
       
       // Add user ID if authenticated
       if (req.isAuthenticated?.()) {
-        feedbackData.userId = (req as any).user.id;
+        feedbackData.userId = req.user.id;
       }
       
       const feedback = await storage.createFeedback(feedbackData);
@@ -1232,7 +1259,7 @@ ${document.content}
       // If user is authenticated, they can see their own private feedback
       if (req.isAuthenticated?.()) {
         // Admin can see all feedback
-        if ((req as any).user.role === 'admin' || (req as any).user.role === 'super_admin') {
+        if (req.user.role === 'admin' || req.user.role === 'super_admin') {
           delete filters.isPublic;
         }
       }
@@ -1274,7 +1301,7 @@ ${document.content}
     try {
       const feedbackId = parseInt(req.params.id);
       const { voteType } = req.body;
-      const userId = (req as any).user.id;
+      const userId = req.user.id;
 
       if (!['upvote', 'downvote'].includes(voteType)) {
         return res.status(400).json({ message: 'Invalid vote type' });
@@ -1296,7 +1323,7 @@ ${document.content}
 
     try {
       const feedbackId = parseInt(req.params.id);
-      const userId = (req as any).user.id;
+      const userId = req.user.id;
 
       await storage.removeVoteFeedback(feedbackId, userId);
       res.json({ success: true });

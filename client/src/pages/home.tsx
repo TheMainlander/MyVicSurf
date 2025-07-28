@@ -29,10 +29,6 @@ export default function Home() {
   // Mock user ID for development - in production this would come from authentication
   const currentUserId = "550e8400-e29b-41d4-a716-446655440000";
 
-  const { data: spots, isLoading: spotsLoading } = useQuery<SurfSpot[]>({
-    queryKey: ["/api/surf-spots"],
-  });
-
   const handleLocationShared = (latitude: number, longitude: number) => {
     setUserLocation({ lat: latitude, lng: longitude });
     setShowLocationPrompt(false);
@@ -63,6 +59,10 @@ export default function Home() {
   };
 
   const toRadian = (value: number) => (value * Math.PI) / 180;
+
+  const { data: spots, isLoading: spotsLoading } = useQuery<SurfSpot[]>({
+    queryKey: ["/api/surf-spots"],
+  });
 
   const selectedSpot = spots?.find(spot => spot.id === selectedSpotId);
 
