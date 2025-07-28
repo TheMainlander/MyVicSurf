@@ -280,28 +280,45 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                         ))}
                       </div>
                       
-                      {/* Tide Height Visualization */}
-                      <div className="relative mb-4">
-                        <div className="grid grid-cols-6 gap-4 items-end" style={{ height: '120px' }}>
-                          {hourlyTides.slice(0, 6).map((hourly, index) => {
-                            const maxHeight = Math.max(...hourlyTides.slice(0, 6).map(h => h.height));
-                            const normalizedHeight = Math.max(20, (hourly.height / maxHeight) * 100);
-                            return (
-                              <div key={index} className="flex flex-col items-center">
-                                <div 
-                                  className="w-8 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg mb-2 transition-all duration-500 hover:from-blue-600 hover:to-blue-500 cursor-pointer shadow-sm"
-                                  style={{ 
-                                    height: `${normalizedHeight}%`,
-                                    minHeight: '30px'
-                                  }}
-                                  title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
-                                ></div>
-                                <div className="text-sm font-semibold text-gray-700">
-                                  {hourly.height.toFixed(1)}m
+                      {/* Tide Height Visualization - Next 6 Hours */}
+                      <div className="relative mb-6">
+                        <div className="bg-gradient-to-r from-blue-100 to-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-3 h-3 bg-gradient-to-t from-blue-600 to-blue-500 rounded-full shadow-sm"></div>
+                            <span className="text-sm font-semibold text-blue-800">Next 6 hours</span>
+                            <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Current Period</span>
+                          </div>
+                          <div className="grid grid-cols-6 gap-3 items-end" style={{ height: '120px' }}>
+                            {hourlyTides.slice(0, 6).map((hourly, index) => {
+                              const maxHeight = Math.max(...hourlyTides.slice(0, 6).map(h => h.height));
+                              const normalizedHeight = Math.max(25, (hourly.height / maxHeight) * 100);
+                              const isHigh = hourly.height > (maxHeight * 0.7);
+                              return (
+                                <div key={index} className="flex flex-col items-center">
+                                  <div 
+                                    className={`w-10 rounded-t-xl mb-2 transition-all duration-500 cursor-pointer shadow-md transform hover:scale-105 ${
+                                      isHigh 
+                                        ? 'bg-gradient-to-t from-blue-600 via-blue-500 to-blue-400 border-2 border-blue-300' 
+                                        : 'bg-gradient-to-t from-blue-500 via-blue-400 to-blue-300 border border-blue-200'
+                                    }`}
+                                    style={{ 
+                                      height: `${normalizedHeight}%`,
+                                      minHeight: '35px'
+                                    }}
+                                    title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
+                                  >
+                                    {/* Height indicator dot */}
+                                    <div className={`w-2 h-2 rounded-full mx-auto mt-1 ${
+                                      isHigh ? 'bg-white opacity-80' : 'bg-blue-100 opacity-60'
+                                    }`}></div>
+                                  </div>
+                                  <div className={`text-sm font-bold ${isHigh ? 'text-blue-700' : 'text-blue-600'}`}>
+                                    {hourly.height.toFixed(1)}m
+                                  </div>
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
                         
                         {/* Horizontal reference lines */}
@@ -311,53 +328,68 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                         </div>
                       </div>
                       
-                      {/* Next 6 hours */}
-                      <div className="border-t border-gray-200 pt-4 mt-4">
-                        <div className="grid grid-cols-6 gap-4 mb-3">
-                          {hourlyTides.slice(6, 12).map((hourly, index) => (
-                            <div key={index} className="text-center">
-                              <div className="text-sm font-medium text-gray-600 mb-1">
-                                {String(hourly.hour).padStart(2, '0')}:00
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        <div className="grid grid-cols-6 gap-4 items-end" style={{ height: '80px' }}>
-                          {hourlyTides.slice(6, 12).map((hourly, index) => {
-                            const maxHeight = Math.max(...hourlyTides.slice(6, 12).map(h => h.height));
-                            const normalizedHeight = Math.max(15, (hourly.height / maxHeight) * 100);
-                            return (
-                              <div key={index} className="flex flex-col items-center">
-                                <div 
-                                  className="w-6 bg-gradient-to-t from-cyan-400 to-cyan-300 rounded-t-lg mb-2 transition-all duration-500 hover:from-cyan-500 hover:to-cyan-400 cursor-pointer shadow-sm opacity-80"
-                                  style={{ 
-                                    height: `${normalizedHeight}%`,
-                                    minHeight: '20px'
-                                  }}
-                                  title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
-                                ></div>
-                                <div className="text-xs font-medium text-gray-600">
-                                  {hourly.height.toFixed(1)}m
+                      {/* Hours 7-12 - Extended Forecast */}
+                      <div className="mt-6">
+                        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg p-4 border-l-4 border-teal-400">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-3 h-3 bg-gradient-to-t from-teal-500 to-cyan-400 rounded-full shadow-sm"></div>
+                            <span className="text-sm font-semibold text-teal-800">Hours 7-12</span>
+                            <span className="text-xs text-teal-600 bg-teal-100 px-2 py-1 rounded-full">Extended View</span>
+                          </div>
+                          <div className="grid grid-cols-6 gap-3 mb-3">
+                            {hourlyTides.slice(6, 12).map((hourly, index) => (
+                              <div key={index} className="text-center">
+                                <div className="text-sm font-medium text-teal-700 mb-1">
+                                  {String(hourly.hour).padStart(2, '0')}:00
                                 </div>
                               </div>
-                            );
-                          })}
+                            ))}
+                          </div>
+                          
+                          <div className="grid grid-cols-6 gap-3 items-end" style={{ height: '90px' }}>
+                            {hourlyTides.slice(6, 12).map((hourly, index) => {
+                              const maxHeight = Math.max(...hourlyTides.slice(6, 12).map(h => h.height));
+                              const normalizedHeight = Math.max(20, (hourly.height / maxHeight) * 100);
+                              const isHigh = hourly.height > (maxHeight * 0.7);
+                              return (
+                                <div key={index} className="flex flex-col items-center">
+                                  <div 
+                                    className={`w-8 rounded-t-lg mb-2 transition-all duration-500 cursor-pointer shadow-sm transform hover:scale-105 ${
+                                      isHigh 
+                                        ? 'bg-gradient-to-t from-teal-500 via-teal-400 to-cyan-400 border-2 border-teal-300' 
+                                        : 'bg-gradient-to-t from-teal-400 via-cyan-400 to-cyan-300 border border-teal-200'
+                                    } opacity-85`}
+                                    style={{ 
+                                      height: `${normalizedHeight}%`,
+                                      minHeight: '25px'
+                                    }}
+                                    title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
+                                  >
+                                    {/* Striped pattern for extended forecast */}
+                                    <div className="w-full h-1 bg-white opacity-30 mt-1"></div>
+                                  </div>
+                                  <div className={`text-sm font-semibold ${isHigh ? 'text-teal-700' : 'text-teal-600'}`}>
+                                    {hourly.height.toFixed(1)}m
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="mt-6 text-center space-y-2">
-                        <div className="flex items-center justify-center gap-4 text-xs">
-                          <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 bg-gradient-to-t from-blue-500 to-blue-400 rounded"></div>
-                            <span className="text-gray-600">Next 6 hours</span>
+                      <div className="mt-6 text-center space-y-3">
+                        <div className="flex items-center justify-center gap-6 text-sm">
+                          <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200">
+                            <div className="w-3 h-3 bg-gradient-to-t from-blue-600 to-blue-500 rounded-full shadow-sm"></div>
+                            <span className="text-blue-800 font-medium">Next 6 hours</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 bg-gradient-to-t from-cyan-400 to-cyan-300 rounded opacity-80"></div>
-                            <span className="text-gray-600">Hours 7-12</span>
+                          <div className="flex items-center gap-2 bg-teal-50 px-3 py-1.5 rounded-full border border-teal-200">
+                            <div className="w-3 h-3 bg-gradient-to-t from-teal-500 to-cyan-400 rounded-full shadow-sm"></div>
+                            <span className="text-teal-800 font-medium">Hours 7-12</span>
                           </div>
                         </div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 bg-gray-50 px-4 py-2 rounded-lg">
                           Victorian coastline hourly tide heights with BOM data integration
                         </p>
                       </div>
