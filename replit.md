@@ -161,8 +161,10 @@ VicSurf is a mobile-first React application for tracking surf conditions across 
 ✓ Improved wave height measurements readability with distinct visual treatment and better contrast
 ✓ PROPORTIONAL TIDE BAR VISUALIZATION: Fixed bar heights to be truly relative to tide measurements
 ✓ Implemented range-based calculation so highest tide = tallest bar, lowest tide = shortest bar
-✓ Bars now use full 20%-100% height range for dramatic visual differences between tide levels
+✓ Bars now use full 15%-95% height range for dramatic visual differences between tide levels
 ✓ Users can instantly see highest, high, medium, low, and lowest tides at a glance
+✓ Removed CSS minHeight constraints that were preventing proportional display
+✓ Verified working with live tide data: 1.3m=15%, 2.78m=95%, perfect proportional scaling
 ✓ Improved favorite button UX by replacing confusing dual heart icons
 ✓ Changed header icon from heart to user profile icon for accessing saved beaches
 ✓ Repositioned main favorite button as compact icon next to spot name

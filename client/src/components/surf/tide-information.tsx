@@ -295,10 +295,12 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                               const minHeight = Math.min(...slice.map(h => h.height));
                               const range = maxHeight - minHeight;
                               
-                              // Create dramatic visual differences - use full 20%-100% range
+                              // Create dramatic visual differences - use full 15%-95% range  
                               const normalizedHeight = range > 0 
-                                ? ((hourly.height - minHeight) / range) * 80 + 20  // 20% to 100% range
+                                ? ((hourly.height - minHeight) / range) * 80 + 15  // 15% to 95% range
                                 : 50; // fallback if all heights are same
+                              
+
                               
                               const isHigh = hourly.height > (maxHeight * 0.7);
                               return (
@@ -310,8 +312,7 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                                         : 'bg-gradient-to-t from-blue-500 via-blue-400 to-blue-300 border border-blue-200'
                                     }`}
                                     style={{ 
-                                      height: `${normalizedHeight}%`,
-                                      minHeight: '25px'  // Reduced min height for better proportion
+                                      height: `${normalizedHeight}%`
                                     }}
                                     title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
                                   >
@@ -361,10 +362,12 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                               const minHeight = Math.min(...slice.map(h => h.height));
                               const range = maxHeight - minHeight;
                               
-                              // Create dramatic visual differences - use full 20%-100% range
+                              // Create dramatic visual differences - use full 15%-95% range  
                               const normalizedHeight = range > 0 
-                                ? ((hourly.height - minHeight) / range) * 80 + 20  // 20% to 100% range
+                                ? ((hourly.height - minHeight) / range) * 80 + 15  // 15% to 95% range
                                 : 50; // fallback if all heights are same
+                              
+
                               
                               const isHigh = hourly.height > (maxHeight * 0.7);
                               return (
@@ -376,8 +379,7 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                                         : 'bg-gradient-to-t from-teal-400 via-cyan-400 to-cyan-300 border border-teal-200'
                                     } opacity-85`}
                                     style={{ 
-                                      height: `${normalizedHeight}%`,
-                                      minHeight: '20px'  // Reduced min height for better proportion
+                                      height: `${normalizedHeight}%`
                                     }}
                                     title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
                                   >
