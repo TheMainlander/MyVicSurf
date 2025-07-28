@@ -290,8 +290,16 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                           </div>
                           <div className="grid grid-cols-6 gap-3 items-end" style={{ height: '120px' }}>
                             {hourlyTides.slice(0, 6).map((hourly, index) => {
-                              const maxHeight = Math.max(...hourlyTides.slice(0, 6).map(h => h.height));
-                              const normalizedHeight = Math.max(25, (hourly.height / maxHeight) * 100);
+                              const slice = hourlyTides.slice(0, 6);
+                              const maxHeight = Math.max(...slice.map(h => h.height));
+                              const minHeight = Math.min(...slice.map(h => h.height));
+                              const range = maxHeight - minHeight;
+                              
+                              // Create dramatic visual differences - use full 20%-100% range
+                              const normalizedHeight = range > 0 
+                                ? ((hourly.height - minHeight) / range) * 80 + 20  // 20% to 100% range
+                                : 50; // fallback if all heights are same
+                              
                               const isHigh = hourly.height > (maxHeight * 0.7);
                               return (
                                 <div key={index} className="flex flex-col items-center">
@@ -303,7 +311,7 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                                     }`}
                                     style={{ 
                                       height: `${normalizedHeight}%`,
-                                      minHeight: '35px'
+                                      minHeight: '25px'  // Reduced min height for better proportion
                                     }}
                                     title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
                                   >
@@ -348,8 +356,16 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                           
                           <div className="grid grid-cols-6 gap-3 items-end" style={{ height: '90px' }}>
                             {hourlyTides.slice(6, 12).map((hourly, index) => {
-                              const maxHeight = Math.max(...hourlyTides.slice(6, 12).map(h => h.height));
-                              const normalizedHeight = Math.max(20, (hourly.height / maxHeight) * 100);
+                              const slice = hourlyTides.slice(6, 12);
+                              const maxHeight = Math.max(...slice.map(h => h.height));
+                              const minHeight = Math.min(...slice.map(h => h.height));
+                              const range = maxHeight - minHeight;
+                              
+                              // Create dramatic visual differences - use full 20%-100% range
+                              const normalizedHeight = range > 0 
+                                ? ((hourly.height - minHeight) / range) * 80 + 20  // 20% to 100% range
+                                : 50; // fallback if all heights are same
+                              
                               const isHigh = hourly.height > (maxHeight * 0.7);
                               return (
                                 <div key={index} className="flex flex-col items-center">
@@ -361,7 +377,7 @@ export default function TideInformation({ spotId }: TideInformationProps) {
                                     } opacity-85`}
                                     style={{ 
                                       height: `${normalizedHeight}%`,
-                                      minHeight: '25px'
+                                      minHeight: '20px'  // Reduced min height for better proportion
                                     }}
                                     title={`${hourly.height.toFixed(1)}m at ${String(hourly.hour).padStart(2, '0')}:00 - ${hourly.description}`}
                                   >
