@@ -52,6 +52,11 @@ import { getCurrentConditionsFromAPI, getForecastFromAPI, getTideDataFromBOM, ge
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 
+// Check if database is available
+const isDatabaseAvailable = () => {
+  return db !== null && process.env.DATABASE_URL;
+};
+
 export interface IStorage {
   // Surf Spots
   getSurfSpots(): Promise<SurfSpot[]>;
@@ -172,31 +177,73 @@ export class DatabaseStorage implements IStorage {
   private currentUserId = "550e8400-e29b-41d4-a716-446655440000";
 
   async getSurfSpots(): Promise<SurfSpot[]> {
-    return await db.select().from(surfSpots);
+    if (!isDatabaseAvailable()) {
+      console.warn("Database not available, returning empty surf spots array");
+      return [];
+    }
+    try {
+      return await db.select().from(surfSpots);
+    } catch (error) {
+      console.error("Error fetching surf spots:", error);
+      return [];
+    }
   }
 
   async getSurfSpot(id: number): Promise<SurfSpot | undefined> {
-    const [spot] = await db.select().from(surfSpots).where(eq(surfSpots.id, id));
-    return spot;
+    if (!isDatabaseAvailable()) {
+      console.warn("Database not available, returning undefined for surf spot");
+      return undefined;
+    }
+    try {
+      const [spot] = await db.select().from(surfSpots).where(eq(surfSpots.id, id));
+      return spot;
+    } catch (error) {
+      console.error("Error fetching surf spot:", error);
+      return undefined;
+    }
   }
 
   async createSurfSpot(spot: InsertSurfSpot): Promise<SurfSpot> {
-    const [newSpot] = await db.insert(surfSpots).values(spot).returning();
-    return newSpot;
+    if (!isDatabaseAvailable()) {
+      throw new Error("Database not available - cannot create surf spot");
+    }
+    try {
+      const [newSpot] = await db.insert(surfSpots).values(spot).returning();
+      return newSpot;
+    } catch (error) {
+      console.error("Error creating surf spot:", error);
+      throw error;
+    }
   }
 
   async updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined> {
-    const [updatedSpot] = await db
-      .update(surfSpots)
-      .set(spotData)
-      .where(eq(surfSpots.id, id))
-      .returning();
-    return updatedSpot;
+    if (!isDatabaseAvailable()) {
+      throw new Error("Database not available - cannot update surf spot");
+    }
+    try {
+      const [updatedSpot] = await db
+        .update(surfSpots)
+        .set(spotData)
+        .where(eq(surfSpots.id, id))
+        .returning();
+      return updatedSpot;
+    } catch (error) {
+      console.error("Error updating surf spot:", error);
+      throw error;
+    }
   }
 
   async deleteSurfSpot(id: number): Promise<boolean> {
-    const result = await db.delete(surfSpots).where(eq(surfSpots.id, id));
-    return result.rowCount > 0;
+    if (!isDatabaseAvailable()) {
+      throw new Error("Database not available - cannot delete surf spot");
+    }
+    try {
+      const result = await db.delete(surfSpots).where(eq(surfSpots.id, id));
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error("Error deleting surf spot:", error);
+      throw error;
+    }
   }
 
   async updateSurfSpot(id: number, spotData: Partial<SurfSpot>): Promise<SurfSpot | undefined> {
